@@ -1,5 +1,6 @@
 using MediatR;
 using MyShop.Application.Common.Interfaces;
+using MyShop.Contracts.CQRS.Commands.Common;
 using MyShop.Contracts.CQRS.Commands.Customer;
 
 namespace MyShop.Application.Commands.Customer;

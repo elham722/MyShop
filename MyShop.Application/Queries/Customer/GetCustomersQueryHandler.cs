@@ -1,6 +1,7 @@
 using MediatR;
 using MyShop.Application.Common.Extensions;
 using MyShop.Application.Common.Interfaces;
+using MyShop.Contracts.CQRS.Queries.Common;
 using MyShop.Contracts.CQRS.Queries.Customer;
 
 namespace MyShop.Application.Queries.Customer;

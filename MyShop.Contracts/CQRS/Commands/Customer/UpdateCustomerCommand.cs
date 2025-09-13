@@ -1,10 +1,5 @@
-using MyShop.Contracts.DTOs.Customer;
-
 namespace MyShop.Contracts.CQRS.Commands.Customer;
 
-/// <summary>
-/// Command to update an existing customer
-/// </summary>
 public record UpdateCustomerCommand : ICommand<CustomerDto>
 {
     public Guid Id { get; init; }

@@ -1,10 +1,5 @@
-using MyShop.Contracts.DTOs.Customer;
-
 namespace MyShop.Contracts.CQRS.Commands.Customer;
 
-/// <summary>
-/// Command to create a new customer
-/// </summary>
 public record CreateCustomerCommand : ICommand<CustomerDto>
 {
     public string FirstName { get; init; } = string.Empty;

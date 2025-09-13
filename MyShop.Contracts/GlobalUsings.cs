@@ -9,3 +9,6 @@ global using MyShop.Contracts.Common;
 global using MyShop.Contracts.Common.Pagination;
 global using MyShop.Contracts.Common.Sorting;
 global using MyShop.Contracts.Common.Filtering;
+global using MyShop.Contracts.CQRS.Commands.Common;
+global using MyShop.Contracts.DTOs.Customer;
+global using MyShop.Contracts.CQRS.Queries.Common;

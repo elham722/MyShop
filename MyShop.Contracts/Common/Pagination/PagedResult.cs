@@ -1,9 +1,5 @@
 namespace MyShop.Contracts.Common.Pagination;
 
-/// <summary>
-/// Represents a paged result with metadata
-/// </summary>
-/// <typeparam name="T">The type of items in the result</typeparam>
 public class PagedResult<T>
 {
     public IReadOnlyList<T> Items { get; set; } = new List<T>();
@@ -27,9 +23,6 @@ public class PagedResult<T>
         return new PagedResult<T>(Array.Empty<T>(), 0, pageNumber, pageSize);
     }
 
-    /// <summary>
-    /// Creates pagination metadata
-    /// </summary>
     public object GetMeta()
     {
         return new
