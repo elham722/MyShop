@@ -113,36 +113,7 @@ public class PhoneNumber : BaseValueObject
         return Value;
     }
 
-    public string GetAreaCode()
-    {
-        if (Value.StartsWith("+98"))
-        {
-            var number = Value.Substring(3);
-            if (number.StartsWith("9"))
-            {
-                return number.Substring(0, 4);
-            }
-            else
-            {
-                return number.Substring(0, 3);
-            }
-        }
-        else if (Value.StartsWith("09"))
-        {
-            return Value.Substring(0, 4);
-        }
-        else if (Value.StartsWith("0"))
-        {
-            return Value.Substring(0, 3);
-        }
-        return string.Empty;
-    }
-
-
-    public bool IsSameAreaCode(PhoneNumber other)
-    {
-        return GetAreaCode() == other.GetAreaCode();
-    }
+  
 
     public PhoneNumber GetAlternativeFormat()
     {

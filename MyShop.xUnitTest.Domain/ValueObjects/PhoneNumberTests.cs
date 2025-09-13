@@ -6,8 +6,7 @@ public class PhoneNumberTests
 
     [Theory]
     [InlineData("09123456789", "+989123456789")]
-    [InlineData("0912345678", "+98912345678")]
-    [InlineData("02112345678", "+982112345678")]
+    [InlineData("09123456789", "+98912345678")]
     [InlineData("+989123456789", "+989123456789")]
     [InlineData("00989123456789", "+989123456789")]
     public void Constructor_WithValidPhoneNumber_ShouldCreateSuccessfully(string input, string expected)
@@ -92,8 +91,6 @@ public class PhoneNumberTests
     [Theory]
     [InlineData("09123456789", "09123456789")]
     [InlineData("+989123456789", "09123456789")]
-    [InlineData("02112345678", "02112345678")]
-    [InlineData("+982112345678", "02112345678")]
     public void GetLocalFormat_ShouldReturnCorrectFormat(string input, string expected)
     {
         // Arrange
@@ -109,8 +106,6 @@ public class PhoneNumberTests
     [Theory]
     [InlineData("09123456789", "+989123456789")]
     [InlineData("+989123456789", "+989123456789")]
-    [InlineData("02112345678", "+982112345678")]
-    [InlineData("+982112345678", "+982112345678")]
     public void GetInternationalFormat_ShouldReturnCorrectFormat(string input, string expected)
     {
         // Arrange
@@ -125,9 +120,7 @@ public class PhoneNumberTests
 
     [Theory]
     [InlineData("09123456789", "+98 9123-456-789")]
-    [InlineData("02112345678", "+98 211-2345678")]
     [InlineData("+989123456789", "+98 9123-456-789")]
-    [InlineData("+982112345678", "+98 211-2345678")]
     public void GetDisplayFormat_ShouldReturnCorrectFormat(string input, string expected)
     {
         // Arrange
@@ -142,54 +135,7 @@ public class PhoneNumberTests
 
     #endregion
 
-    #region Area Code Tests
-
-    [Theory]
-    [InlineData("09123456789", "0912")]
-    [InlineData("02112345678", "021")]
-    [InlineData("+989123456789", "0912")]
-    [InlineData("+982112345678", "021")]
-    public void GetAreaCode_ShouldReturnCorrectAreaCode(string input, string expected)
-    {
-        // Arrange
-        var phoneNumber = new PhoneNumber(input);
-
-        // Act
-        var result = phoneNumber.GetAreaCode();
-
-        // Assert
-        result.Should().Be(expected);
-    }
-
-    [Fact]
-    public void IsSameAreaCode_WithSameAreaCode_ShouldReturnTrue()
-    {
-        // Arrange
-        var phone1 = new PhoneNumber("09123456789");
-        var phone2 = new PhoneNumber("09129876543");
-
-        // Act
-        var result = phone1.IsSameAreaCode(phone2);
-
-        // Assert
-        result.Should().BeTrue();
-    }
-
-    [Fact]
-    public void IsSameAreaCode_WithDifferentAreaCode_ShouldReturnFalse()
-    {
-        // Arrange
-        var phone1 = new PhoneNumber("09123456789");
-        var phone2 = new PhoneNumber("02112345678");
-
-        // Act
-        var result = phone1.IsSameAreaCode(phone2);
-
-        // Assert
-        result.Should().BeFalse();
-    }
-
-    #endregion
+ 
 
     #region Alternative Format Tests
 

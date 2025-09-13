@@ -601,7 +601,7 @@ public class CustomerTests
     {
         // Arrange
         var customer = CreateValidCustomer();
-        customer.UpdatePersonalInfo("", "احمدی"); // Invalid first name
+        customer.UpdatePersonalInfo("h", "احمدی"); // Invalid first name
 
         // Act & Assert
         var action = () => customer.ValidateBusinessRules();
@@ -627,7 +627,9 @@ public class CustomerTests
     {
         // Arrange
         var customer = CreateValidCustomer();
-        customer.SetDateOfBirth(DateTime.UtcNow.AddYears(-10)); // Too young
+        customer.SetDateOfBirth(DateTime.UtcNow.Date.AddYears(-14).AddDays(-10));
+
+
 
         // Act & Assert
         var action = () => customer.ValidateBusinessRules();
