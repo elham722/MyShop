@@ -31,6 +31,19 @@ Content-Type: application/json
   "createdBy": "API"
 }
 
+### Expected Response with Meta:
+### {
+###   "success": true,
+###   "data": { ... },
+###   "errors": [],
+###   "meta": {
+###     "createdAt": "2025-01-27T10:30:00Z",
+###     "operation": "CreateCustomer",
+###     "version": "1.0"
+###   },
+###   "traceId": "0HMQ8VQKJQJQJ"
+### }
+
 ### Update customer
 PUT https://localhost:7000/api/customers/{{customerId}}
 Content-Type: application/json
@@ -44,6 +57,34 @@ Content-Type: application/json
   "updatedBy": "API"
 }
 
+### Expected Response with Meta:
+### {
+###   "success": true,
+###   "data": { ... },
+###   "errors": [],
+###   "meta": {
+###     "updatedAt": "2025-01-27T10:30:00Z",
+###     "operation": "UpdateCustomer",
+###     "customerId": "123e4567-e89b-12d3-a456-426614174000",
+###     "version": "1.0"
+###   },
+###   "traceId": "0HMQ8VQKJQJQJ"
+### }
+
 ### Delete customer
 DELETE https://localhost:7000/api/customers/{{customerId}}
 Accept: application/json
+
+### Expected Response with Meta:
+### {
+###   "success": true,
+###   "data": null,
+###   "errors": [],
+###   "meta": {
+###     "deletedAt": "2025-01-27T10:30:00Z",
+###     "operation": "DeleteCustomer",
+###     "customerId": "123e4567-e89b-12d3-a456-426614174000",
+###     "version": "1.0"
+###   },
+###   "traceId": "0HMQ8VQKJQJQJ"
+### }

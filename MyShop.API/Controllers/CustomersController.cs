@@ -53,7 +53,12 @@ public class CustomersController : BaseController
     public async Task<ActionResult<ApiResponse<CustomerDto>>> CreateCustomer([FromBody] CreateCustomerCommand command)
     {
         var result = await _mediator.Send(command);
-        return Ok(result);
+        var meta = new { 
+            CreatedAt = DateTime.UtcNow,
+            Operation = "CreateCustomer",
+            Version = "1.0"
+        };
+        return Ok(result, meta);
     }
 
     /// <summary>
@@ -67,7 +72,13 @@ public class CustomersController : BaseController
     {
         var updateCommand = command with { Id = id };
         var result = await _mediator.Send(updateCommand);
-        return Ok(result);
+        var meta = new { 
+            UpdatedAt = DateTime.UtcNow,
+            Operation = "UpdateCustomer",
+            CustomerId = id,
+            Version = "1.0"
+        };
+        return Ok(result, meta);
     }
 
     /// <summary>
@@ -80,6 +91,12 @@ public class CustomersController : BaseController
     {
         var command = new DeleteCustomerCommand { Id = id, DeletedBy = "API" };
         await _mediator.Send(command);
-        return Ok();
+        var meta = new { 
+            DeletedAt = DateTime.UtcNow,
+            Operation = "DeleteCustomer",
+            CustomerId = id,
+            Version = "1.0"
+        };
+        return Ok((object?)meta);
     }
 }

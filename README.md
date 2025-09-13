@@ -134,7 +134,11 @@ Content-Type: application/json
     "status": "Active"
   },
   "errors": [],
-  "meta": null,
+  "meta": {
+    "createdAt": "2025-01-27T10:30:00Z",
+    "operation": "CreateCustomer",
+    "version": "1.0"
+  },
   "traceId": "0HMQ8VQKJQJQJ"
 }
 ```
@@ -194,6 +198,33 @@ dotnet test
 3. **Domain Events**: تغییرات مهم در Domain Events ثبت می‌شوند
 4. **Business Rules**: قوانین تجاری قابل تست و قابل استفاده مجدد هستند
 5. **Clean Architecture**: جداسازی مناسب لایه‌ها و وابستگی‌ها
+6. **Performance Optimization**: استفاده از `Array.Empty<string>()` به جای `new List<string>()`
+7. **Rich Metadata**: پشتیبانی کامل از Meta در تمام پاسخ‌های API
+8. **Traceability**: ردیابی کامل درخواست‌ها با TraceId
+
+## 🚀 بهبودهای جدید
+
+### ApiResponse بهینه‌سازی شده
+- **Errors**: استفاده از `Array.Empty<string>()` برای بهینه‌سازی حافظه
+- **Meta**: پشتیبانی کامل از Metadata در تمام متدهای `FromResult`
+- **TraceId**: ردیابی کامل درخواست‌ها
+
+### نمونه استفاده از Meta
+```csharp
+// در Controller
+var meta = new { 
+    CreatedAt = DateTime.UtcNow,
+    Operation = "CreateCustomer",
+    Version = "1.0"
+};
+return Ok(result, meta);
+
+// در BaseController
+protected ActionResult<ApiResponse<T>> Ok<T>(Result<T> result, object? meta = null)
+{
+    return base.Ok(ApiResponse<T>.FromResult(result, meta, TraceId));
+}
+```
 
 ## 🤝 مشارکت
 

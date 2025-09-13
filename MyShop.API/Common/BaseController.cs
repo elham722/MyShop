@@ -36,7 +36,7 @@ public abstract class BaseController : ControllerBase
     /// </summary>
     protected ActionResult<ApiResponse<T>> Ok<T>(Result<T> result, object? meta = null)
     {
-        return base.Ok(ApiResponse<T>.FromResult(result, TraceId));
+        return base.Ok(ApiResponse<T>.FromResult(result, meta, TraceId));
     }
 
     /// <summary>
@@ -44,7 +44,7 @@ public abstract class BaseController : ControllerBase
     /// </summary>
     protected ActionResult<ApiResponse> Ok(Result result, object? meta = null)
     {
-        return base.Ok(ApiResponse.FromResult(result, TraceId));
+        return base.Ok(ApiResponse.FromResult(result, meta, TraceId));
     }
 
     /// <summary>

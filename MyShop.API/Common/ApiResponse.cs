@@ -8,7 +8,7 @@ public class ApiResponse<T>
 {
     public bool Success { get; set; }
     public T? Data { get; set; }
-    public IReadOnlyList<string> Errors { get; set; } = new List<string>();
+    public IReadOnlyList<string> Errors { get; set; } = Array.Empty<string>();
     public object? Meta { get; set; }
     public string TraceId { get; set; } = string.Empty;
 
@@ -38,10 +38,10 @@ public class ApiResponse<T>
         return Failure(new[] { error }, traceId);
     }
 
-    public static ApiResponse<T> FromResult(Result<T> result, string traceId = "")
+    public static ApiResponse<T> FromResult(Result<T> result, object? meta = null, string traceId = "")
     {
         return result.IsSuccess 
-            ? SuccessResponse(result.Value, traceId: traceId)
+            ? SuccessResponse(result.Value, meta, traceId)
             : Failure(result.Errors, traceId);
     }
 }
@@ -52,7 +52,7 @@ public class ApiResponse<T>
 public class ApiResponse
 {
     public bool Success { get; set; }
-    public IReadOnlyList<string> Errors { get; set; } = new List<string>();
+    public IReadOnlyList<string> Errors { get; set; } = Array.Empty<string>();
     public object? Meta { get; set; }
     public string TraceId { get; set; } = string.Empty;
 
@@ -81,10 +81,10 @@ public class ApiResponse
         return Failure(new[] { error }, traceId);
     }
 
-    public static ApiResponse FromResult(Result result, string traceId = "")
+    public static ApiResponse FromResult(Result result, object? meta = null, string traceId = "")
     {
         return result.IsSuccess 
-            ? SuccessResponse(traceId: traceId)
+            ? SuccessResponse(meta, traceId)
             : Failure(result.Errors, traceId);
     }
 }
