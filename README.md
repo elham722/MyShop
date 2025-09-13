@@ -226,6 +226,45 @@ protected ActionResult<ApiResponse<T>> Ok<T>(Result<T> result, object? meta = nu
 }
 ```
 
+### فیلترینگ پیشرفته با Type Safety
+```csharp
+// فیلتر با نوع داده صحیح
+var filter = new FilterDto 
+{ 
+    Field = "Age", 
+    Operator = FilterOperator.GreaterThan, 
+    Value = "25", 
+    ValueType = "int" 
+};
+
+// فیلتر تاریخ
+var dateFilter = new FilterDto 
+{ 
+    Field = "CreatedAt", 
+    Operator = FilterOperator.GreaterThanOrEqual, 
+    Value = "2024-01-01T00:00:00Z", 
+    ValueType = "datetime" 
+};
+
+// استفاده در Query
+var customers = await _customerRepository.GetQueryableAsync()
+    .ApplyFiltering(filter)
+    .ApplyFiltering(dateFilter)
+    .ToPagedResultAsync(paginationParams);
+```
+
+### نمونه‌های API با فیلترینگ پیشرفته
+```http
+# فیلتر سن (int)
+GET /api/customers?Filtering[0].Field=Age&Filtering[0].Operator=GreaterThan&Filtering[0].Value=25&Filtering[0].ValueType=int
+
+# فیلتر تاریخ (datetime)
+GET /api/customers?Filtering[0].Field=CreatedAt&Filtering[0].Operator=GreaterThanOrEqual&Filtering[0].Value=2024-01-01T00:00:00Z&Filtering[0].ValueType=datetime
+
+# فیلتر چندگانه
+GET /api/customers?Filtering[0].Field=Status&Filtering[0].Operator=Equals&Filtering[0].Value=Active&Filtering[1].Field=Age&Filtering[1].Operator=GreaterThan&Filtering[1].Value=20&Filtering[1].ValueType=int
+```
+
 ## 🤝 مشارکت
 
 برای مشارکت در پروژه:

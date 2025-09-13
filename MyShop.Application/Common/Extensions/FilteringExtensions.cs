@@ -20,8 +20,8 @@ public static class FilteringExtensions
         if (filterDto == null || !filterDto.IsValid())
             return query;
 
-        var expression = BuildFilterExpression(filterDto);
-        return query.Where(expression);
+        var (expression, values) = BuildFilterExpression(filterDto);
+        return query.Where(expression, values);
     }
 
     /// <summary>
@@ -63,28 +63,30 @@ public static class FilteringExtensions
     /// Builds a dynamic LINQ expression for filtering
     /// </summary>
     /// <param name="filterDto">Filter parameters</param>
-    /// <returns>Dynamic LINQ expression string</returns>
-    private static string BuildFilterExpression(FilterDto filterDto)
+    /// <returns>Tuple containing expression string and parameter values</returns>
+    private static (string expression, object[] values) BuildFilterExpression(FilterDto filterDto)
     {
+        var parsedValue = filterDto.ParseValue();
+        
         return filterDto.Operator switch
         {
-            FilterOperator.Equals => $"{filterDto.Field} == \"{filterDto.Value}\"",
-            FilterOperator.NotEquals => $"{filterDto.Field} != \"{filterDto.Value}\"",
-            FilterOperator.Contains => $"{filterDto.Field}.Contains(\"{filterDto.Value}\")",
-            FilterOperator.NotContains => $"!{filterDto.Field}.Contains(\"{filterDto.Value}\")",
-            FilterOperator.StartsWith => $"{filterDto.Field}.StartsWith(\"{filterDto.Value}\")",
-            FilterOperator.EndsWith => $"{filterDto.Field}.EndsWith(\"{filterDto.Value}\")",
-            FilterOperator.GreaterThan => $"{filterDto.Field} > \"{filterDto.Value}\"",
-            FilterOperator.GreaterThanOrEqual => $"{filterDto.Field} >= \"{filterDto.Value}\"",
-            FilterOperator.LessThan => $"{filterDto.Field} < \"{filterDto.Value}\"",
-            FilterOperator.LessThanOrEqual => $"{filterDto.Field} <= \"{filterDto.Value}\"",
+            FilterOperator.Equals => ($"{filterDto.Field} == @0", new[] { parsedValue! }),
+            FilterOperator.NotEquals => ($"{filterDto.Field} != @0", new[] { parsedValue! }),
+            FilterOperator.Contains => ($"{filterDto.Field}.Contains(@0)", new[] { parsedValue! }),
+            FilterOperator.NotContains => ($"!{filterDto.Field}.Contains(@0)", new[] { parsedValue! }),
+            FilterOperator.StartsWith => ($"{filterDto.Field}.StartsWith(@0)", new[] { parsedValue! }),
+            FilterOperator.EndsWith => ($"{filterDto.Field}.EndsWith(@0)", new[] { parsedValue! }),
+            FilterOperator.GreaterThan => ($"{filterDto.Field} > @0", new[] { parsedValue! }),
+            FilterOperator.GreaterThanOrEqual => ($"{filterDto.Field} >= @0", new[] { parsedValue! }),
+            FilterOperator.LessThan => ($"{filterDto.Field} < @0", new[] { parsedValue! }),
+            FilterOperator.LessThanOrEqual => ($"{filterDto.Field} <= @0", new[] { parsedValue! }),
             FilterOperator.In => BuildInExpression(filterDto),
             FilterOperator.NotIn => BuildNotInExpression(filterDto),
-            FilterOperator.IsNull => $"{filterDto.Field} == null",
-            FilterOperator.IsNotNull => $"{filterDto.Field} != null",
-            FilterOperator.IsEmpty => $"{filterDto.Field} == \"\"",
-            FilterOperator.IsNotEmpty => $"{filterDto.Field} != \"\"",
-            _ => "true"
+            FilterOperator.IsNull => ($"{filterDto.Field} == null", Array.Empty<object>()),
+            FilterOperator.IsNotNull => ($"{filterDto.Field} != null", Array.Empty<object>()),
+            FilterOperator.IsEmpty => ($"{filterDto.Field} == \"\"", Array.Empty<object>()),
+            FilterOperator.IsNotEmpty => ($"{filterDto.Field} != \"\"", Array.Empty<object>()),
+            _ => ("true", Array.Empty<object>())
         };
     }
 
@@ -92,21 +94,23 @@ public static class FilteringExtensions
     /// Builds an IN expression for filtering
     /// </summary>
     /// <param name="filterDto">Filter parameters</param>
-    /// <returns>Dynamic LINQ expression string</returns>
-    private static string BuildInExpression(FilterDto filterDto)
+    /// <returns>Tuple containing expression string and parameter values</returns>
+    private static (string expression, object[] values) BuildInExpression(FilterDto filterDto)
     {
-        var values = filterDto.Values.Select(v => $"\"{v}\"").ToArray();
-        return $"{filterDto.Field}.In({string.Join(", ", values)})";
+        var values = filterDto.Values.ToArray();
+        var placeholders = values.Select((_, index) => $"@{index}").ToArray();
+        return ($"{filterDto.Field}.In({string.Join(", ", placeholders)})", values.Cast<object>().ToArray());
     }
 
     /// <summary>
     /// Builds a NOT IN expression for filtering
     /// </summary>
     /// <param name="filterDto">Filter parameters</param>
-    /// <returns>Dynamic LINQ expression string</returns>
-    private static string BuildNotInExpression(FilterDto filterDto)
+    /// <returns>Tuple containing expression string and parameter values</returns>
+    private static (string expression, object[] values) BuildNotInExpression(FilterDto filterDto)
     {
-        var values = filterDto.Values.Select(v => $"\"{v}\"").ToArray();
-        return $"!{filterDto.Field}.In({string.Join(", ", values)})";
+        var values = filterDto.Values.ToArray();
+        var placeholders = values.Select((_, index) => $"@{index}").ToArray();
+        return ($"!{filterDto.Field}.In({string.Join(", ", placeholders)})", values.Cast<object>().ToArray());
     }
 }

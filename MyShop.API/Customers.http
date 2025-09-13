@@ -10,6 +10,18 @@ Accept: application/json
 GET https://localhost:7000/api/customers?PageNumber=1&PageSize=10&Filtering[0].Field=Status&Filtering[0].Operator=Equals&Filtering[0].Value=Active
 Accept: application/json
 
+### Get customers with advanced filtering (Age > 25)
+GET https://localhost:7000/api/customers?PageNumber=1&PageSize=10&Filtering[0].Field=Age&Filtering[0].Operator=GreaterThan&Filtering[0].Value=25&Filtering[0].ValueType=int
+Accept: application/json
+
+### Get customers with date filtering (CreatedAt >= 2024-01-01)
+GET https://localhost:7000/api/customers?PageNumber=1&PageSize=10&Filtering[0].Field=CreatedAt&Filtering[0].Operator=GreaterThanOrEqual&Filtering[0].Value=2024-01-01T00:00:00Z&Filtering[0].ValueType=datetime
+Accept: application/json
+
+### Get customers with multiple filters (Status = Active AND Age > 20)
+GET https://localhost:7000/api/customers?PageNumber=1&PageSize=10&Filtering[0].Field=Status&Filtering[0].Operator=Equals&Filtering[0].Value=Active&Filtering[1].Field=Age&Filtering[1].Operator=GreaterThan&Filtering[1].Value=20&Filtering[1].ValueType=int
+Accept: application/json
+
 ### Get customers with search
 GET https://localhost:7000/api/customers?PageNumber=1&PageSize=10&Search=علی
 Accept: application/json
