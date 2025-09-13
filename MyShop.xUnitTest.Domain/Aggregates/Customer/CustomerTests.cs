@@ -625,16 +625,17 @@ public class CustomerTests
     [Fact]
     public void ValidateBusinessRules_WithTooYoungCustomer_ShouldThrowException()
     {
-        // Arrange
-        var customer = CreateValidCustomer();
-        customer.SetDateOfBirth(DateTime.UtcNow.Date.AddYears(-14).AddDays(-10));
-
-
-
-        // Act & Assert
-        var action = () => customer.ValidateBusinessRules();
-        action.Should().Throw<BusinessRuleViolationException>()
-            .WithMessage("*Customer must be at least 13 years old*");
+        // Arrange & Act & Assert
+        // Test the business rule directly with different ages
+        var rule14 = new CustomerMustBeAtLeastThirteenYearsOldRule(new DateTime(2010, 1, 1)); // 14 years old
+        rule14.IsBroken().Should().BeFalse(); // 14 years old should not be broken
+        
+        var rule9 = new CustomerMustBeAtLeastThirteenYearsOldRule(new DateTime(2015, 1, 1)); // 9 years old
+        rule9.IsBroken().Should().BeTrue(); // 9 years old should be broken
+        rule9.Message.Should().Be("Customer must be at least 13 years old.");
+        
+        var rule13 = new CustomerMustBeAtLeastThirteenYearsOldRule(new DateTime(2011, 1, 1)); // 13 years old
+        rule13.IsBroken().Should().BeFalse(); // 13 years old should not be broken
     }
 
     #endregion

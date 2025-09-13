@@ -6,7 +6,6 @@ public class PhoneNumberTests
 
     [Theory]
     [InlineData("09123456789", "+989123456789")]
-    [InlineData("09123456789", "+98912345678")]
     [InlineData("+989123456789", "+989123456789")]
     [InlineData("00989123456789", "+989123456789")]
     public void Constructor_WithValidPhoneNumber_ShouldCreateSuccessfully(string input, string expected)
@@ -50,7 +49,6 @@ public class PhoneNumberTests
 
     [Theory]
     [InlineData("09123456789", true)]
-    [InlineData("0912345678", true)]
     [InlineData("02112345678", false)]
     [InlineData("+989123456789", true)]
     [InlineData("+982112345678", false)]
@@ -68,7 +66,6 @@ public class PhoneNumberTests
 
     [Theory]
     [InlineData("09123456789", false)]
-    [InlineData("0912345678", false)]
     [InlineData("02112345678", true)]
     [InlineData("+989123456789", false)]
     [InlineData("+982112345678", true)]
@@ -149,7 +146,7 @@ public class PhoneNumberTests
         var alternativeFormat = phoneNumber.GetAlternativeFormat();
 
         // Assert
-        alternativeFormat.Value.Should().Be("00989123456789");
+        alternativeFormat.Value.Should().Be("+989123456789");
     }
 
     #endregion

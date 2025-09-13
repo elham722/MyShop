@@ -13,8 +13,12 @@ public class CustomerMustBeAtLeastThirteenYearsOldRule : BaseBusinessRule
         if (!_dateOfBirth.HasValue)
             return false;
 
-        var age = DateTime.UtcNow.Year - _dateOfBirth.Value.Year;
-        if (_dateOfBirth.Value.Date > DateTime.UtcNow.AddYears(-age))
+        var today = DateTime.UtcNow.Date;
+        var birthDate = _dateOfBirth.Value.Date;
+        var age = today.Year - birthDate.Year;
+        
+        // Subtract a year if the birthday hasn't occurred this year
+        if (birthDate > today.AddYears(-age))
             age--;
 
         return age < 13;
