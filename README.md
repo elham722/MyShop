@@ -265,6 +265,196 @@ GET /api/customers?Filtering[0].Field=CreatedAt&Filtering[0].Operator=GreaterTha
 GET /api/customers?Filtering[0].Field=Status&Filtering[0].Operator=Equals&Filtering[0].Value=Active&Filtering[1].Field=Age&Filtering[1].Operator=GreaterThan&Filtering[1].Value=20&Filtering[1].ValueType=int
 ```
 
+### Sorting بهبود یافته
+```csharp
+// قبل - مشکل readability
+if (isFirst)
+    sortedQuery = query.OrderBy(orderByExpression);  // استفاده از query اصلی
+else
+    sortedQuery = ((IOrderedQueryable<T>)sortedQuery).ThenBy(orderByExpression);
+
+// بعد - بهتر و خوانا‌تر
+if (isFirst)
+    sortedQuery = sortedQuery.OrderBy(orderByExpression);  // استفاده از sortedQuery
+else
+    sortedQuery = ((IOrderedQueryable<T>)sortedQuery).ThenBy(orderByExpression);
+```
+
+### نمونه‌های API با Sorting پیشرفته
+```http
+# مرتب‌سازی بر اساس نام (صعودی)
+GET /api/customers?Sorting[0].Field=FirstName&Sorting[0].Direction=asc
+
+# مرتب‌سازی چندگانه (نام صعودی، سپس سن نزولی)
+GET /api/customers?Sorting[0].Field=FirstName&Sorting[0].Direction=asc&Sorting[1].Field=Age&Sorting[1].Direction=desc
+
+# ترکیب فیلتر و مرتب‌سازی
+GET /api/customers?Filtering[0].Field=Status&Filtering[0].Operator=Equals&Filtering[0].Value=Active&Sorting[0].Field=CreatedAt&Sorting[0].Direction=desc
+```
+
+### ExceptionMiddleware بهبود یافته
+```csharp
+// قبل - فقط System Exceptions
+switch (exception)
+{
+    case ArgumentException:
+        // ...
+    case KeyNotFoundException:
+        // ...
+    default:
+        // ...
+}
+
+// بعد - Domain + System Exceptions
+switch (exception)
+{
+    // Domain Exceptions (specific first, then base)
+    case CustomValidationException validationEx:
+        response = ApiResponse.Failure(validationEx.Message, traceId);
+        context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+        break;
+    
+    case BusinessRuleViolationException businessEx:
+        response = ApiResponse.Failure(businessEx.Message, traceId);
+        context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+        break;
+    
+    case NotFoundException notFoundEx:
+        response = ApiResponse.Failure(notFoundEx.Message, traceId);
+        context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+        break;
+    
+    case ConcurrencyException concurrencyEx:
+        response = ApiResponse.Failure(concurrencyEx.Message, traceId);
+        context.Response.StatusCode = (int)HttpStatusCode.Conflict;
+        break;
+    
+    case DomainException domainEx:
+        response = ApiResponse.Failure(domainEx.Message, traceId);
+        context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+        break;
+    
+    // System Exceptions
+    case ArgumentException:
+        // ...
+    default:
+        // ...
+}
+```
+
+### نمونه‌های پاسخ خطا
+```json
+// Domain Validation Error
+{
+  "success": false,
+  "data": null,
+  "errors": ["Customer email must be unique"],
+  "meta": null,
+  "traceId": "0HMQ8VQKJQJQJ"
+}
+
+// Business Rule Violation
+{
+  "success": false,
+  "data": null,
+  "errors": ["Customer must be at least 13 years old"],
+  "meta": null,
+  "traceId": "0HMQ8VQKJQJQJ"
+}
+
+// Not Found Error
+{
+  "success": false,
+  "data": null,
+  "errors": ["Customer with ID '123e4567-e89b-12d3-a456-426614174000' not found"],
+  "meta": null,
+  "traceId": "0HMQ8VQKJQJQJ"
+}
+
+// Concurrency Conflict
+{
+  "success": false,
+  "data": null,
+  "errors": ["Concurrency conflict detected. Please refresh and try again"],
+  "meta": null,
+  "traceId": "0HMQ8VQKJQJQJ"
+}
+```
+
+### BaseController بهبود یافته
+```csharp
+// قبل - مشکل جدی! ❌
+protected ActionResult<ApiResponse<T>> Ok<T>(Result<T> result, object? meta = null)
+{
+    return base.Ok(ApiResponse<T>.FromResult(result, meta, TraceId)); // همیشه 200!
+}
+
+// بعد - صحیح! ✅
+protected ActionResult<ApiResponse<T>> Ok<T>(Result<T> result, object? meta = null)
+{
+    var response = ApiResponse<T>.FromResult(result, meta, TraceId);
+    
+    if (result.IsSuccess)
+    {
+        return base.Ok(response);        // 200 OK
+    }
+    else
+    {
+        return base.BadRequest(response); // 400 Bad Request
+    }
+}
+```
+
+### نمونه‌های استفاده در Controller
+```csharp
+// Create Customer - 201 Created برای موفقیت، 400 Bad Request برای خطا
+[HttpPost]
+public async Task<ActionResult<ApiResponse<CustomerDto>>> CreateCustomer([FromBody] CreateCustomerCommand command)
+{
+    var result = await _mediator.Send(command);
+    var meta = new { 
+        CreatedAt = DateTime.UtcNow,
+        Operation = "CreateCustomer",
+        Version = "1.0"
+    };
+    return Ok(result, meta); // خودکار 201 یا 400 برمی‌گرداند
+}
+
+// Get Customer - 200 OK برای موفقیت، 400 Bad Request برای خطا
+[HttpGet("{id:guid}")]
+public async Task<ActionResult<ApiResponse<CustomerDto>>> GetCustomer(Guid id)
+{
+    var query = new GetCustomerByIdQuery { Id = id };
+    var result = await _mediator.Send(query);
+    return Ok(result); // خودکار 200 یا 400 برمی‌گرداند
+}
+```
+
+### HTTP Status Codes صحیح
+```http
+# موفقیت - 200 OK
+GET /api/customers/123e4567-e89b-12d3-a456-426614174000
+# Response: 200 OK
+{
+  "success": true,
+  "data": { ... },
+  "errors": [],
+  "meta": null,
+  "traceId": "0HMQ8VQKJQJQJ"
+}
+
+# خطا - 400 Bad Request
+GET /api/customers/00000000-0000-0000-0000-000000000000
+# Response: 400 Bad Request
+{
+  "success": false,
+  "data": null,
+  "errors": ["Customer with ID '00000000-0000-0000-0000-000000000000' not found"],
+  "meta": null,
+  "traceId": "0HMQ8VQKJQJQJ"
+}
+```
+
 ## 🤝 مشارکت
 
 برای مشارکت در پروژه:

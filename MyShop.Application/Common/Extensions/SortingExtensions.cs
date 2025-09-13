@@ -38,20 +38,21 @@ public static class SortingExtensions
         if (sortDtos == null || !sortDtos.IsValid())
             return query;
 
+        var validSorts = sortDtos.Where(s => s.IsValid()).ToList();
+        if (!validSorts.Any())
+            return query;
+
         IQueryable<T> sortedQuery = query;
         bool isFirst = true;
 
-        foreach (var sortDto in sortDtos)
+        foreach (var sortDto in validSorts)
         {
-            if (!sortDto.IsValid())
-                continue;
-
             var direction = sortDto.IsAscending ? "asc" : "desc";
             var orderByExpression = $"{sortDto.Field} {direction}";
 
             if (isFirst)
             {
-                sortedQuery = query.OrderBy(orderByExpression);
+                sortedQuery = sortedQuery.OrderBy(orderByExpression);
                 isFirst = false;
             }
             else

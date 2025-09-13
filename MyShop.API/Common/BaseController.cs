@@ -32,19 +32,37 @@ public abstract class BaseController : ControllerBase
     }
 
     /// <summary>
-    /// Returns a successful API response from a Result
+    /// Returns an API response from a Result with appropriate status code
     /// </summary>
     protected ActionResult<ApiResponse<T>> Ok<T>(Result<T> result, object? meta = null)
     {
-        return base.Ok(ApiResponse<T>.FromResult(result, meta, TraceId));
+        var response = ApiResponse<T>.FromResult(result, meta, TraceId);
+        
+        if (result.IsSuccess)
+        {
+            return base.Ok(response);
+        }
+        else
+        {
+            return base.BadRequest(response);
+        }
     }
 
     /// <summary>
-    /// Returns a successful API response from a Result without data
+    /// Returns an API response from a Result without data with appropriate status code
     /// </summary>
     protected ActionResult<ApiResponse> Ok(Result result, object? meta = null)
     {
-        return base.Ok(ApiResponse.FromResult(result, meta, TraceId));
+        var response = ApiResponse.FromResult(result, meta, TraceId);
+        
+        if (result.IsSuccess)
+        {
+            return base.Ok(response);
+        }
+        else
+        {
+            return base.BadRequest(response);
+        }
     }
 
     /// <summary>
@@ -125,5 +143,43 @@ public abstract class BaseController : ControllerBase
     protected ActionResult<ApiResponse> InternalServerError(string message = "An internal server error occurred")
     {
         return StatusCode(500, ApiResponse.Failure(message, TraceId));
+    }
+
+    /// <summary>
+    /// Returns an API response with custom status code from a Result
+    /// </summary>
+    protected ActionResult<ApiResponse<T>> StatusCode<T>(Result<T> result, int statusCode, object? meta = null)
+    {
+        var response = ApiResponse<T>.FromResult(result, meta, TraceId);
+        return StatusCode(statusCode, response);
+    }
+
+    /// <summary>
+    /// Returns an API response with custom status code from a Result without data
+    /// </summary>
+    protected ActionResult<ApiResponse> StatusCode(Result result, int statusCode, object? meta = null)
+    {
+        var response = ApiResponse.FromResult(result, meta, TraceId);
+        return StatusCode(statusCode, response);
+    }
+
+    /// <summary>
+    /// Returns an API response with appropriate status code based on Result success/failure
+    /// </summary>
+    protected ActionResult<ApiResponse<T>> HandleResult<T>(Result<T> result, object? meta = null, int successStatusCode = 200, int failureStatusCode = 400)
+    {
+        var response = ApiResponse<T>.FromResult(result, meta, TraceId);
+        var statusCode = result.IsSuccess ? successStatusCode : failureStatusCode;
+        return StatusCode(statusCode, response);
+    }
+
+    /// <summary>
+    /// Returns an API response with appropriate status code based on Result success/failure without data
+    /// </summary>
+    protected ActionResult<ApiResponse> HandleResult(Result result, object? meta = null, int successStatusCode = 200, int failureStatusCode = 400)
+    {
+        var response = ApiResponse.FromResult(result, meta, TraceId);
+        var statusCode = result.IsSuccess ? successStatusCode : failureStatusCode;
+        return StatusCode(statusCode, response);
     }
 }

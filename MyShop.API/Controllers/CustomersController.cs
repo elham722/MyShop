@@ -41,7 +41,7 @@ public class CustomersController : BaseController
     {
         var query = new GetCustomerByIdQuery { Id = id };
         var result = await _mediator.Send(query);
-        return Ok(result);
+        return Ok(result); // Use Ok which now handles success/failure correctly
     }
 
     /// <summary>
@@ -58,7 +58,7 @@ public class CustomersController : BaseController
             Operation = "CreateCustomer",
             Version = "1.0"
         };
-        return Ok(result, meta);
+        return Ok(result, meta); // Use Ok which now handles success/failure correctly
     }
 
     /// <summary>
@@ -78,7 +78,7 @@ public class CustomersController : BaseController
             CustomerId = id,
             Version = "1.0"
         };
-        return Ok(result, meta);
+        return Ok(result, meta); // Use Ok which now handles success/failure correctly
     }
 
     /// <summary>
@@ -97,6 +97,6 @@ public class CustomersController : BaseController
             CustomerId = id,
             Version = "1.0"
         };
-        return Ok((object?)meta);
+        return Ok((object?)meta); // Return success response with meta
     }
 }
