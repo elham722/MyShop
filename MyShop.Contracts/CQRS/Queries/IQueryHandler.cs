@@ -1,5 +1,5 @@
 ﻿namespace MyShop.Contracts.CQRS.Queries;
-public interface IQueryHandler<in TQuery, TResponse> where TQuery : IQuery<TResponse>
+public interface IQueryHandler<in TQuery, TResponse> : IRequestHandler<TQuery, TResponse> where TQuery : IQuery<TResponse>
 {
-    Task<TResponse> HandleAsync(TQuery query, CancellationToken cancellationToken = default);
+    Task<Result<TResponse>> HandleAsync(TQuery query, CancellationToken cancellationToken = default);
 }

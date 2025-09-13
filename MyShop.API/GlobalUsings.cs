@@ -1,11 +1,13 @@
-﻿global using System;
+global using System;
 global using System.Collections.Generic;
 global using System.Linq;
 global using System.Text;
 global using System.Threading.Tasks;
-global using System.Linq.Expressions;
+global using Microsoft.AspNetCore.Mvc;
 global using MediatR;
 global using MyShop.Contracts.Common;
 global using MyShop.Contracts.Common.Pagination;
 global using MyShop.Contracts.Common.Sorting;
 global using MyShop.Contracts.Common.Filtering;
+global using MyShop.Contracts.DTOs.Customer;
+global using MyShop.API.Common;

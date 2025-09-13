@@ -1,7 +1,10 @@
 ﻿namespace MyShop.Contracts.CQRS.Commands;
-public interface ICommandHandler<in TCommand, TResponse> where TCommand : ICommand<TResponse>
+public interface ICommandHandler<in TCommand, TResponse> : IRequestHandler<TCommand, TResponse> where TCommand : ICommand<TResponse>
 {
-    Task<TResponse> HandleAsync(TCommand command, CancellationToken cancellationToken = default);
+    Task<Result<TResponse>> HandleAsync(TCommand command, CancellationToken cancellationToken = default);
 }
 
-public interface ICommandHandler<in TCommand> : ICommandHandler<TCommand, Unit> where TCommand : ICommand { }
+public interface ICommandHandler<in TCommand> : IRequestHandler<TCommand, Unit> where TCommand : ICommand
+{
+    Task<Result> HandleAsync(TCommand command, CancellationToken cancellationToken = default);
+}
