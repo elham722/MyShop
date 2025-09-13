@@ -4,7 +4,7 @@ public interface ICommandHandler<in TCommand, TResponse> : IRequestHandler<TComm
     Task<Result<TResponse>> HandleAsync(TCommand command, CancellationToken cancellationToken = default);
 }
 
-public interface ICommandHandler<in TCommand> : IRequestHandler<TCommand, Unit> where TCommand : ICommand
+public interface ICommandHandler<in TCommand> : IRequestHandler<TCommand, MediatR.Unit> where TCommand : ICommand
 {
     Task<Result> HandleAsync(TCommand command, CancellationToken cancellationToken = default);
 }
