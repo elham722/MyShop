@@ -182,7 +182,13 @@ public abstract class BaseAggregateRoot<TId> : AuditableEntity<TId>, IAggregateR
     public override void MarkAsCreated(string createdBy, DateTime createdAt)
     {
         base.MarkAsCreated(createdBy, createdAt);
+        IncrementVersion();
         OnCreated();
+    }
+
+    public override void MarkAsUpdated()
+    {
+        MarkAsUpdatedInternal();
     }
 
     public override void MarkAsUpdated(string updatedBy)

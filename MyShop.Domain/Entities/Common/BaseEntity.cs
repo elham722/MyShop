@@ -6,7 +6,13 @@ public abstract class BaseEntity<TId> : IEquatable<BaseEntity<TId>> where TId : 
     private readonly List<BaseDomainEvent> _domainEvents = new();
     public IReadOnlyCollection<BaseDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
 
-    protected BaseEntity() { }
+    protected BaseEntity()
+    {
+        if (typeof(TId) == typeof(Guid) && EqualityComparer<TId>.Default.Equals(Id, default!))
+        {
+            Id = (TId)(object)Guid.NewGuid();
+        }
+    }
     protected BaseEntity(TId id) => Id = ValidateId(id);
 
     public void AddDomainEvent(BaseDomainEvent @event)

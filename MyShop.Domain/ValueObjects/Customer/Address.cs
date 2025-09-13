@@ -9,8 +9,8 @@ public class Address : BaseValueObject
     public string PostalCode { get; private set; } = null!;
     public string? Details { get; private set; }
 
-    public string FullAddress => $"{Street}, {District}, {City}, {Province}, {Country}".Trim();
-    public string ShortAddress => $"{Street}, {City}, {Province}".Trim();
+    public string FullAddress => $"{Street}، {District}، {City}، {Province}، {Country}".Trim();
+    public string ShortAddress => $"{Street}، {City}، {Province}".Trim();
     public bool IsComplete => !string.IsNullOrWhiteSpace(Street) &&
                              !string.IsNullOrWhiteSpace(City) &&
                              !string.IsNullOrWhiteSpace(Province) &&
