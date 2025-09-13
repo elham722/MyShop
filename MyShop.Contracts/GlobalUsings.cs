@@ -12,3 +12,5 @@ global using MyShop.Contracts.Common.Filtering;
 global using MyShop.Contracts.CQRS.Commands.Common;
 global using MyShop.Contracts.DTOs.Customer;
 global using MyShop.Contracts.CQRS.Queries.Common;
+global using MyShop.Domain.Events.Common;
+global using MyShop.Contracts.DomainEvent.Statistics;
