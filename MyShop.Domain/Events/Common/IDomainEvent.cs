@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MyShop.Domain.Events.Common
+﻿namespace MyShop.Domain.Events.Common;
+public interface IDomainEvent
 {
-    internal interface IDomainEvent
-    {
-    }
+    Guid Id { get; }
+
+    Guid AggregateId { get; }
+
+    int Version { get; }
+
+    DateTime OccurredOn { get; }
+
+    string EventType { get; }
 }

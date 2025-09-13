@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MyShop.Domain.Events.Customer
+﻿namespace MyShop.Domain.Events.Customer;
+public class CustomerLoggedInEvent : BaseDomainEvent
 {
-    internal class CustomerLoggedInEvent
+    public DateTime LoginTime { get; }
+
+    public CustomerLoggedInEvent(Guid customerId, DateTime loginTime)
+        : base(customerId)
     {
+        LoginTime = loginTime;
     }
 }

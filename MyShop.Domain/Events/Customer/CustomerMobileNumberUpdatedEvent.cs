@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MyShop.Domain.Events.Customer
+﻿namespace MyShop.Domain.Events.Customer;
+public class CustomerMobileNumberUpdatedEvent : BaseDomainEvent
 {
-    internal class CustomerMobileNumberUpdatedEvent
+    public string? OldMobileNumber { get; }
+    public string NewMobileNumber { get; }
+
+    public CustomerMobileNumberUpdatedEvent(Guid customerId, string? oldMobileNumber, string newMobileNumber)
+        : base(customerId)
     {
+        Guard.AgainstNullOrEmpty(newMobileNumber, nameof(newMobileNumber));
+        OldMobileNumber = oldMobileNumber;
+        NewMobileNumber = newMobileNumber;
     }
 }

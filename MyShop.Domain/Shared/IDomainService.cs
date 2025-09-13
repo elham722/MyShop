@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace MyShop.Domain.Shared;
 
-namespace MyShop.Domain.Shared
+public interface IDomainService
 {
-    internal class IDomainService
-    {
-    }
+    // Marker interface for domain services
 }

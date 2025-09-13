@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MyShop.Domain.Shared
+﻿namespace MyShop.Domain.Shared;
+public interface IDomainPolicy
 {
-    internal interface IDomainPolicy
-    {
-    }
+    // Marker interface for domain policies
 }

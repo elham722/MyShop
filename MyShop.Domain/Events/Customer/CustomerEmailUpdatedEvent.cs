@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MyShop.Domain.Events.Customer
+﻿namespace MyShop.Domain.Events.Customer;
+public class CustomerEmailUpdatedEvent : BaseDomainEvent
 {
-    internal class CustomerEmailUpdatedEvent
+    public string? OldEmail { get; }
+    public string NewEmail { get; }
+
+    public CustomerEmailUpdatedEvent(Guid customerId, string? oldEmail, string newEmail)
+        : base(customerId)
     {
+        Guard.AgainstNullOrEmpty(newEmail, nameof(newEmail));
+        OldEmail = oldEmail;
+        NewEmail = newEmail;
     }
 }

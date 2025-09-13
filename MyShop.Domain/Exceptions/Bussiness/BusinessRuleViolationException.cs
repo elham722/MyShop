@@ -1,12 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MyShop.Domain.Exceptions.Bussiness
+﻿namespace MyShop.Domain.Exceptions.Bussiness;
+public class BusinessRuleViolationException : DomainException
 {
-    internal class BusinessRuleViolationException
+    public new const string ErrorCode = DomainErrorCodes.BusinessRuleViolation;
+
+    public BusinessRuleViolationException(string message) : base(message, ErrorCode)
     {
+    }
+
+    public BusinessRuleViolationException(string message, Exception innerException) : base(message, ErrorCode, innerException)
+    {
+    }
+
+    public override string ToString()
+    {
+        return $"BusinessRuleViolationException: {Message} (ErrorCode: {ErrorCode})";
     }
 }

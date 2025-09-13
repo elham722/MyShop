@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MyShop.Domain.Services
+﻿namespace MyShop.Domain.Services;
+public interface IDomainEventService
 {
-    internal interface IDomainEventService
-    {
-    }
+    Task PublishAsync(BaseDomainEvent domainEvent);
+    Task PublishAsync(IEnumerable<BaseDomainEvent> domainEvents);
 }

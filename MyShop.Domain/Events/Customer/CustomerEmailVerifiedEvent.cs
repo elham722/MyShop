@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MyShop.Domain.Events.Customer
+﻿namespace MyShop.Domain.Events.Customer;
+public class CustomerEmailVerifiedEvent : BaseDomainEvent
 {
-    internal class CustomerEmailVerifiedEvent
+    public string Email { get; }
+
+    public CustomerEmailVerifiedEvent(Guid customerId, string email)
+        : base(customerId)
     {
+        Guard.AgainstNullOrEmpty(email, nameof(email));
+        Email = email;
     }
 }

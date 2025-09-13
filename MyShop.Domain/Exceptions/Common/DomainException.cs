@@ -1,12 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MyShop.Domain.Exceptions.Common
+﻿namespace MyShop.Domain.Exceptions.Common;
+public class DomainException : Exception
 {
-    internal class DomainException
+    public string? ErrorCode { get; }
+
+    public DomainException(string message) : base(message)
     {
+    }
+
+    public DomainException(string message, string errorCode) : base(message)
+    {
+        ErrorCode = errorCode;
+    }
+
+    public DomainException(string message, Exception innerException) : base(message, innerException)
+    {
+    }
+
+    public DomainException(string message, string errorCode, Exception innerException) : base(message, innerException)
+    {
+        ErrorCode = errorCode;
+    }
+
+    public override string ToString()
+    {
+        var errorCodeInfo = !string.IsNullOrEmpty(ErrorCode) ? $" (ErrorCode: {ErrorCode})" : "";
+        return $"DomainException: {Message}{errorCodeInfo}";
     }
 }

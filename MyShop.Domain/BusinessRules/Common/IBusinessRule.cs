@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MyShop.Domain.BusinessRules.Common
+﻿namespace MyShop.Domain.BusinessRules.Common;
+public interface IBusinessRule
 {
-    internal interface IBusinessRule
-    {
-    }
+    bool IsBroken();
+
+    string Message { get; }
+
+    Task<bool> IsBrokenAsync();
 }

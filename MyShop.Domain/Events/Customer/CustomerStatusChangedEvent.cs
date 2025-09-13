@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MyShop.Domain.Events.Customer
+﻿namespace MyShop.Domain.Events.Customer;
+public class CustomerStatusChangedEvent : BaseDomainEvent
 {
-    internal class CustomerStatusChangedEvent
+    public CustomerStatus OldStatus { get; }
+    public CustomerStatus NewStatus { get; }
+
+    public CustomerStatusChangedEvent(Guid customerId, CustomerStatus oldStatus, CustomerStatus newStatus)
+        : base(customerId)
     {
+        OldStatus = oldStatus;
+        NewStatus = newStatus;
     }
 }
+

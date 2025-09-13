@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MyShop.Domain.Events.Customer
+﻿namespace MyShop.Domain.Events.Customer;
+public class CustomerUnlinkedFromApplicationUserEvent : BaseDomainEvent
 {
-    internal class CustomerUnlinkedFromApplicationUserEvent
+    public string ApplicationUserId { get; }
+
+    public CustomerUnlinkedFromApplicationUserEvent(Guid customerId, string applicationUserId)
+        : base(customerId)
     {
+        Guard.AgainstNullOrEmpty(applicationUserId, nameof(applicationUserId));
+        ApplicationUserId = applicationUserId;
     }
 }
+

@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MyShop.Domain.Enums.Business
+﻿namespace MyShop.Domain.Enums.Business;
+public enum BusinessOperationType
 {
-    internal class BusinessOperationType
-    {
-    }
+    Create,
+    Update,
+    Delete,
+    BusinessProcess,
+    BulkOperation,
+    EventSourcingOperation,
+    WorkflowOperation
 }

@@ -1,12 +1,2 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MyShop.Domain.Aggregates.Common
-{
-    internal interface IAggregateRoot
-    {
-    }
-}
+﻿namespace MyShop.Domain.Aggregates.Common;
+public interface IAggregateRoot { }

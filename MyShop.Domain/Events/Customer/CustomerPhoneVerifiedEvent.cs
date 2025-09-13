@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MyShop.Domain.Events.Customer
+﻿namespace MyShop.Domain.Events.Customer;
+public class CustomerPhoneVerifiedEvent : BaseDomainEvent
 {
-    internal class CustomerPhoneVerifiedEvent
+    public string PhoneNumber { get; }
+
+    public CustomerPhoneVerifiedEvent(Guid customerId, string phoneNumber)
+        : base(customerId)
     {
+        Guard.AgainstNullOrEmpty(phoneNumber, nameof(phoneNumber));
+        PhoneNumber = phoneNumber;
     }
 }

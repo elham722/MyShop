@@ -1,12 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MyShop.Domain.BusinessRules.Common
+﻿namespace MyShop.Domain.BusinessRules.Common;
+public interface IBusinessContext
 {
-    internal interface IBusinessContext
-    {
-    }
+    string? CurrentUserId { get; }
+
+    string? CurrentUserName { get; }
+
+    BusinessOperationType OperationType { get; }
+
+    Dictionary<string, object> AdditionalData { get; }
+
+    DateTime ContextTimestamp { get; }
+
+    string BusinessDomain { get; }
 }

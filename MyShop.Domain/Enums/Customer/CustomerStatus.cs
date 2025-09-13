@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MyShop.Domain.Enums.Customer
+﻿namespace MyShop.Domain.Enums.Customer;
+public enum CustomerStatus
 {
-    internal class CustomerStatus
-    {
-    }
+    Active = 1,
+    Inactive = 2,
+    Suspended = 3,
+    Deleted = 4
 }

@@ -1,12 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MyShop.Domain.BusinessRules.Customer
+﻿namespace MyShop.Domain.BusinessRules.Customer;
+public class CustomerMustBeActiveRule : BaseBusinessRule
 {
-    internal class CustomerMustBeActiveRule
+    private readonly CustomerStatus _status;
+
+    public CustomerMustBeActiveRule(CustomerStatus status)
     {
+        _status = status;
     }
+
+    public override bool IsBroken()
+    {
+        return _status != CustomerStatus.Active;
+    }
+
+    public override string Message => "Customer must be active to perform this operation.";
 }

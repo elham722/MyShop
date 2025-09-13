@@ -3,5 +3,20 @@ global using System.Collections.Generic;
 global using System.Linq;
 global using System.Text;
 global using System.Threading.Tasks;
-
-
+global using System.Text.RegularExpressions;
+global using System.Linq.Expressions;
+global using MyShop.Domain.Entities.Common;
+global using MyShop.Domain.Events.Common;
+global using MyShop.Domain.Exceptions.Validation;
+global using MyShop.Domain.Shared;
+global using MyShop.Domain.Exceptions.Bussiness;
+global using MyShop.Domain.Enums.Business;
+global using MyShop.Domain.BusinessRules.Common;
+global using MyShop.Domain.Enums.Customer;
+global using MyShop.Domain.ValueObjects.Customer;
+global using MyShop.Domain.Events.Customer;
+global using MyShop.Domain.Exceptions.Common;
+global using MyShop.Domain.BusinessRules.Customer;
+global using MyShop.Domain.Aggregates.Common;
+global using MyShop.Domain.Specifications.Common;
+global using MyShop.Domain.ValueObjects.Common;

@@ -1,12 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MyShop.Domain.BusinessRules.Customer
+﻿namespace MyShop.Domain.BusinessRules.Customer;
+public class CustomerMustHaveContactInfoRule : BaseBusinessRule
 {
-    internal class CustomerMustHaveContactInfoRule
+    private readonly Email? _email;
+    private readonly PhoneNumber? _mobileNumber;
+
+    public CustomerMustHaveContactInfoRule(Email? email, PhoneNumber? mobileNumber)
     {
+        _email = email;
+        _mobileNumber = mobileNumber;
     }
+
+    public override bool IsBroken()
+    {
+        return _email == null && _mobileNumber == null;
+    }
+
+    public override string Message => "Customer must have at least one contact method (email or mobile number).";
 }

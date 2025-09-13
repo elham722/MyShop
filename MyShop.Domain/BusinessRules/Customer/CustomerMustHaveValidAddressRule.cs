@@ -1,12 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MyShop.Domain.BusinessRules.Customer
+﻿namespace MyShop.Domain.BusinessRules.Customer;
+public class CustomerMustHaveValidAddressRule : BaseBusinessRule
 {
-    internal class CustomerMustHaveValidAddressRule
+    private readonly Address? _address;
+
+    public CustomerMustHaveValidAddressRule(Address? address)
     {
+        _address = address;
     }
+
+    public override bool IsBroken()
+    {
+        return _address != null && !_address.IsComplete;
+    }
+
+    public override string Message => "Customer address must be complete (country, province, city, district, street, and postal code).";
 }

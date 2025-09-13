@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MyShop.Domain.Events.Customer
+﻿namespace MyShop.Domain.Events.Customer;
+public class CustomerAddressUpdatedEvent : BaseDomainEvent
 {
-    internal class CustomerAddressUpdatedEvent
+    public string? OldAddress { get; }
+    public string NewAddress { get; }
+
+    public CustomerAddressUpdatedEvent(Guid customerId, string? oldAddress, string newAddress)
+        : base(customerId)
     {
+        Guard.AgainstNullOrEmpty(newAddress, nameof(newAddress));
+        OldAddress = oldAddress;
+        NewAddress = newAddress;
     }
 }

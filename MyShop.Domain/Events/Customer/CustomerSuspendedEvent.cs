@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MyShop.Domain.Events.Customer
+﻿namespace MyShop.Domain.Events.Customer;
+public class CustomerSuspendedEvent : BaseDomainEvent
 {
-    internal class CustomerSuspendedEvent
+    public string Reason { get; }
+    public CustomerStatus PreviousStatus { get; }
+
+    public CustomerSuspendedEvent(Guid customerId, string reason, CustomerStatus previousStatus)
+        : base(customerId)
     {
+        Guard.AgainstNullOrEmpty(reason, nameof(reason));
+        Reason = reason;
+        PreviousStatus = previousStatus;
     }
 }
