@@ -1,0 +1,2 @@
+﻿namespace MyShop.Identity.Models;
+
