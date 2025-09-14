@@ -1,4 +1,4 @@
-namespace MyShop.Contracts.DTOs.Responses;
+namespace MyShop.Contracts.Common.Pagination;
 
 public class PaginationInfo
 {
