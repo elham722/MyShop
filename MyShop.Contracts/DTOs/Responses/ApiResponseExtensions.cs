@@ -1,9 +1,37 @@
+using Microsoft.AspNetCore.Http;
 using MyShop.Contracts.DTOs.Search;
+using System.Net.Http;
 
 namespace MyShop.Contracts.DTOs.Responses;
 
 public static class ApiResponseExtensions
 {
+
+    public static ApiResponse<T> ToApiResponse<T>(this Result<T> result, HttpContext context)
+    {
+        return new ApiResponse<T>
+        {
+            IsSuccess = result.IsSuccess,
+            Data = result.Value,
+            Errors = result.Errors,
+            Timestamp = DateTime.UtcNow,
+            CorrelationId = context.TraceIdentifier,
+            Message = result.IsSuccess ? "Operation successful" : "Operation failed"
+        };
+    }
+
+    public static ApiResponse ToApiResponse(this Result result, HttpContext context)
+    {
+        return new ApiResponse
+        {
+            IsSuccess = result.IsSuccess,
+            Errors = result.Errors,
+            Timestamp = DateTime.UtcNow,
+            CorrelationId = context.TraceIdentifier,
+            Message = result.IsSuccess ? "Operation successful" : "Operation failed"
+        };
+    }
+
     #region SearchResult Extensions
 
     public static ApiResponse<IEnumerable<T>> ToApiResponse<T>(

@@ -21,6 +21,8 @@
 
   <ItemGroup>
     <Folder Include="Commands\Customer\" />
+    <Folder Include="Common\Mappings\" />
+    <Folder Include="Services\" />
     <Folder Include="Queries\Customer\" />
     <Folder Include="Validators\Customers\" />
   </ItemGroup>

@@ -14,6 +14,18 @@ namespace MyShop.API.Controllers;
 [ApiResponse]
 public abstract class BaseController : ControllerBase
 {
+    protected IActionResult FromResult<T>(Result<T> result)
+    {
+        var response = result.ToApiResponse(HttpContext);
+        return result.IsSuccess ? Ok(response) : BadRequest(response);
+    }
+
+    protected IActionResult FromResult(Result result)
+    {
+        var response = result.ToApiResponse(HttpContext);
+        return result.IsSuccess ? Ok(response) : BadRequest(response);
+    }
+
     #region Success Responses
 
     /// <summary>

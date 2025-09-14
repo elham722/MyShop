@@ -35,6 +35,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyShop.xUnitTest.Domain", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyShop.xUnitTest.Application", "MyShop.xUnitTest.Application\MyShop.xUnitTest.Application.csproj", "{8F74F58F-C228-4941-BE70-C7C3D79DBAFF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyShop.xUnitTest.API", "MyShop.xUnitTest.API\MyShop.xUnitTest.API.csproj", "{16E39B91-4D3B-4951-A3E8-A3FF91194AF9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +83,10 @@ Global
 		{8F74F58F-C228-4941-BE70-C7C3D79DBAFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8F74F58F-C228-4941-BE70-C7C3D79DBAFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8F74F58F-C228-4941-BE70-C7C3D79DBAFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16E39B91-4D3B-4951-A3E8-A3FF91194AF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16E39B91-4D3B-4951-A3E8-A3FF91194AF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16E39B91-4D3B-4951-A3E8-A3FF91194AF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16E39B91-4D3B-4951-A3E8-A3FF91194AF9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -100,6 +106,7 @@ Global
 		{4DBF0D89-167D-4E28-A355-B2887C9B082A} = {25C1D91F-B92E-4CEF-9690-D8423BD0006E}
 		{682E8E79-8AD5-4B94-A7B4-D816C93D9AC3} = {686675E1-F5F5-42AF-BEDB-6E4B6B2CF996}
 		{8F74F58F-C228-4941-BE70-C7C3D79DBAFF} = {686675E1-F5F5-42AF-BEDB-6E4B6B2CF996}
+		{16E39B91-4D3B-4951-A3E8-A3FF91194AF9} = {686675E1-F5F5-42AF-BEDB-6E4B6B2CF996}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CBAE5E36-A858-4946-8BF1-72CBA47D2199}
