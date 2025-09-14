@@ -1,4 +1,4 @@
-namespace MyShop.Contracts.DTOs.Analytics;
+namespace MyShop.Contracts.DTOs.Search;
 
 public class SearchTrend
 {

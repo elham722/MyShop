@@ -1,4 +1,4 @@
-namespace MyShop.Contracts.DTOs.Results;
+namespace MyShop.Contracts.DTOs.Search;
 
 public class SearchResult<T, TId> where T : BaseAggregateRoot<TId> where TId : IEquatable<TId>
 {

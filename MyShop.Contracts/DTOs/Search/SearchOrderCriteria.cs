@@ -1,4 +1,4 @@
-namespace MyShop.Contracts.DTOs.Options;
+namespace MyShop.Contracts.DTOs.Search;
 
 public class SearchOrderCriteria
 {

@@ -1,4 +1,6 @@
-﻿namespace MyShop.Contracts.Repositories.Query;
+﻿using MyShop.Contracts.DTOs.Search;
+
+namespace MyShop.Contracts.Repositories.Query;
 public interface IQueryBuilder<T, TId> where T : BaseAggregateRoot<TId> where TId : IEquatable<TId>
 {
     #region Filtering

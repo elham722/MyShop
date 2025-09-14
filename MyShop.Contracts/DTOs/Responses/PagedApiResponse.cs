@@ -1,3 +1,5 @@
+using MyShop.Contracts.DTOs.Search;
+
 namespace MyShop.Contracts.DTOs.Responses;
 
 public class PagedApiResponse<T> : ApiResponse<IEnumerable<T>>

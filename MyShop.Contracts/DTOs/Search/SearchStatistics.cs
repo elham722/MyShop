@@ -1,4 +1,4 @@
-namespace MyShop.Contracts.DTOs.Statistics;
+namespace MyShop.Contracts.DTOs.Search;
 
 public class SearchStatistics
 {
