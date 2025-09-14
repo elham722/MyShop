@@ -28,17 +28,30 @@ public class SearchSuggestionConfiguration
 }
 
 /// <summary>
-/// Search configuration
+/// Global search configuration - system-wide settings
 /// </summary>
 public class SearchConfiguration
 {
+    // System Settings
     public bool EnableSearch { get; set; } = true;
-    public int MaxResults { get; set; } = 1000;
-    public int DefaultPageSize { get; set; } = 20;
-    public bool EnableFuzzySearch { get; set; } = true;
-    public double FuzzyThreshold { get; set; } = 0.7;
-    public bool EnableHighlighting { get; set; } = true;
     public bool EnableSpellCheck { get; set; } = true;
+    public bool EnableHighlighting { get; set; } = true;
+    
+    // Default Limits
+    public int DefaultMaxResults { get; set; } = 1000;
+    public int DefaultPageSize { get; set; } = 20;
+    public int DefaultMinSearchTermLength { get; set; } = 2;
+    public int DefaultMaxSearchTermLength { get; set; } = 100;
+    
+    // Default Search Behavior
+    public bool DefaultCaseSensitive { get; set; } = false;
+    public bool DefaultExactMatch { get; set; } = false;
+    public bool DefaultUseWildcards { get; set; } = true;
+    public bool DefaultUseFuzzySearch { get; set; } = false;
+    public double DefaultFuzzyThreshold { get; set; } = 0.8;
+    public bool DefaultUseFullTextSearch { get; set; } = false;
+    
+    // Sub-configurations
     public SearchAnalyticsConfiguration Analytics { get; set; } = new();
     public SearchSuggestionConfiguration Suggestions { get; set; } = new();
     public Dictionary<string, object> CustomSettings { get; set; } = new();

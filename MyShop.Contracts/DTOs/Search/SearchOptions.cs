@@ -1,26 +1,32 @@
 namespace MyShop.Contracts.DTOs.Search;
 
+/// <summary>
+/// Per-request search options - overrides global configuration
+/// </summary>
 public class SearchOptions
 {
-    public bool CaseSensitive { get; set; } = false;
-
-    public bool ExactMatch { get; set; } = false;
+    // Search Behavior Overrides
+    public bool? CaseSensitive { get; set; } = null; // null = use global default
+    public bool? ExactMatch { get; set; } = null;
+    public bool? UseWildcards { get; set; } = null;
+    public bool? UseFuzzySearch { get; set; } = null;
+    public double? FuzzyThreshold { get; set; } = null;
+    public bool? UseFullTextSearch { get; set; } = null;
     
-    public bool UseWildcards { get; set; } = true;
+    // Result Limits Overrides
+    public int? MaxResults { get; set; } = null;
+    public int? MinSearchTermLength { get; set; } = null;
+    public int? MaxSearchTermLength { get; set; } = null;
     
-    public int MinSearchTermLength { get; set; } = 2;
-    
-    public int MaxSearchTermLength { get; set; } = 100;
-    
-    public bool UseFuzzySearch { get; set; } = false;
-    
-    public double FuzzyThreshold { get; set; } = 0.8;
-    
-    public bool UseFullTextSearch { get; set; } = false;
-    
+    // Result Processing
     public bool HighlightResults { get; set; } = false;
-    
-    public int MaxResults { get; set; } = 1000;
-    
     public bool IncludeSearchStatistics { get; set; } = false;
+    public bool IncludeRelevanceScore { get; set; } = false;
+    
+    // Performance Options
+    public int? TimeoutMs { get; set; } = null;
+    public bool UseCache { get; set; } = true;
+    
+    // Custom Options
+    public Dictionary<string, object> CustomOptions { get; set; } = new();
 }

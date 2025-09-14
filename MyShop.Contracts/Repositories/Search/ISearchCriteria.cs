@@ -1,4 +1,5 @@
 ﻿using MyShop.Contracts.DTOs.Search;
+using MyShop.Contracts.Common.Sorting;
 
 namespace MyShop.Contracts.Repositories.Search;
 public interface ISearchCriteria<T, TId> where T : BaseAggregateRoot<TId> where TId : IEquatable<TId>
@@ -11,7 +12,7 @@ public interface ISearchCriteria<T, TId> where T : BaseAggregateRoot<TId> where 
 
     Expression<Func<T, object>>[] Includes { get; set; }
 
-    SearchOrderCriteria[] OrderBy { get; set; }
+    SortDto[] OrderBy { get; set; }
 
     SearchOptions Options { get; set; }
 }
