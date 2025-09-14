@@ -1,4 +1,6 @@
-﻿namespace MyShop.Contracts.Services;
+﻿using MyShop.Domain.Shared.Base;
+
+namespace MyShop.Contracts.Services;
 public interface IServiceFactory
 {
     #region Service Creation

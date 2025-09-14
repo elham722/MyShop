@@ -1,4 +1,6 @@
-﻿namespace MyShop.Domain.Services;
+﻿using MyShop.Domain.Shared.BusinessRules.Common;
+
+namespace MyShop.Domain.Services;
 public class BusinessRuleService : IBusinessRuleService
 {
     public void Validate(params IBusinessRule[] businessRules)

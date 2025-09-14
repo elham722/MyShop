@@ -1,3 +1,7 @@
+using MyShop.Domain.Shared.Exceptions.Bussiness;
+using MyShop.Domain.Shared.Exceptions.Common;
+using MyShop.Domain.Shared.Exceptions.Validation;
+
 namespace MyShop.xUnitTest.Domain.Aggregates.Customer;
 
 public class CustomerTests

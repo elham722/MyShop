@@ -1,4 +1,6 @@
-﻿namespace MyShop.Contracts.Services.Query;
+﻿using MyShop.Domain.Shared.Base;
+
+namespace MyShop.Contracts.Services.Query;
 public interface IQueryService<T, TId> where T : BaseAggregateRoot<TId> where TId : IEquatable<TId>
 {
     #region Basic Query Operations

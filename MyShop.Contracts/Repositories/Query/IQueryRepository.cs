@@ -1,4 +1,7 @@
-﻿namespace MyShop.Contracts.Repositories.Query;
+﻿using MyShop.Domain.Shared.Base;
+using MyShop.Domain.Shared.Specifications.Common;
+
+namespace MyShop.Contracts.Repositories.Query;
 
 /// <summary>
 /// Simplified query repository interface with reduced overloads

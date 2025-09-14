@@ -6,4 +6,14 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Aggregates\**" />
+    <EmbeddedResource Remove="Aggregates\**" />
+    <None Remove="Aggregates\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MyShop.Domain.Shared\MyShop.Domain.Shared.csproj" />
+  </ItemGroup>
+
 </Project>

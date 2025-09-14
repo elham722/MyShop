@@ -1,3 +1,5 @@
+using MyShop.Domain.Shared.Exceptions.Validation;
+
 namespace MyShop.xUnitTest.Domain.ValueObjects;
 
 public class PhoneNumberTests

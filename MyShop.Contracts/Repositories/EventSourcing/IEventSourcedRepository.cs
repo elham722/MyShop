@@ -1,4 +1,6 @@
-﻿namespace MyShop.Contracts.Repositories.EventSourcing;
+﻿using MyShop.Domain.Shared.Base;
+
+namespace MyShop.Contracts.Repositories.EventSourcing;
 public interface IEventSourcedRepository<T, TId> : ICommandRepository<T, TId>, IEventStore<T, TId> where T : BaseAggregateRoot<TId> where TId : IEquatable<TId>
 {
     #region Event Sourcing Operations

@@ -1,4 +1,6 @@
 ﻿using MyShop.Contracts.DTOs.Search;
+using MyShop.Domain.Shared.Base;
+using MyShop.Domain.Shared.Specifications.Common;
 
 namespace MyShop.Contracts.Repositories.Query;
 public interface IQueryBuilder<T, TId> where T : BaseAggregateRoot<TId> where TId : IEquatable<TId>

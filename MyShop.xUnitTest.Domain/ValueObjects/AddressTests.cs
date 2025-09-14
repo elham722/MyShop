@@ -1,3 +1,6 @@
+using MyShop.Domain.Shared.Exceptions.Validation;
+using MyShop.Domain.Shared.ValueObjects.Customer;
+
 namespace MyShop.xUnitTest.Domain.ValueObjects;
 
 public class AddressTests

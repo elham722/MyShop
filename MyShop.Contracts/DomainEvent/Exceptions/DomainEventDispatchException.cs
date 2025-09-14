@@ -1,4 +1,6 @@
-﻿namespace MyShop.Contracts.DomainEvent.Exceptions;
+﻿using MyShop.Domain.Shared.Events.Common;
+
+namespace MyShop.Contracts.DomainEvent.Exceptions;
 public class DomainEventDispatchException : Exception
 {
     public BaseDomainEvent? FailedEvent { get; }

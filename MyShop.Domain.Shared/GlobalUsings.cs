@@ -1,0 +1,15 @@
+﻿global using System;
+global using System.Collections.Generic;
+global using System.Linq;
+global using System.Text;
+global using System.Threading.Tasks;
+global using System.Text.RegularExpressions;
+global using System.Linq.Expressions;
+global using MyShop.Domain.Shared.Shared;
+global using MyShop.Domain.Shared.Events.Common;
+global using MyShop.Domain.Shared.Exceptions.Validation;
+global using MyShop.Domain.Shared.Exceptions.Common;
+global using MyShop.Domain.Shared.ValueObjects.Common;
+global using MyShop.Domain.Shared.Enums.Business;
+global using MyShop.Domain.Shared.Enums.Customer;
+global using MyShop.Domain.Shared.Exceptions.Bussiness;

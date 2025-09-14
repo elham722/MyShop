@@ -1,4 +1,6 @@
-﻿namespace MyShop.Contracts.DomainEvent.Dispatching;
+﻿using MyShop.Domain.Shared.Events.Common;
+
+namespace MyShop.Contracts.DomainEvent.Dispatching;
 
 public interface IDomainEventDispatcher
 {

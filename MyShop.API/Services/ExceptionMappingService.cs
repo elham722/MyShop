@@ -1,9 +1,8 @@
 using System.Net;
 using MyShop.Contracts.DTOs.Responses;
-using MyShop.Domain.Exceptions.Common;
-using MyShop.Domain.Exceptions.Validation;
-using MyShop.Domain.Exceptions.Bussiness;
-using MyShop.Domain.Exceptions.Persistence;
+using MyShop.Domain.Shared.Exceptions.Bussiness;
+using MyShop.Domain.Shared.Exceptions.Common;
+using MyShop.Domain.Shared.Exceptions.Validation;
 
 namespace MyShop.API.Services;
 

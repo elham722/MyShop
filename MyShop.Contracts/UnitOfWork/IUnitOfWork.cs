@@ -1,4 +1,7 @@
-﻿namespace MyShop.Contracts.UnitOfWork;
+﻿using MyShop.Domain.Shared.Base;
+using MyShop.Domain.Shared.Events.Common;
+
+namespace MyShop.Contracts.UnitOfWork;
 public interface IUnitOfWork : IDisposable, IAsyncDisposable
 {
     #region Repository Management

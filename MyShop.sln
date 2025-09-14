@@ -45,6 +45,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyShop.xUnitTest.Persistenc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyShop.xUnitTest.Infrastructure", "MyShop.xUnitTest.Infrastructure\MyShop.xUnitTest.Infrastructure.csproj", "{713FA367-9ED1-4D2A-B691-7594B1F72464}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyShop.Domain.Shared", "MyShop.Domain.Shared\MyShop.Domain.Shared.csproj", "{6DB60F9D-B424-47C3-8BEB-3CA5292D6E5B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -111,6 +113,10 @@ Global
 		{713FA367-9ED1-4D2A-B691-7594B1F72464}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{713FA367-9ED1-4D2A-B691-7594B1F72464}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{713FA367-9ED1-4D2A-B691-7594B1F72464}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6DB60F9D-B424-47C3-8BEB-3CA5292D6E5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6DB60F9D-B424-47C3-8BEB-3CA5292D6E5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6DB60F9D-B424-47C3-8BEB-3CA5292D6E5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6DB60F9D-B424-47C3-8BEB-3CA5292D6E5B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -135,6 +141,7 @@ Global
 		{9D24928A-F3BD-4ECF-A70E-A414998B234F} = {686675E1-F5F5-42AF-BEDB-6E4B6B2CF996}
 		{D3D4164D-E650-4C75-BAA1-B5633FA4F4B2} = {686675E1-F5F5-42AF-BEDB-6E4B6B2CF996}
 		{713FA367-9ED1-4D2A-B691-7594B1F72464} = {686675E1-F5F5-42AF-BEDB-6E4B6B2CF996}
+		{6DB60F9D-B424-47C3-8BEB-3CA5292D6E5B} = {111D7B2A-5C3E-4FB6-8565-FC77A1E0E670}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CBAE5E36-A858-4946-8BF1-72CBA47D2199}

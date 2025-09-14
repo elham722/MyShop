@@ -1,4 +1,6 @@
-﻿namespace MyShop.Contracts.Services.BusinessRules;
+﻿using MyShop.Domain.Shared.BusinessRules.Common;
+
+namespace MyShop.Contracts.Services.BusinessRules;
 public interface IBusinessRuleService<T> where T : class
 {
     #region Basic Business Rules Operations

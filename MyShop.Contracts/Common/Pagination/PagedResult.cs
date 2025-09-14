@@ -1,8 +1,5 @@
 namespace MyShop.Contracts.Common.Pagination;
 
-/// <summary>
-/// Enhanced paged result with comprehensive metadata
-/// </summary>
 public class PagedResult<T>
 {
     public IReadOnlyList<T> Items { get; set; } = new List<T>();
@@ -27,43 +24,28 @@ public class PagedResult<T>
         PageSize = pageSize;
     }
 
-    /// <summary>
-    /// Creates empty paged result
-    /// </summary>
     public static PagedResult<T> Empty(int pageNumber = 1, int pageSize = 20)
     {
         return new PagedResult<T>(Array.Empty<T>(), 0, pageNumber, pageSize);
     }
 
-    /// <summary>
-    /// Creates paged result from items
-    /// </summary>
     public static PagedResult<T> Create(IEnumerable<T> items, int totalCount, PaginationParams pagination)
     {
         return new PagedResult<T>(items, totalCount, pagination.PageNumber, pagination.PageSize);
     }
 
-    /// <summary>
-    /// Creates paged result with single page
-    /// </summary>
     public static PagedResult<T> SinglePage(IEnumerable<T> items)
     {
         var itemsList = items.ToList();
         return new PagedResult<T>(itemsList, itemsList.Count, 1, itemsList.Count);
     }
 
-    /// <summary>
-    /// Creates paged result with all items
-    /// </summary>
     public static PagedResult<T> AllItems(IEnumerable<T> items, int pageSize = 20)
     {
         var itemsList = items.ToList();
         return new PagedResult<T>(itemsList, itemsList.Count, 1, pageSize);
     }
 
-    /// <summary>
-    /// Gets pagination metadata
-    /// </summary>
     public PaginationInfo GetPaginationInfo()
     {
         return new PaginationInfo
@@ -88,27 +70,18 @@ public class PagedResult<T>
         return Enumerable.Range(start, end - start + 1);
     }
 
-    /// <summary>
-    /// Converts to different page size
-    /// </summary>
     public PagedResult<T> ToPageSize(int newPageSize)
     {
         var newPageNumber = (int)Math.Ceiling((double)StartIndex / newPageSize);
         return new PagedResult<T>(Items, TotalCount, newPageNumber, newPageSize);
     }
 
-    /// <summary>
-    /// Maps items to different type
-    /// </summary>
     public PagedResult<TResult> Map<TResult>(Func<T, TResult> selector)
     {
         var mappedItems = Items.Select(selector).ToList();
         return new PagedResult<TResult>(mappedItems, TotalCount, PageNumber, PageSize);
     }
 
-    /// <summary>
-    /// Gets summary string
-    /// </summary>
     public string GetSummary()
     {
         if (IsEmpty)
@@ -117,9 +90,6 @@ public class PagedResult<T>
         return $"Showing {StartIndex}-{EndIndex} of {TotalCount} items (Page {PageNumber} of {TotalPages})";
     }
 
-    /// <summary>
-    /// Converts to string representation
-    /// </summary>
     public override string ToString()
     {
         return GetSummary();

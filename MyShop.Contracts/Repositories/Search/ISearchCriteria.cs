@@ -1,5 +1,6 @@
 ﻿using MyShop.Contracts.DTOs.Search;
 using MyShop.Contracts.Common.Sorting;
+using MyShop.Domain.Shared.Base;
 
 namespace MyShop.Contracts.Repositories.Search;
 public interface ISearchCriteria<T, TId> where T : BaseAggregateRoot<TId> where TId : IEquatable<TId>

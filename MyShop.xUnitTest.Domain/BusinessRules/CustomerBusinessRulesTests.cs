@@ -1,3 +1,6 @@
+using MyShop.Domain.Shared.BusinessRules.Common;
+using MyShop.Domain.Shared.Exceptions.Bussiness;
+
 namespace MyShop.xUnitTest.Domain.BusinessRules;
 
 public class CustomerBusinessRulesTests

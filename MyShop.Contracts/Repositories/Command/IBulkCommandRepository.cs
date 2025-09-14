@@ -1,4 +1,6 @@
-﻿namespace MyShop.Contracts.Repositories.Command;
+﻿using MyShop.Domain.Shared.Base;
+
+namespace MyShop.Contracts.Repositories.Command;
 public interface IBulkCommandRepository<T, TId> where T : BaseAggregateRoot<TId> where TId : IEquatable<TId>
 {
     #region Bulk Operations

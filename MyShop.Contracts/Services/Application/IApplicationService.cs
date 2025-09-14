@@ -1,4 +1,6 @@
-﻿namespace MyShop.Contracts.Services.Application;
+﻿using MyShop.Domain.Shared.Base;
+
+namespace MyShop.Contracts.Services.Application;
 public interface IApplicationService<T, TId> where T : BaseAggregateRoot<TId> where TId : IEquatable<TId>
 {
     #region Service Access

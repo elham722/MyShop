@@ -1,4 +1,5 @@
 using MyShop.Contracts.DTOs.Search;
+using MyShop.Domain.Shared.Base;
 using SearchConfig = MyShop.Contracts.DTOs.Search.SearchConfiguration;
 
 namespace MyShop.Contracts.Services.Search;

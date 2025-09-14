@@ -1,4 +1,6 @@
-﻿namespace MyShop.Contracts.Repositories.Factories;
+﻿using MyShop.Domain.Shared.Base;
+
+namespace MyShop.Contracts.Repositories.Factories;
 public interface IRepositoryFactory
 {
     #region Basic Repository Creation

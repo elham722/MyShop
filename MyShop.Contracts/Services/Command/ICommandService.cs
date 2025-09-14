@@ -1,4 +1,6 @@
-﻿namespace MyShop.Contracts.Services.Command;
+﻿using MyShop.Domain.Shared.Base;
+
+namespace MyShop.Contracts.Services.Command;
 public interface ICommandService<T, TId> where T : BaseAggregateRoot<TId> where TId : IEquatable<TId>
 {
     #region Basic CRUD Operations

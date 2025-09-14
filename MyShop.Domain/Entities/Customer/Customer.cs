@@ -1,4 +1,6 @@
-﻿namespace MyShop.Domain.Entities.Customer;
+﻿using MyShop.Domain.Shared.BusinessRules.Common;
+
+namespace MyShop.Domain.Entities.Customer;
 public class Customer : BaseAggregateRoot<Guid>
 {
     // Personal Information

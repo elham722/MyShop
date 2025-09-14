@@ -1,4 +1,6 @@
-﻿namespace MyShop.Contracts.Repositories.Caching;
+﻿using MyShop.Domain.Shared.Base;
+
+namespace MyShop.Contracts.Repositories.Caching;
 public interface ICachedRepository<T, TId> : ICommandRepository<T, TId>, IQueryRepository<T, TId>, ICacheRepository<T, TId>
     where T : BaseAggregateRoot<TId> where TId : IEquatable<TId>
 {
