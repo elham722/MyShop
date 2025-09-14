@@ -1,15 +1,7 @@
-using MyShop.Contracts.Common.Pagination;
-
 namespace MyShop.Application.Common.Extensions;
 
-/// <summary>
-/// Enhanced pagination extensions for IQueryable
-/// </summary>
 public static class PaginationExtensions
 {
-    /// <summary>
-    /// Converts query to paged result
-    /// </summary>
     public static async Task<MyShop.Contracts.Common.Pagination.PagedResult<T>> ToPagedResultAsync<T>(
         this IQueryable<T> query,
         PaginationParams paginationParams,
@@ -25,9 +17,6 @@ public static class PaginationExtensions
         return MyShop.Contracts.Common.Pagination.PagedResult<T>.Create(items, totalCount, paginationParams);
     }
 
-    /// <summary>
-    /// Converts query to paged result with projection
-    /// </summary>
     public static async Task<MyShop.Contracts.Common.Pagination.PagedResult<TResult>> ToPagedResultAsync<TSource, TResult>(
         this IQueryable<TSource> query,
         PaginationParams paginationParams,
@@ -45,9 +34,6 @@ public static class PaginationExtensions
         return MyShop.Contracts.Common.Pagination.PagedResult<TResult>.Create(items, totalCount, paginationParams);
     }
 
-    /// <summary>
-    /// Converts query to paged result with custom count query
-    /// </summary>
     public static async Task<MyShop.Contracts.Common.Pagination.PagedResult<T>> ToPagedResultAsync<T>(
         this IQueryable<T> query,
         IQueryable<T> countQuery,
@@ -64,9 +50,6 @@ public static class PaginationExtensions
         return MyShop.Contracts.Common.Pagination.PagedResult<T>.Create(items, totalCount, paginationParams);
     }
 
-    /// <summary>
-    /// Converts query to paged result with custom count query and projection
-    /// </summary>
     public static async Task<MyShop.Contracts.Common.Pagination.PagedResult<TResult>> ToPagedResultAsync<TSource, TResult>(
         this IQueryable<TSource> query,
         IQueryable<TSource> countQuery,
@@ -85,9 +68,6 @@ public static class PaginationExtensions
         return MyShop.Contracts.Common.Pagination.PagedResult<TResult>.Create(items, totalCount, paginationParams);
     }
 
-    /// <summary>
-    /// Converts query to paged result with parallel execution
-    /// </summary>
     public static async Task<MyShop.Contracts.Common.Pagination.PagedResult<T>> ToPagedResultParallelAsync<T>(
         this IQueryable<T> query,
         PaginationParams paginationParams,
@@ -104,9 +84,6 @@ public static class PaginationExtensions
         return MyShop.Contracts.Common.Pagination.PagedResult<T>.Create(await itemsTask, await countTask, paginationParams);
     }
 
-    /// <summary>
-    /// Converts query to paged result with parallel execution and projection
-    /// </summary>
     public static async Task<MyShop.Contracts.Common.Pagination.PagedResult<TResult>> ToPagedResultParallelAsync<TSource, TResult>(
         this IQueryable<TSource> query,
         PaginationParams paginationParams,
@@ -125,9 +102,6 @@ public static class PaginationExtensions
         return MyShop.Contracts.Common.Pagination.PagedResult<TResult>.Create(await itemsTask, await countTask, paginationParams);
     }
 
-    /// <summary>
-    /// Converts query to paged result with custom page size
-    /// </summary>
     public static async Task<MyShop.Contracts.Common.Pagination.PagedResult<T>> ToPagedResultAsync<T>(
         this IQueryable<T> query,
         int pageNumber,
@@ -138,9 +112,6 @@ public static class PaginationExtensions
         return await query.ToPagedResultAsync(pagination, cancellationToken);
     }
 
-    /// <summary>
-    /// Converts query to paged result with custom page size and projection
-    /// </summary>
     public static async Task<MyShop.Contracts.Common.Pagination.PagedResult<TResult>> ToPagedResultAsync<TSource, TResult>(
         this IQueryable<TSource> query,
         int pageNumber,
@@ -152,9 +123,6 @@ public static class PaginationExtensions
         return await query.ToPagedResultAsync(pagination, selector, cancellationToken);
     }
 
-    /// <summary>
-    /// Converts query to paged result with default pagination
-    /// </summary>
     public static async Task<MyShop.Contracts.Common.Pagination.PagedResult<T>> ToPagedResultAsync<T>(
         this IQueryable<T> query,
         CancellationToken cancellationToken = default)
@@ -162,9 +130,6 @@ public static class PaginationExtensions
         return await query.ToPagedResultAsync(PaginationParams.Default, cancellationToken);
     }
 
-    /// <summary>
-    /// Converts query to paged result with default pagination and projection
-    /// </summary>
     public static async Task<MyShop.Contracts.Common.Pagination.PagedResult<TResult>> ToPagedResultAsync<TSource, TResult>(
         this IQueryable<TSource> query,
         Expression<Func<TSource, TResult>> selector,
