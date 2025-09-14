@@ -42,12 +42,12 @@ public interface ISearchService<T, TId> where T : BaseAggregateRoot<TId> where T
     /// <summary>
     /// Advanced search with criteria
     /// </summary>
-    Task<SearchResult<T, TId>> SearchAsync(ISearchCriteria<T, TId> searchCriteria, CancellationToken cancellationToken = default);
+    Task<SearchResult<T>> SearchAsync(ISearchCriteria<T, TId> searchCriteria, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Advanced search with paging
     /// </summary>
-    Task<SearchResult<T, TId>> SearchPagedAsync(ISearchCriteria<T, TId> searchCriteria, int pageNumber, int pageSize, CancellationToken cancellationToken = default);
+    Task<SearchResult<T>> SearchPagedAsync(ISearchCriteria<T, TId> searchCriteria, int pageNumber, int pageSize, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Advanced search count

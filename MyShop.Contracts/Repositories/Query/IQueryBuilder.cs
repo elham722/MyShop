@@ -57,7 +57,7 @@ public interface IQueryBuilder<T, TId> where T : BaseAggregateRoot<TId> where TI
 
     Task<(IEnumerable<T> Items, int TotalCount)> ToPagedListAsync(CancellationToken cancellationToken = default);
 
-    Task<SearchResult<T, TId>> ToSearchResultAsync(CancellationToken cancellationToken = default);
+    Task<SearchResult<T>> ToSearchResultAsync(CancellationToken cancellationToken = default);
 
     #endregion
 }

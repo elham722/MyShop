@@ -117,22 +117,18 @@ public static class ApiResponseFactory
 
     #region Search Response Factories
 
-    public static ApiResponse<IEnumerable<T>> CreateSearchSuccess<T, TId>(
-        SearchResult<T, TId> searchResult, 
-        string? message = null) 
-        where T : BaseAggregateRoot<TId> 
-        where TId : IEquatable<TId>
+    public static ApiResponse<IEnumerable<T>> CreateSearchSuccess<T>(
+        SearchResult<T> searchResult, 
+        string? message = null)
     {
         return searchResult.ToApiResponse(message);
     }
 
-    public static PagedApiResponse<T> CreatePagedSearchSuccess<T, TId>(
-        SearchResult<T, TId> searchResult, 
+    public static PagedApiResponse<T> CreatePagedSearchSuccess<T>(
+        SearchResult<T> searchResult, 
         int pageNumber, 
         int pageSize, 
-        string? message = null) 
-        where T : BaseAggregateRoot<TId> 
-        where TId : IEquatable<TId>
+        string? message = null)
     {
         return searchResult.ToPagedApiResponse(pageNumber, pageSize, message);
     }

@@ -6,11 +6,9 @@ public static class ApiResponseExtensions
 {
     #region SearchResult Extensions
 
-    public static ApiResponse<IEnumerable<T>> ToApiResponse<T, TId>(
-        this SearchResult<T, TId> searchResult, 
-        string? message = null) 
-        where T : BaseAggregateRoot<TId> 
-        where TId : IEquatable<TId>
+    public static ApiResponse<IEnumerable<T>> ToApiResponse<T>(
+        this SearchResult<T> searchResult, 
+        string? message = null)
     {
         return ApiResponse<IEnumerable<T>>.Success(
             searchResult.Items, 
@@ -20,13 +18,11 @@ public static class ApiResponseExtensions
             .WithMetadata("Highlights", searchResult.Highlights);
     }
 
-    public static PagedApiResponse<T> ToPagedApiResponse<T, TId>(
-        this SearchResult<T, TId> searchResult, 
+    public static PagedApiResponse<T> ToPagedApiResponse<T>(
+        this SearchResult<T> searchResult, 
         int pageNumber, 
         int pageSize, 
-        string? message = null) 
-        where T : BaseAggregateRoot<TId> 
-        where TId : IEquatable<TId>
+        string? message = null)
     {
         return PagedApiResponse<T>.FromSearchResult(searchResult, pageNumber, pageSize);
     }

@@ -71,35 +71,10 @@ public class PagedResult<T>
             PageNumber = PageNumber,
             PageSize = PageSize,
             TotalCount = TotalCount,
-            TotalPages = TotalPages,
-            HasPreviousPage = HasPreviousPage,
-            HasNextPage = HasNextPage,
-            IsFirstPage = IsFirstPage,
-            IsLastPage = IsLastPage,
-            StartIndex = StartIndex,
-            EndIndex = EndIndex,
-            LoadPercentage = LoadPercentage
         };
     }
 
-    /// <summary>
-    /// Gets navigation links
-    /// </summary>
-    public PaginationNavigation GetNavigation()
-    {
-        return new PaginationNavigation
-        {
-            FirstPage = 1,
-            LastPage = TotalPages,
-            PreviousPage = HasPreviousPage ? PageNumber - 1 : null,
-            NextPage = HasNextPage ? PageNumber + 1 : null,
-            CurrentPage = PageNumber
-        };
-    }
-
-    /// <summary>
-    /// Gets page range for UI
-    /// </summary>
+   
     public IEnumerable<int> GetPageRange(int maxPages = 10)
     {
         var start = Math.Max(1, PageNumber - maxPages / 2);

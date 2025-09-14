@@ -48,15 +48,15 @@ public class PagedApiResponse<T> : ApiResponse<IEnumerable<T>>
         };
     }
 
-    public static PagedApiResponse<T> FromSearchResult<TSearchItem, TId>(
-        SearchResult<TSearchItem, TId> searchResult, 
+    public static PagedApiResponse<T> FromSearchResult<T>(
+        SearchResult<T> searchResult, 
         int pageNumber, 
-        int pageSize) where TSearchItem : BaseAggregateRoot<TId> where TId : IEquatable<TId>
+        int pageSize)
     {
         return new PagedApiResponse<T>
         {
             IsSuccess = true,
-            Data = searchResult.Items.Cast<T>(),
+            Data = searchResult.Items,
             Message = "Search completed successfully",
             Pagination = new PaginationInfo(pageNumber, pageSize, searchResult.TotalCount),
             Metadata = new Dictionary<string, object>
@@ -188,8 +188,8 @@ public class PagedApiResponse<T> : ApiResponse<IEnumerable<T>>
         };
     }
 
-    public PagedApiResponse<T> WithSearchMetadata<TSearchItem, TId>(
-        SearchResult<TSearchItem, TId> searchResult) where TSearchItem : BaseAggregateRoot<TId> where TId : IEquatable<TId>
+    public PagedApiResponse<T> WithSearchMetadata<TSearchItem>(
+        SearchResult<TSearchItem> searchResult)
     {
         Metadata ??= new Dictionary<string, object>();
         Metadata["SearchStatistics"] = searchResult.Statistics ?? new object();
