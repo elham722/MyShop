@@ -10,4 +10,3 @@ global using MyShop.Contracts.Common.Pagination;
 global using MyShop.Contracts.Common.Sorting;
 global using MyShop.Contracts.Common.Filtering;
 global using MyShop.Contracts.DTOs.Customer;
-global using MyShop.API.Common;
