@@ -3,6 +3,8 @@ global using System.Collections.Generic;
 global using System.Linq;
 global using System.Text;
 global using System.Threading.Tasks;
+global using Microsoft.Extensions.DependencyInjection;
+global using System.Reflection;
 global using MyShop.Contracts.Common.Filtering;
 global using System.Linq.Dynamic.Core;
 global using System.Diagnostics;
