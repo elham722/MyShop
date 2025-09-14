@@ -16,4 +16,29 @@ public class SortDto
                (Direction.Equals("asc", StringComparison.OrdinalIgnoreCase) || 
                 Direction.Equals("desc", StringComparison.OrdinalIgnoreCase));
     }
+
+    public static SortDto Ascending(string field)
+    {
+        return new SortDto { Field = field, Direction = "asc" };
+    }
+
+    public static SortDto Descending(string field)
+    {
+        return new SortDto { Field = field, Direction = "desc" };
+    }
+
+    public static SortDto Create(string field, string direction)
+    {
+        return new SortDto { Field = field, Direction = direction };
+    }
+
+    public static SortDto Create(string field, bool ascending)
+    {
+        return new SortDto { Field = field, Direction = ascending ? "asc" : "desc" };
+    }
+
+    public override string ToString()
+    {
+        return $"{Field} {Direction}";
+    }
 }

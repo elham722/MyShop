@@ -13,7 +13,7 @@ public static class SortingExtensions
         return query.OrderBy(orderByExpression);
     }
 
-    public static IQueryable<T> ApplySorting<T>(this IQueryable<T> query, SortDtoCollection sortDtos)
+    public static IQueryable<T> ApplySorting<T>(this IQueryable<T> query, IEnumerable<SortDto> sortDtos)
     {
         if (sortDtos == null || !sortDtos.IsValid())
             return query;
@@ -57,5 +57,31 @@ public static class SortingExtensions
     {
         var direction = ascending ? "asc" : "desc";
         return query.ApplySorting(field, direction);
+    }
+
+    public static IQueryable<T> ApplySorting<T>(this IQueryable<T> query, params (string field, string direction)[] sorts)
+    {
+        if (sorts == null || !sorts.Any())
+            return query;
+
+        var sortDtos = sorts.Select(s => new SortDto { Field = s.field, Direction = s.direction });
+        return query.ApplySorting(sortDtos);
+    }
+
+    public static IQueryable<T> ApplySorting<T>(this IQueryable<T> query, params (string field, bool ascending)[] sorts)
+    {
+        if (sorts == null || !sorts.Any())
+            return query;
+
+        var sortDtos = sorts.Select(s => new SortDto { Field = s.field, Direction = s.ascending ? "asc" : "desc" });
+        return query.ApplySorting(sortDtos);
+    }
+
+    public static IQueryable<T> ApplySorting<T>(this IQueryable<T> query, params SortDto[] sorts)
+    {
+        if (sorts == null || !sorts.Any())
+            return query;
+
+        return query.ApplySorting(sorts.AsEnumerable());
     }
 }
