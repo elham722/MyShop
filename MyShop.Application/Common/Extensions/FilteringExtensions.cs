@@ -11,7 +11,7 @@ public static class FilteringExtensions
         return query.Where(expression, values);
     }
 
-    public static IQueryable<T> ApplyFiltering<T>(this IQueryable<T> query, FilterDtoCollection filterDtos)
+    public static IQueryable<T> ApplyFiltering<T>(this IQueryable<T> query, IEnumerable<FilterDto> filterDtos)
     {
         if (filterDtos == null || !filterDtos.IsValid())
             return query;
@@ -27,6 +27,24 @@ public static class FilteringExtensions
     public static IQueryable<T> ApplyFiltering<T>(this IQueryable<T> query, string field, FilterOperator @operator, string value = "")
     {
         var filterDto = new FilterDto { Field = field, Operator = @operator, Value = value };
+        return query.ApplyFiltering(filterDto);
+    }
+
+    public static IQueryable<T> ApplyFiltering<T>(this IQueryable<T> query, string field, FilterOperator @operator, string value, string valueType)
+    {
+        var filterDto = new FilterDto { Field = field, Operator = @operator, Value = value, ValueType = valueType };
+        return query.ApplyFiltering(filterDto);
+    }
+
+    public static IQueryable<T> ApplyFiltering<T>(this IQueryable<T> query, string field, FilterOperator @operator, IEnumerable<string> values)
+    {
+        var filterDto = new FilterDto { Field = field, Operator = @operator, Values = values.ToList().AsReadOnly() };
+        return query.ApplyFiltering(filterDto);
+    }
+
+    public static IQueryable<T> ApplyFiltering<T>(this IQueryable<T> query, string field, FilterOperator @operator)
+    {
+        var filterDto = new FilterDto { Field = field, Operator = @operator };
         return query.ApplyFiltering(filterDto);
     }
 

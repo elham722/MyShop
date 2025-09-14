@@ -81,5 +81,50 @@ public class FilterDto
     {
         return new FilterDto { Field = field, Operator = FilterOperator.IsNotNull };
     }
+
+    public static FilterDto NotEquals(string field, string value, string? valueType = null)
+    {
+        return new FilterDto { Field = field, Operator = FilterOperator.NotEquals, Value = value, ValueType = valueType };
+    }
+
+    public static FilterDto NotContains(string field, string value, string? valueType = null)
+    {
+        return new FilterDto { Field = field, Operator = FilterOperator.NotContains, Value = value, ValueType = valueType };
+    }
+
+    public static FilterDto StartsWith(string field, string value, string? valueType = null)
+    {
+        return new FilterDto { Field = field, Operator = FilterOperator.StartsWith, Value = value, ValueType = valueType };
+    }
+
+    public static FilterDto EndsWith(string field, string value, string? valueType = null)
+    {
+        return new FilterDto { Field = field, Operator = FilterOperator.EndsWith, Value = value, ValueType = valueType };
+    }
+
+    public static FilterDto GreaterThanOrEqual(string field, string value, string? valueType = null)
+    {
+        return new FilterDto { Field = field, Operator = FilterOperator.GreaterThanOrEqual, Value = value, ValueType = valueType };
+    }
+
+    public static FilterDto LessThanOrEqual(string field, string value, string? valueType = null)
+    {
+        return new FilterDto { Field = field, Operator = FilterOperator.LessThanOrEqual, Value = value, ValueType = valueType };
+    }
+
+    public static FilterDto NotIn(string field, params string[] values)
+    {
+        return new FilterDto { Field = field, Operator = FilterOperator.NotIn, Values = values.ToList().AsReadOnly() };
+    }
+
+    public static FilterDto IsEmpty(string field)
+    {
+        return new FilterDto { Field = field, Operator = FilterOperator.IsEmpty };
+    }
+
+    public static FilterDto IsNotEmpty(string field)
+    {
+        return new FilterDto { Field = field, Operator = FilterOperator.IsNotEmpty };
+    }
 }
 
