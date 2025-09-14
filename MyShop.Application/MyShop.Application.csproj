@@ -17,4 +17,9 @@
     <ProjectReference Include="..\MyShop.Domain\MyShop.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Commands\Customer\" />
+    <Folder Include="Queries\Customer\" />
+  </ItemGroup>
+
 </Project>

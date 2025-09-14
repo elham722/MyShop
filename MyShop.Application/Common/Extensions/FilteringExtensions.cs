@@ -1,20 +1,7 @@
-using System.Linq.Dynamic.Core;
-using MyShop.Contracts.Common.Filtering;
-
 namespace MyShop.Application.Common.Extensions;
 
-/// <summary>
-/// Extension methods for filtering
-/// </summary>
 public static class FilteringExtensions
 {
-    /// <summary>
-    /// Applies filtering to an IQueryable based on FilterDto
-    /// </summary>
-    /// <typeparam name="T">The type of entities</typeparam>
-    /// <param name="query">The queryable to filter</param>
-    /// <param name="filterDto">Filter parameters</param>
-    /// <returns>The filtered queryable</returns>
     public static IQueryable<T> ApplyFiltering<T>(this IQueryable<T> query, FilterDto filterDto)
     {
         if (filterDto == null || !filterDto.IsValid())
@@ -24,13 +11,6 @@ public static class FilteringExtensions
         return query.Where(expression, values);
     }
 
-    /// <summary>
-    /// Applies filtering to an IQueryable based on multiple FilterDto
-    /// </summary>
-    /// <typeparam name="T">The type of entities</typeparam>
-    /// <param name="query">The queryable to filter</param>
-    /// <param name="filterDtos">Collection of filter parameters</param>
-    /// <returns>The filtered queryable</returns>
     public static IQueryable<T> ApplyFiltering<T>(this IQueryable<T> query, FilterDtoCollection filterDtos)
     {
         if (filterDtos == null || !filterDtos.IsValid())
@@ -44,26 +24,12 @@ public static class FilteringExtensions
         return query;
     }
 
-    /// <summary>
-    /// Applies filtering to an IQueryable based on field, operator and value
-    /// </summary>
-    /// <typeparam name="T">The type of entities</typeparam>
-    /// <param name="query">The queryable to filter</param>
-    /// <param name="field">Field name to filter by</param>
-    /// <param name="operator">Filter operator</param>
-    /// <param name="value">Filter value</param>
-    /// <returns>The filtered queryable</returns>
     public static IQueryable<T> ApplyFiltering<T>(this IQueryable<T> query, string field, FilterOperator @operator, string value = "")
     {
         var filterDto = new FilterDto { Field = field, Operator = @operator, Value = value };
         return query.ApplyFiltering(filterDto);
     }
 
-    /// <summary>
-    /// Builds a dynamic LINQ expression for filtering
-    /// </summary>
-    /// <param name="filterDto">Filter parameters</param>
-    /// <returns>Tuple containing expression string and parameter values</returns>
     private static (string expression, object[] values) BuildFilterExpression(FilterDto filterDto)
     {
         var parsedValue = filterDto.ParseValue();
@@ -90,11 +56,6 @@ public static class FilteringExtensions
         };
     }
 
-    /// <summary>
-    /// Builds an IN expression for filtering
-    /// </summary>
-    /// <param name="filterDto">Filter parameters</param>
-    /// <returns>Tuple containing expression string and parameter values</returns>
     private static (string expression, object[] values) BuildInExpression(FilterDto filterDto)
     {
         var values = filterDto.Values.ToArray();
@@ -102,11 +63,6 @@ public static class FilteringExtensions
         return ($"{filterDto.Field}.In({string.Join(", ", placeholders)})", values.Cast<object>().ToArray());
     }
 
-    /// <summary>
-    /// Builds a NOT IN expression for filtering
-    /// </summary>
-    /// <param name="filterDto">Filter parameters</param>
-    /// <returns>Tuple containing expression string and parameter values</returns>
     private static (string expression, object[] values) BuildNotInExpression(FilterDto filterDto)
     {
         var values = filterDto.Values.ToArray();
