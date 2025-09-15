@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Identity;
+using MyShop.Contracts.Enums.Identity;
 using MyShop.Domain.Shared.Exceptions.Validation;
 using MyShop.Domain.Shared.Shared;
-using MyShop.Identity.Enums;
 
 namespace MyShop.Identity.Models
 {

@@ -75,9 +75,9 @@ namespace MyShop.Identity.DependencyInjection
             // Configure Authentication
             services.AddAuthentication(options =>
             {
-                options.DefaultAuthenticateScheme = IdentityConstants.ApplicationScheme;
-                options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
-                options.DefaultSignInScheme = IdentityConstants.ApplicationScheme;
+                options.DefaultAuthenticateScheme = Constants.IdentityConstants.ApplicationScheme;
+                options.DefaultChallengeScheme = Constants.IdentityConstantss.ApplicationScheme;
+                options.DefaultSignInScheme = Constants.IdentityConstantss.ApplicationScheme;
             });
 
             // Configure Authorization

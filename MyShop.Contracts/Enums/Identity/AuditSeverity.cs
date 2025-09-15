@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging;
 
-namespace MyShop.Identity.Enums;
+namespace MyShop.Contracts.Enums.Identity;
 
 public enum AuditSeverity
 {

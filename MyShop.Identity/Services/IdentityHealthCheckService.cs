@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using MyShop.Contracts.Enums.Identity;
 using MyShop.Identity.Context;
-using MyShop.Identity.Enums;
 using MyShop.Identity.Models;
 
 namespace MyShop.Identity.Services;
