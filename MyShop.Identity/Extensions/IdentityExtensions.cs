@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using MyShop.Identity.Models;
 using MyShop.Identity.Enums;
 using MyShop.Identity.Constants;
+using MyShop.Identity.Context;
 
 namespace MyShop.Identity.Extensions;
 
@@ -14,12 +16,22 @@ public static class IdentityExtensions
     /// Checks if user has a specific permission
     /// </summary>
     public static async Task<bool> HasPermissionAsync(this UserManager<ApplicationUser> userManager, 
-        ApplicationUser user, string permissionName)
+        ApplicationUser user, string permissionName, MyShopIdentityDbContext context)
     {
         var userRoles = await userManager.GetRolesAsync(user);
-        // Implementation would check if any of the user's roles have the permission
-        // This is a simplified version - in real implementation, you'd query the database
-        return true; // Placeholder
+        
+        // Check if any of the user's roles have the permission
+        var hasPermission = await context.RolePermissions
+            .Include(rp => rp.Role)
+            .Include(rp => rp.Permission)
+            .Where(rp => userRoles.Contains(rp.Role.Name) && 
+                        rp.Permission.Name == permissionName &&
+                        rp.IsActive &&
+                        rp.IsGranted &&
+                        (rp.ExpiresAt == null || rp.ExpiresAt > DateTime.UtcNow))
+            .AnyAsync();
+
+        return hasPermission;
     }
 
     /// <summary>
@@ -85,17 +97,17 @@ public static class IdentityExtensions
         // Define role priority (lower number = higher priority)
         var rolePriority = new Dictionary<string, int>
         {
-            { RoleConstants.System.SuperAdmin, 1 },
-            { RoleConstants.System.SystemAdmin, 2 },
-            { RoleConstants.Administrative.Admin, 3 },
-            { RoleConstants.Administrative.Manager, 4 },
-            { RoleConstants.Business.CustomerService, 5 },
-            { RoleConstants.Business.SalesRep, 6 },
-            { RoleConstants.Business.SupportAgent, 7 },
-            { RoleConstants.Specialized.Auditor, 5 },
-            { RoleConstants.Specialized.ReportViewer, 6 },
-            { RoleConstants.User.Customer, 8 },
-            { RoleConstants.User.Guest, 9 }
+            { RoleConstants.System.SuperAdmin, Constants.IdentityConstants.RolePriority.SuperAdmin },
+            { RoleConstants.System.SystemAdmin, Constants.IdentityConstants.RolePriority.SystemAdmin },
+            { RoleConstants.Administrative.Admin, Constants.IdentityConstants.RolePriority.Admin },
+            { RoleConstants.Administrative.Manager, Constants.IdentityConstants.RolePriority.Manager },
+            { RoleConstants.Business.CustomerService, Constants.IdentityConstants.RolePriority.CustomerService },
+            { RoleConstants.Business.SalesRep, Constants.IdentityConstants.RolePriority.SalesRep },
+            { RoleConstants.Business.SupportAgent, Constants.IdentityConstants.RolePriority.SupportAgent },
+            { RoleConstants.Specialized.Auditor, Constants.IdentityConstants.RolePriority.Auditor },
+            { RoleConstants.Specialized.ReportViewer, Constants.IdentityConstants.RolePriority.ReportViewer },
+            { RoleConstants.User.Customer, Constants.IdentityConstants.RolePriority.Customer },
+            { RoleConstants.User.Guest, Constants.IdentityConstants.RolePriority.Guest }
         };
 
         return roles
@@ -127,11 +139,8 @@ public static class IdentityExtensions
     /// Checks if user can perform action on resource
     /// </summary>
     public static async Task<bool> CanPerformActionAsync(this UserManager<ApplicationUser> userManager, 
-        ApplicationUser user, Resource resource, ActionEnum action)
+        ApplicationUser user, Resource resource, ActionEnum action, MyShopIdentityDbContext context)
     {
-        // This is a simplified implementation
-        // In a real scenario, you'd check the user's roles and their permissions
-        
         var userRoles = await userManager.GetRolesAsync(user);
         
         // System admins can do everything
@@ -141,41 +150,42 @@ public static class IdentityExtensions
             return true;
         }
 
-        // Check specific permissions based on role and resource/action
-        return await CheckResourceActionPermissionAsync(userRoles, resource, action);
-    }
-
-    private static async Task<bool> CheckResourceActionPermissionAsync(IList<string> userRoles, 
-        Resource resource, ActionEnum action)
-    {
-        // Simplified permission checking logic
-        // In real implementation, you'd query the database for role-permission mappings
-        
+        // Check specific permissions from database
         var permissionName = $"{resource.ToStringValue()}.{action.ToStringValue()}";
         
-        // Define which roles can perform which actions
-        var rolePermissions = new Dictionary<string, List<string>>
-        {
-            { RoleConstants.Administrative.Admin, new List<string> { "Customer.Create", "Customer.Read", "Customer.Update", "Customer.List", "Order.Create", "Order.Read", "Order.Update", "Order.List", "Product.Create", "Product.Read", "Product.Update", "Product.List" } },
-            { RoleConstants.Administrative.Manager, new List<string> { "Customer.Read", "Customer.List", "Customer.Update", "Order.Read", "Order.List", "Order.Approve", "Product.Read", "Product.List" } },
-            { RoleConstants.Business.CustomerService, new List<string> { "Customer.Read", "Customer.List", "Customer.Update", "Order.Read", "Order.List", "Product.Read", "Product.List" } },
-            { RoleConstants.Business.SalesRep, new List<string> { "Customer.Create", "Customer.Read", "Customer.List", "Order.Create", "Order.Read", "Order.List", "Product.Read", "Product.List" } },
-            { RoleConstants.Business.SupportAgent, new List<string> { "Customer.Read", "Customer.List", "Order.Read", "Order.List", "Product.Read", "Product.List" } },
-            { RoleConstants.User.Customer, new List<string> { "Order.Create", "Order.Read", "Order.List", "Product.Read", "Product.List", "Payment.Create", "Payment.Read", "Payment.List" } },
-            { RoleConstants.Specialized.Auditor, new List<string> { "Audit.Read", "Audit.List", "User.Read", "User.List" } },
-            { RoleConstants.Specialized.ReportViewer, new List<string> { "Report.Read", "Report.List", "Report.Execute" } }
-        };
+        var hasPermission = await context.RolePermissions
+            .Include(rp => rp.Role)
+            .Include(rp => rp.Permission)
+            .Where(rp => userRoles.Contains(rp.Role.Name) && 
+                        rp.Permission.Name == permissionName &&
+                        rp.IsActive &&
+                        rp.IsGranted &&
+                        (rp.ExpiresAt == null || rp.ExpiresAt > DateTime.UtcNow))
+            .AnyAsync();
 
-        foreach (var role in userRoles)
-        {
-            if (rolePermissions.ContainsKey(role) && 
-                rolePermissions[role].Contains(permissionName))
-            {
-                return true;
-            }
-        }
+        return hasPermission;
+    }
 
-        return false;
+    /// <summary>
+    /// Gets all permissions for a user through their roles
+    /// </summary>
+    public static async Task<IEnumerable<string>> GetUserPermissionsAsync(this UserManager<ApplicationUser> userManager, 
+        ApplicationUser user, MyShopIdentityDbContext context)
+    {
+        var userRoles = await userManager.GetRolesAsync(user);
+        
+        var permissions = await context.RolePermissions
+            .Include(rp => rp.Role)
+            .Include(rp => rp.Permission)
+            .Where(rp => userRoles.Contains(rp.Role.Name) && 
+                        rp.IsActive &&
+                        rp.IsGranted &&
+                        (rp.ExpiresAt == null || rp.ExpiresAt > DateTime.UtcNow))
+            .Select(rp => rp.Permission.Name)
+            .Distinct()
+            .ToListAsync();
+
+        return permissions;
     }
 
     /// <summary>
@@ -228,6 +238,6 @@ public static class IdentityExtensions
             return null;
 
         var daysSinceChange = DateTime.UtcNow.Subtract(user.LastPasswordChangeAt.Value).Days;
-        return Math.Max(0, 90 - daysSinceChange);
+        return Math.Max(0, Constants.IdentityConstants.PasswordPolicy.ExpirationDays - daysSinceChange);
     }
 }
