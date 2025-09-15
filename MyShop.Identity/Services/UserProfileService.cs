@@ -3,9 +3,23 @@ using Microsoft.EntityFrameworkCore;
 using MyShop.Identity.Context;
 using MyShop.Identity.Models;
 using MyShop.Contracts.Identity.Services;
+using MyShop.Contracts.DTOs.Identity;
 using MyShop.Domain.Shared.Interfaces;
 
 namespace MyShop.Identity.Services;
+
+/// <summary>
+/// Simple implementation of IDateTimeService for internal use
+/// </summary>
+internal class SimpleDateTimeService : IDateTimeService
+{
+    public DateTime UtcNow => DateTime.UtcNow;
+    public DateTime LocalNow => DateTime.Now;
+    public DateTime UtcToday => DateTime.UtcNow.Date;
+    public DateTime LocalToday => DateTime.Now.Date;
+    public DateTime ToLocalTime(DateTime utcDateTime) => utcDateTime.ToLocalTime();
+    public DateTime ToUtcTime(DateTime localDateTime) => localDateTime.ToUniversalTime();
+}
 
 
 /// <summary>

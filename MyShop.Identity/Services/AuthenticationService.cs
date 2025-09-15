@@ -125,7 +125,7 @@ public class AuthenticationService : IAuthenticationService
             IsSuccess = true,
             AccessToken = accessToken,
             RefreshToken = refreshToken,
-            User = MapToDto(user)
+            User = MappingService.MapToDto(user)
         };
     }
 
@@ -167,7 +167,7 @@ public class AuthenticationService : IAuthenticationService
             IsSuccess = true,
             AccessToken = newAccessToken,
             RefreshToken = newRefreshToken,
-            User = MapToDto(user)
+            User = MappingService.MapToDto(user)
         };
     }
 
@@ -216,7 +216,7 @@ public class AuthenticationService : IAuthenticationService
         return new AuthenticationResult
         {
             IsSuccess = true,
-            User = MapToDto(user),
+            User = MappingService.MapToDto(user),
             RequiresEmailConfirmation = true
         };
     }
@@ -387,43 +387,4 @@ public class AuthenticationService : IAuthenticationService
         return remaining > TimeSpan.Zero ? remaining : null;
     }
 
-    #region Private Helpers
-
-    private static ApplicationUserDto MapToDto(ApplicationUser user)
-    {
-        return new ApplicationUserDto
-        {
-            Id = user.Id,
-            UserName = user.UserName ?? string.Empty,
-            Email = user.Email ?? string.Empty,
-            PhoneNumber = user.PhoneNumber,
-            EmailConfirmed = user.EmailConfirmed,
-            PhoneNumberConfirmed = user.PhoneNumberConfirmed,
-            TwoFactorEnabled = user.TwoFactorEnabled,
-            LockoutEnabled = user.LockoutEnabled,
-            AccessFailedCount = user.AccessFailedCount,
-            LockoutEnd = user.LockoutEnd,
-            CustomerId = user.CustomerId,
-            TotpEnabled = user.TotpEnabled,
-            SmsEnabled = user.SmsEnabled,
-            GoogleId = user.GoogleId,
-            MicrosoftId = user.MicrosoftId,
-            IsLocked = user.IsLocked,
-            IsAccountLocked = user.IsAccountLocked,
-            IsActive = user.IsActive,
-            IsNewUser = user.IsNewUser,
-            IsDeleted = user.IsDeleted,
-            LastLoginAt = user.LastLoginAt,
-            LastPasswordChangeAt = user.LastPasswordChangeAt,
-            LoginAttempts = user.LoginAttempts,
-            RequiresPasswordChange = user.RequiresPasswordChange,
-            CreatedAt = user.Account.CreatedAt,
-            BranchId = user.Account.BranchId,
-            CreatedBy = user.Audit.CreatedBy,
-            UpdatedAt = user.Audit.ModifiedAt,
-            UpdatedBy = user.Audit.ModifiedBy
-        };
-    }
-
-    #endregion
 }
