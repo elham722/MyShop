@@ -4,11 +4,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MyShop.Contracts.Identity.Services;
+using MyShop.Identity.Authorization.Handlers;
 using MyShop.Identity.Constants;
 using MyShop.Identity.Context;
 using MyShop.Identity.Models;
 using MyShop.Identity.Services;
-using IAuthorizationService = MyShop.Identity.Services.IAuthorizationService;
+using IAuthorizationService = MyShop.Identity.Services.AuthorizationService;
 
 namespace MyShop.Identity.DependencyInjection
 {
@@ -77,8 +78,8 @@ namespace MyShop.Identity.DependencyInjection
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = Constants.IdentityConstants.ApplicationScheme;
-                options.DefaultChallengeScheme = Constants.IdentityConstantss.ApplicationScheme;
-                options.DefaultSignInScheme = Constants.IdentityConstantss.ApplicationScheme;
+                options.DefaultChallengeScheme = Constants.IdentityConstants.ApplicationScheme;
+                options.DefaultSignInScheme = Constants.IdentityConstants.ApplicationScheme;
             });
 
             // Configure Authorization
