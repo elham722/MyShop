@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using MyShop.Domain.Shared.Exceptions.Validation;
 using MyShop.Domain.Shared.Shared;
+using MyShop.Identity.Enums;
 
 namespace MyShop.Identity.Models
 {
@@ -8,8 +9,8 @@ namespace MyShop.Identity.Models
     {
         public string Id { get; private set; } = null!;
         public string Name { get; private set; } = null!;
-        public string Resource { get; private set; } = null!;
-        public string Action { get; private set; } = null!;
+        public Resource Resource { get; private set; }
+        public ActionEnum Action { get; private set; }
         public string Description { get; private set; } = null!;
         public DateTime CreatedAt { get; private set; }
         public DateTime? UpdatedAt { get; private set; }
@@ -22,11 +23,9 @@ namespace MyShop.Identity.Models
 
         private Permission() { } // For EF Core
 
-        public static Permission Create(string name, string resource, string action, string description, string? category = null, int priority = 0, bool isSystemPermission = false, string createdBy = "System")
+        public static Permission Create(string name, Resource resource, ActionEnum action, string description, string? category = null, int priority = 0, bool isSystemPermission = false, string createdBy = "System")
         {
             Guard.AgainstNullOrEmpty(name, nameof(name));
-            Guard.AgainstNullOrEmpty(resource, nameof(resource));
-            Guard.AgainstNullOrEmpty(action, nameof(action));
             Guard.AgainstNullOrEmpty(description, nameof(description));
           
             return new Permission
@@ -40,16 +39,21 @@ namespace MyShop.Identity.Models
                 CreatedBy = createdBy,
                 IsActive = true,
                 IsSystemPermission = isSystemPermission,
-                Category = category,
-                Priority = priority
+                Category = category ?? resource.GetCategory(),
+                Priority = priority == 0 ? resource.GetPriority() : priority
             };
         }
 
-        public void Update(string name, string resource, string action, string description, string? category = null, int? priority = null, string updatedBy = "System")
+        public static Permission Create(string name, string resource, string action, string description, string? category = null, int priority = 0, bool isSystemPermission = false, string createdBy = "System")
+        {
+            var resourceEnum = ResourceExtensions.ParseFromString(resource);
+            var actionEnum = ActionExtensions.ParseFromString(action);
+            return Create(name, resourceEnum, actionEnum, description, category, priority, isSystemPermission, createdBy);
+        }
+
+        public void Update(string name, Resource resource, ActionEnum action, string description, string? category = null, int? priority = null, string updatedBy = "System")
         {
             Guard.AgainstNullOrEmpty(name, nameof(name));
-            Guard.AgainstNullOrEmpty(resource, nameof(resource));
-            Guard.AgainstNullOrEmpty(action, nameof(action));
             Guard.AgainstNullOrEmpty(description, nameof(description));
             Guard.AgainstNullOrEmpty(updatedBy, nameof(updatedBy));
 
@@ -60,10 +64,17 @@ namespace MyShop.Identity.Models
             Resource = resource;
             Action = action;
             Description = description;
-            Category = category;
+            Category = category ?? resource.GetCategory();
             Priority = priority ?? Priority;
             UpdatedAt = DateTime.UtcNow;
             UpdatedBy = updatedBy;
+        }
+
+        public void Update(string name, string resource, string action, string description, string? category = null, int? priority = null, string updatedBy = "System")
+        {
+            var resourceEnum = ResourceExtensions.ParseFromString(resource);
+            var actionEnum = ActionExtensions.ParseFromString(action);
+            Update(name, resourceEnum, actionEnum, description, category, priority, updatedBy);
         }
 
         public void Deactivate(string deactivatedBy)
@@ -89,13 +100,39 @@ namespace MyShop.Identity.Models
 
         public string GetFullName()
         {
-            return $"{Resource}:{Action}";
+            return $"{Resource.ToStringValue()}:{Action.ToStringValue()}";
+        }
+
+        public bool MatchesResourceAction(Resource resource, ActionEnum action)
+        {
+            return Resource == resource && Action == action;
         }
 
         public bool MatchesResourceAction(string resource, string action)
         {
-            return Resource.Equals(resource, StringComparison.OrdinalIgnoreCase) &&
-                   Action.Equals(action, StringComparison.OrdinalIgnoreCase);
+            var resourceEnum = ResourceExtensions.ParseFromString(resource);
+            var actionEnum = ActionExtensions.ParseFromString(action);
+            return MatchesResourceAction(resourceEnum, actionEnum);
+        }
+
+        public bool IsDestructive()
+        {
+            return Action.IsDestructive();
+        }
+
+        public bool RequiresSpecialPrivileges()
+        {
+            return Action.RequiresSpecialPrivileges();
+        }
+
+        public string GetResourceString()
+        {
+            return Resource.ToStringValue();
+        }
+
+        public string GetActionString()
+        {
+            return Action.ToStringValue();
         }
     }
 }
