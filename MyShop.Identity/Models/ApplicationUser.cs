@@ -78,8 +78,11 @@ public class ApplicationUser : IdentityUser
 
     // State update methods
 
-    internal void UpdateAccount(AccountInfo account) =>
+    internal void UpdateAccount(AccountInfo account)
+    {
         Guard.AgainstNull(account, nameof(account));
+        Account = account;
+    }
 
     internal void UpdateSecurity(SecurityInfo security) =>
         Guard.AgainstNull(security, nameof(security));

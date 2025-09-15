@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using MyShop.Identity.Context;
 using MyShop.Identity.Models;
+using MyShop.Contracts.Identity.Services;
 
 namespace MyShop.Identity.Services;
 

@@ -220,26 +220,6 @@ public class AuditAlert
     public string Recommendation { get; set; } = string.Empty;
 }
 
-/// <summary>
-/// Security report model
-/// </summary>
-public class SecurityReport
-{
-    public DateTime StartDate { get; set; }
-    public DateTime EndDate { get; set; }
-    public int TotalUsers { get; set; }
-    public int ActiveUsers { get; set; }
-    public int LockedUsers { get; set; }
-    public int UsersWithTwoFactor { get; set; }
-    public double TwoFactorAdoptionRate { get; set; }
-    public int FailedLoginAttempts { get; set; }
-    public int SuspiciousActivities { get; set; }
-    public int SecurityAlerts { get; set; }
-    public List<SecurityIncident> SecurityIncidents { get; set; } = new();
-    public List<SecurityTrend> SecurityTrends { get; set; } = new();
-    public SecurityRecommendations Recommendations { get; set; } = new();
-    public DateTime GeneratedAt { get; set; } = DateTime.UtcNow;
-}
 
 /// <summary>
 /// Security incident

@@ -1,40 +1,14 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using MyShop.Contracts.Identity.Services;
 using MyShop.Identity.Constants;
 using MyShop.Identity.Context;
 using MyShop.Identity.Models;
 using MyShop.Identity.Enums;
+using MyShop.Domain.Shared.Interfaces;
 
 namespace MyShop.Identity.Services;
-
-/// <summary>
-/// Service for managing authentication operations
-/// </summary>
-public interface IAuthenticationService
-{
-    Task<AuthenticationResult> LoginAsync(string email, string password, string? ipAddress = null, 
-        string? userAgent = null, string? deviceInfo = null);
-    Task<AuthenticationResult> LoginWithRefreshTokenAsync(string refreshToken, string? ipAddress = null, 
-        string? userAgent = null);
-    Task<bool> LogoutAsync(string userId, string? ipAddress = null, string? userAgent = null);
-    Task<bool> LogoutAllDevicesAsync(string userId, string? ipAddress = null, string? userAgent = null);
-    Task<AuthenticationResult> RegisterAsync(string email, string userName, string password, 
-        string? customerId = null, string? ipAddress = null, string? userAgent = null);
-    Task<bool> ConfirmEmailAsync(string userId, string token);
-    Task<bool> ResendEmailConfirmationAsync(string email);
-    Task<bool> ForgotPasswordAsync(string email);
-    Task<bool> ResetPasswordAsync(string userId, string token, string newPassword);
-    Task<bool> ChangePasswordAsync(string userId, string currentPassword, string newPassword);
-    Task<bool> EnableTwoFactorAsync(string userId);
-    Task<bool> DisableTwoFactorAsync(string userId);
-    Task<bool> VerifyTwoFactorTokenAsync(string userId, string token);
-    Task<string> GenerateTwoFactorTokenAsync(string userId);
-    Task<bool> LockUserAsync(string userId, TimeSpan? lockoutDuration = null);
-    Task<bool> UnlockUserAsync(string userId);
-    Task<bool> IsUserLockedAsync(string userId);
-    Task<TimeSpan?> GetLockoutEndTimeAsync(string userId);
-}
 
 /// <summary>
 /// Result of authentication operations
@@ -63,10 +37,12 @@ public class AuthenticationService : IAuthenticationService
     private readonly IJwtTokenService _jwtTokenService;
     private readonly IAuditService _auditService;
     private readonly IConfiguration _configuration;
+    private readonly IDateTimeService _dateTimeService;
 
     public AuthenticationService(UserManager<ApplicationUser> userManager, 
         SignInManager<ApplicationUser> signInManager, MyShopIdentityDbContext context,
-        IJwtTokenService jwtTokenService, IAuditService auditService, IConfiguration configuration)
+        IJwtTokenService jwtTokenService, IAuditService auditService
+        , IConfiguration configuration, IDateTimeService dateTimeService)
     {
         _userManager = userManager;
         _signInManager = signInManager;
@@ -74,6 +50,8 @@ public class AuthenticationService : IAuthenticationService
         _jwtTokenService = jwtTokenService;
         _auditService = auditService;
         _configuration = configuration;
+        _dateTimeService = dateTimeService;
+
     }
 
     public async Task<AuthenticationResult> LoginAsync(string email, string password, string? ipAddress = null, 
@@ -98,7 +76,7 @@ public class AuthenticationService : IAuthenticationService
                 IsSuccess = false, 
                 ErrorMessage = "Account is locked", 
                 IsAccountLocked = true,
-                LockoutEnd = user.LockoutEnd
+                LockoutEnd = user.LockoutEnd?.DateTime
             };
         }
 
@@ -149,7 +127,8 @@ public class AuthenticationService : IAuthenticationService
         var refreshToken = await _jwtTokenService.GenerateRefreshTokenAsync(user);
 
         // Update last login
-        user.UpdateAccount(user.Account with { LastLoginAt = DateTime.UtcNow });
+      
+        user.UpdateAccount(user.Account.WithLastLogin(_dateTimeService));
         await _userManager.UpdateAsync(user);
 
         // Log successful login
@@ -304,7 +283,7 @@ public class AuthenticationService : IAuthenticationService
         
         if (result.Succeeded)
         {
-            user.UpdateAccount(user.Account with { LastPasswordChangeAt = DateTime.UtcNow });
+            user.UpdateAccount(user.Account.WithPasswordChanged(_dateTimeService));
             await _userManager.UpdateAsync(user);
         }
         
@@ -323,7 +302,7 @@ public class AuthenticationService : IAuthenticationService
         
         if (result.Succeeded)
         {
-            user.UpdateAccount(user.Account with { LastPasswordChangeAt = DateTime.UtcNow });
+            user.UpdateAccount(user.Account.WithPasswordChanged(_dateTimeService));
             await _userManager.UpdateAsync(user);
         }
         

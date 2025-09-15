@@ -2,8 +2,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MyShop.Identity.Context;
 using MyShop.Identity.Models;
+using MyShop.Contracts.Identity.Services;
+using MyShop.Domain.Shared.Interfaces;
 
 namespace MyShop.Identity.Services;
+
 
 /// <summary>
 /// Service for managing user profiles and account information
@@ -158,7 +161,9 @@ public class UserProfileService : IUserProfileService
 
         if (isActive.HasValue && isActive.Value != user.IsActive)
         {
-            user.UpdateAccount(user.Account with { IsActive = isActive.Value });
+            var dateTimeService = new SimpleDateTimeService();
+            var newAccount = isActive.Value ? user.Account.Activate() : user.Account.Deactivate();
+            user.UpdateAccount(newAccount);
         }
 
         var result = await _userManager.UpdateAsync(user);
@@ -313,7 +318,7 @@ public class UserProfileService : IUserProfileService
     public async Task<DateTime?> GetUserSuspensionEndAsync(string userId)
     {
         var user = await _userManager.FindByIdAsync(userId);
-        return user?.LockoutEnd;
+        return user?.LockoutEnd?.DateTime;
     }
 
     public async Task<int> GetUserCountAsync()

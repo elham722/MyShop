@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using MyShop.Contracts.Identity.Services;
 using MyShop.Identity.Models;
 using MyShop.Identity.Context;
 

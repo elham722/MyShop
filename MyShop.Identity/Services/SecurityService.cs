@@ -4,6 +4,9 @@ using MyShop.Identity.Context;
 using MyShop.Identity.Models;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.Extensions.Logging;
+using MyShop.Contracts.Enums.Identity;
+using MyShop.Contracts.Identity.Services;
 
 namespace MyShop.Identity.Services;
 
@@ -588,7 +591,7 @@ public class SecurityService : ISecurityService
         return recommendations;
     }
 
-    private async Task<List<SecurityAlert>> GetSecurityAlertsAsync(string userId, int count)
+    public async Task<List<SecurityAlert>> GetSecurityAlertsAsync(string userId, int count = 50)
     {
         return await _context.AuditLogs
             .Where(al => al.UserId == userId && al.Severity >= AuditSeverity.Warning)
@@ -776,10 +779,6 @@ public class SecurityService : ISecurityService
         return true;
     }
 
-    public async Task<List<SecurityAlert>> GetSecurityAlertsAsync(string userId, int count = 50)
-    {
-        return await GetSecurityAlertsAsync(userId, count);
-    }
 
     public async Task<bool> AcknowledgeSecurityAlertAsync(string alertId, string userId)
     {
