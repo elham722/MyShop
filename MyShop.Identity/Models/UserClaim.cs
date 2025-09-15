@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using MyShop.Domain.Shared.Shared;
 
 namespace MyShop.Identity.Models
 {
@@ -14,15 +15,10 @@ namespace MyShop.Identity.Models
 
         public static UserClaim Create(string userId, string claimType, string claimValue, string createdBy = "System")
         {
-            if (string.IsNullOrWhiteSpace(userId))
-                throw new ArgumentException("User ID cannot be null or empty", nameof(userId));
-
-            if (string.IsNullOrWhiteSpace(claimType))
-                throw new ArgumentException("Claim type cannot be null or empty", nameof(claimType));
-
-            if (string.IsNullOrWhiteSpace(claimValue))
-                throw new ArgumentException("Claim value cannot be null or empty", nameof(claimValue));
-
+            Guard.AgainstNullOrEmpty(userId, nameof(userId));
+            Guard.AgainstNullOrEmpty(claimType, nameof(claimType));
+            Guard.AgainstNullOrEmpty(claimValue, nameof(claimValue));
+          
             return new UserClaim
             {
                 CreatedAt = DateTime.UtcNow,
@@ -33,11 +29,8 @@ namespace MyShop.Identity.Models
 
         public void Update(string claimValue, string updatedBy)
         {
-            if (string.IsNullOrWhiteSpace(claimValue))
-                throw new ArgumentException("Claim value cannot be null or empty", nameof(claimValue));
-
-            if (string.IsNullOrWhiteSpace(updatedBy))
-                throw new ArgumentException("Updated by cannot be null or empty", nameof(updatedBy));
+            Guard.AgainstNullOrEmpty(claimValue, nameof(claimValue));
+            Guard.AgainstNullOrEmpty(updatedBy, nameof(updatedBy));
 
             UpdatedAt = DateTime.UtcNow;
             UpdatedBy = updatedBy;
@@ -45,8 +38,7 @@ namespace MyShop.Identity.Models
 
         public void Deactivate(string deactivatedBy)
         {
-            if (string.IsNullOrWhiteSpace(deactivatedBy))
-                throw new ArgumentException("Deactivated by cannot be null or empty", nameof(deactivatedBy));
+            Guard.AgainstNullOrEmpty(deactivatedBy, nameof(deactivatedBy));
 
             IsActive = false;
             UpdatedAt = DateTime.UtcNow;
@@ -55,8 +47,7 @@ namespace MyShop.Identity.Models
 
         public void Activate(string activatedBy)
         {
-            if (string.IsNullOrWhiteSpace(activatedBy))
-                throw new ArgumentException("Activated by cannot be null or empty", nameof(activatedBy));
+            Guard.AgainstNullOrEmpty(activatedBy, nameof(activatedBy));
 
             IsActive = true;
             UpdatedAt = DateTime.UtcNow;

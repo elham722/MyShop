@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Identity;
+using MyShop.Domain.Shared.Exceptions.Validation;
+using MyShop.Domain.Shared.Shared;
 
 namespace MyShop.Identity.Models
 {
@@ -26,12 +28,9 @@ namespace MyShop.Identity.Models
 
         public static RolePermission Create(string roleId, string permissionId, string? assignedBy = null, string? assignmentReason = null, DateTime? expiresAt = null, bool isGranted = true, string createdBy = "System")
         {
-            if (string.IsNullOrWhiteSpace(roleId))
-                throw new ArgumentException("Role ID cannot be null or empty", nameof(roleId));
-
-            if (string.IsNullOrWhiteSpace(permissionId))
-                throw new ArgumentException("Permission ID cannot be null or empty", nameof(permissionId));
-
+            Guard.AgainstNullOrEmpty(roleId, nameof(roleId));
+            Guard.AgainstNullOrEmpty(permissionId, nameof(permissionId));
+           
             return new RolePermission
             {
                 Id = Guid.NewGuid().ToString(),
@@ -50,12 +49,9 @@ namespace MyShop.Identity.Models
 
         public void UpdateAssignmentReason(string assignmentReason, string updatedBy)
         {
-            if (string.IsNullOrWhiteSpace(assignmentReason))
-                throw new ArgumentException("Assignment reason cannot be null or empty", nameof(assignmentReason));
-
-            if (string.IsNullOrWhiteSpace(updatedBy))
-                throw new ArgumentException("Updated by cannot be null or empty", nameof(updatedBy));
-
+            Guard.AgainstNullOrEmpty(assignmentReason, nameof(assignmentReason));
+            Guard.AgainstNullOrEmpty(updatedBy, nameof(updatedBy));
+           
             AssignmentReason = assignmentReason;
             UpdatedAt = DateTime.UtcNow;
             UpdatedBy = updatedBy;
@@ -63,11 +59,10 @@ namespace MyShop.Identity.Models
 
         public void ExtendExpiration(DateTime newExpiresAt, string extendedBy)
         {
-            if (string.IsNullOrWhiteSpace(extendedBy))
-                throw new ArgumentException("Extended by cannot be null or empty", nameof(extendedBy));
+            Guard.AgainstNullOrEmpty(extendedBy, nameof(extendedBy));
 
             if (newExpiresAt <= DateTime.UtcNow)
-                throw new ArgumentException("New expiration date must be in the future", nameof(newExpiresAt));
+                throw new CustomValidationException("New expiration date must be in the future");
 
             ExpiresAt = newExpiresAt;
             UpdatedAt = DateTime.UtcNow;
@@ -76,8 +71,7 @@ namespace MyShop.Identity.Models
 
         public void RemoveExpiration(string removedBy)
         {
-            if (string.IsNullOrWhiteSpace(removedBy))
-                throw new ArgumentException("Removed by cannot be null or empty", nameof(removedBy));
+            Guard.AgainstNullOrEmpty(removedBy, nameof(removedBy));
 
             ExpiresAt = null;
             UpdatedAt = DateTime.UtcNow;
@@ -86,8 +80,8 @@ namespace MyShop.Identity.Models
 
         public void Deactivate(string deactivatedBy)
         {
-            if (string.IsNullOrWhiteSpace(deactivatedBy))
-                throw new ArgumentException("Deactivated by cannot be null or empty", nameof(deactivatedBy));
+            Guard.AgainstNullOrEmpty(deactivatedBy, nameof(deactivatedBy));
+
 
             IsActive = false;
             UpdatedAt = DateTime.UtcNow;
@@ -96,8 +90,7 @@ namespace MyShop.Identity.Models
 
         public void Activate(string activatedBy)
         {
-            if (string.IsNullOrWhiteSpace(activatedBy))
-                throw new ArgumentException("Activated by cannot be null or empty", nameof(activatedBy));
+            Guard.AgainstNullOrEmpty(activatedBy, nameof(activatedBy));
 
             IsActive = true;
             UpdatedAt = DateTime.UtcNow;
@@ -106,8 +99,7 @@ namespace MyShop.Identity.Models
 
         public void ToggleGrant(string toggledBy)
         {
-            if (string.IsNullOrWhiteSpace(toggledBy))
-                throw new ArgumentException("Toggled by cannot be null or empty", nameof(toggledBy));
+            Guard.AgainstNullOrEmpty(toggledBy, nameof(toggledBy));
 
             IsGranted = !IsGranted;
             UpdatedAt = DateTime.UtcNow;

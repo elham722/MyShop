@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Identity;
+using MyShop.Domain.Shared.Exceptions.Validation;
+using MyShop.Domain.Shared.Shared;
 
 namespace MyShop.Identity.Models
 {
@@ -22,18 +24,11 @@ namespace MyShop.Identity.Models
 
         public static Permission Create(string name, string resource, string action, string description, string? category = null, int priority = 0, bool isSystemPermission = false, string createdBy = "System")
         {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Permission name cannot be null or empty", nameof(name));
-
-            if (string.IsNullOrWhiteSpace(resource))
-                throw new ArgumentException("Resource cannot be null or empty", nameof(resource));
-
-            if (string.IsNullOrWhiteSpace(action))
-                throw new ArgumentException("Action cannot be null or empty", nameof(action));
-
-            if (string.IsNullOrWhiteSpace(description))
-                throw new ArgumentException("Permission description cannot be null or empty", nameof(description));
-
+            Guard.AgainstNullOrEmpty(name, nameof(name));
+            Guard.AgainstNullOrEmpty(resource, nameof(resource));
+            Guard.AgainstNullOrEmpty(action, nameof(action));
+            Guard.AgainstNullOrEmpty(description, nameof(description));
+          
             return new Permission
             {
                 Id = Guid.NewGuid().ToString(),
@@ -52,23 +47,14 @@ namespace MyShop.Identity.Models
 
         public void Update(string name, string resource, string action, string description, string? category = null, int? priority = null, string updatedBy = "System")
         {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Permission name cannot be null or empty", nameof(name));
-
-            if (string.IsNullOrWhiteSpace(resource))
-                throw new ArgumentException("Resource cannot be null or empty", nameof(resource));
-
-            if (string.IsNullOrWhiteSpace(action))
-                throw new ArgumentException("Action cannot be null or empty", nameof(action));
-
-            if (string.IsNullOrWhiteSpace(description))
-                throw new ArgumentException("Permission description cannot be null or empty", nameof(description));
-
-            if (string.IsNullOrWhiteSpace(updatedBy))
-                throw new ArgumentException("Updated by cannot be null or empty", nameof(updatedBy));
+            Guard.AgainstNullOrEmpty(name, nameof(name));
+            Guard.AgainstNullOrEmpty(resource, nameof(resource));
+            Guard.AgainstNullOrEmpty(action, nameof(action));
+            Guard.AgainstNullOrEmpty(description, nameof(description));
+            Guard.AgainstNullOrEmpty(updatedBy, nameof(updatedBy));
 
             if (IsSystemPermission)
-                throw new InvalidOperationException("Cannot update system permissions");
+                throw new CustomValidationException("Cannot update system permissions");
 
             Name = name;
             Resource = resource;
@@ -82,11 +68,10 @@ namespace MyShop.Identity.Models
 
         public void Deactivate(string deactivatedBy)
         {
-            if (string.IsNullOrWhiteSpace(deactivatedBy))
-                throw new ArgumentException("Deactivated by cannot be null or empty", nameof(deactivatedBy));
+            Guard.AgainstNullOrEmpty(deactivatedBy, nameof(deactivatedBy));
 
             if (IsSystemPermission)
-                throw new InvalidOperationException("Cannot deactivate system permissions");
+                throw new CustomValidationException("Cannot deactivate system permissions");
 
             IsActive = false;
             UpdatedAt = DateTime.UtcNow;
@@ -95,8 +80,7 @@ namespace MyShop.Identity.Models
 
         public void Activate(string activatedBy)
         {
-            if (string.IsNullOrWhiteSpace(activatedBy))
-                throw new ArgumentException("Activated by cannot be null or empty", nameof(activatedBy));
+            Guard.AgainstNullOrEmpty(activatedBy, nameof(activatedBy));
 
             IsActive = true;
             UpdatedAt = DateTime.UtcNow;

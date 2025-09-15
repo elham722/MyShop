@@ -2,6 +2,7 @@
 using MyShop.Domain.Shared.Exceptions;
 using MyShop.Domain.Shared.Exceptions.Validation;
 using MyShop.Domain.Shared.Interfaces;
+using MyShop.Domain.Shared.Shared;
 using MyShop.Domain.Shared.ValueObjects.Identity;
 
 namespace MyShop.Identity.Models;
@@ -51,12 +52,9 @@ public class ApplicationUser : IdentityUser
         string? createdBy = null,
         IDateTimeService? dateTimeService = null)
     {
-        if (string.IsNullOrWhiteSpace(email))
-            throw new CustomValidationException("Email cannot be null or empty");
-
-        if (string.IsNullOrWhiteSpace(userName))
-            throw new CustomValidationException( "Username cannot be null or empty");
-
+        Guard.AgainstNullOrEmpty(email, nameof(email));
+        Guard.AgainstNullOrEmpty(userName, nameof(userName));
+        
         var dt = dateTimeService;
 
         return new ApplicationUser
@@ -76,14 +74,15 @@ public class ApplicationUser : IdentityUser
     }
 
     // State update methods
+
     internal void UpdateAccount(AccountInfo account) =>
-        Account = account ?? throw new ArgumentNullException(nameof(account));
+        Guard.AgainstNull(account, nameof(account));
 
     internal void UpdateSecurity(SecurityInfo security) =>
-        Security = security ?? throw new ArgumentNullException(nameof(security));
+        Guard.AgainstNull(security, nameof(security));
 
     internal void UpdateAudit(AuditInfo audit) =>
-        Audit = audit ?? throw new ArgumentNullException(nameof(audit));
+        Guard.AgainstNull(audit, nameof(audit));
 
     internal void SetCustomerId(string? customerId) => CustomerId = customerId;
     internal void SetTotpSecretKey(string? secretKey) => TotpSecretKey = secretKey;

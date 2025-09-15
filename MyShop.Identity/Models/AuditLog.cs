@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore.Identity;
+using MyShop.Domain.Shared.Exceptions.Validation;
+using MyShop.Domain.Shared.Shared;
+using MyShop.Identity.Enums;
 
 namespace MyShop.Identity.Models
 {
@@ -20,23 +23,16 @@ namespace MyShop.Identity.Models
         public string? AdditionalData { get; private set; }
         public bool IsSuccess { get; private set; }
         public string? ErrorMessage { get; private set; }
-        public string? Severity { get; private set; } = "Info";
+        public AuditSeverity Severity { get; private set; } = AuditSeverity.Info;
 
-        private AuditLog() { } // For EF Core
+        private AuditLog() { } 
 
-        public static AuditLog Create(string userId, string action, string entityType, string entityId, string? oldValues = null, string? newValues = null, string? ipAddress = null, string? userAgent = null, string? deviceInfo = null, string? sessionId = null, string? requestId = null, string? additionalData = null, bool isSuccess = true, string? errorMessage = null, string severity = "Info")
+        public static AuditLog Create(string userId, string action, string entityType, string entityId, string? oldValues = null, string? newValues = null, string? ipAddress = null, string? userAgent = null, string? deviceInfo = null, string? sessionId = null, string? requestId = null, string? additionalData = null, bool isSuccess = true, string? errorMessage = null, AuditSeverity severity = AuditSeverity.Info)
         {
-            if (string.IsNullOrWhiteSpace(userId))
-                throw new ArgumentException("User ID cannot be null or empty", nameof(userId));
-
-            if (string.IsNullOrWhiteSpace(action))
-                throw new ArgumentException("Action cannot be null or empty", nameof(action));
-
-            if (string.IsNullOrWhiteSpace(entityType))
-                throw new ArgumentException("Entity type cannot be null or empty", nameof(entityType));
-
-            if (string.IsNullOrWhiteSpace(entityId))
-                throw new ArgumentException("Entity ID cannot be null or empty", nameof(entityId));
+            Guard.AgainstNullOrEmpty(userId, nameof(userId));
+            Guard.AgainstNullOrEmpty(action, nameof(action));
+            Guard.AgainstNullOrEmpty(entityType, nameof(entityType));
+            Guard.AgainstNullOrEmpty(entityId, nameof(entityId));
 
             return new AuditLog
             {
@@ -73,7 +69,7 @@ namespace MyShop.Identity.Models
                 sessionId: sessionId,
                 isSuccess: isSuccess,
                 errorMessage: errorMessage,
-                severity: isSuccess ? "Info" : "Warning"
+                severity: isSuccess ? AuditSeverity.Info : AuditSeverity.Warning
             );
         }
 
@@ -88,7 +84,7 @@ namespace MyShop.Identity.Models
                 userAgent: userAgent,
                 sessionId: sessionId,
                 isSuccess: true,
-                severity: "Info"
+                severity: AuditSeverity.Info
             );
         }
 
@@ -105,7 +101,7 @@ namespace MyShop.Identity.Models
                 userAgent: userAgent,
                 additionalData: additionalData,
                 isSuccess: true,
-                severity: "Info"
+                severity: AuditSeverity.Info
             );
         }
 
@@ -122,7 +118,7 @@ namespace MyShop.Identity.Models
                 userAgent: userAgent,
                 additionalData: additionalData,
                 isSuccess: true,
-                severity: "Info"
+                severity: AuditSeverity.Info
             );
         }
 
@@ -138,7 +134,7 @@ namespace MyShop.Identity.Models
                 additionalData: additionalData,
                 isSuccess: isSuccess,
                 errorMessage: errorMessage,
-                severity: isSuccess ? "Info" : "Warning"
+                severity: isSuccess ? AuditSeverity.Info : AuditSeverity.Warning
             );
         }
 
@@ -146,7 +142,7 @@ namespace MyShop.Identity.Models
         {
             IsSuccess = isSuccess;
             ErrorMessage = errorMessage;
-            Severity = isSuccess ? "Info" : "Warning";
+            Severity = isSuccess ? AuditSeverity.Info : AuditSeverity.Warning;
         }
 
         public void AddAdditionalData(string additionalData)

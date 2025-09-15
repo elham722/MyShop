@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Identity;
+using MyShop.Domain.Shared.Exceptions.Validation;
+using MyShop.Domain.Shared.Shared;
 
 namespace MyShop.Identity.Models
 {
@@ -18,11 +20,8 @@ namespace MyShop.Identity.Models
 
         public static Role Create(string name, string description, string? category = null, int priority = 0, bool isSystemRole = false, string createdBy = "System")
         {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Role name cannot be null or empty", nameof(name));
-
-            if (string.IsNullOrWhiteSpace(description))
-                throw new ArgumentException("Role description cannot be null or empty", nameof(description));
+            Guard.AgainstNullOrEmpty(name, nameof(name));
+            Guard.AgainstNullOrEmpty(description, nameof(description));
 
             return new Role
             {
@@ -40,17 +39,12 @@ namespace MyShop.Identity.Models
 
         public void Update(string name, string description, string? category = null, int? priority = null, string updatedBy = "System")
         {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Role name cannot be null or empty", nameof(name));
-
-            if (string.IsNullOrWhiteSpace(description))
-                throw new ArgumentException("Role description cannot be null or empty", nameof(description));
-
-            if (string.IsNullOrWhiteSpace(updatedBy))
-                throw new ArgumentException("Updated by cannot be null or empty", nameof(updatedBy));
+            Guard.AgainstNullOrEmpty(name, nameof(name));
+            Guard.AgainstNullOrEmpty(description, nameof(description));
+            Guard.AgainstNullOrEmpty(updatedBy, nameof(updatedBy));
 
             if (IsSystemRole)
-                throw new InvalidOperationException("Cannot update system roles");
+                throw new CustomValidationException("Cannot update system roles");
 
             Name = name;
             NormalizedName = name.ToUpperInvariant();
@@ -63,11 +57,9 @@ namespace MyShop.Identity.Models
 
         public void Deactivate(string deactivatedBy)
         {
-            if (string.IsNullOrWhiteSpace(deactivatedBy))
-                throw new ArgumentException("Deactivated by cannot be null or empty", nameof(deactivatedBy));
-
+            Guard.AgainstNullOrEmpty(deactivatedBy, nameof(deactivatedBy));
             if (IsSystemRole)
-                throw new InvalidOperationException("Cannot deactivate system roles");
+                throw new CustomValidationException("Cannot deactivate system roles");
 
             IsActive = false;
             UpdatedAt = DateTime.UtcNow;
@@ -76,8 +68,7 @@ namespace MyShop.Identity.Models
 
         public void Activate(string activatedBy)
         {
-            if (string.IsNullOrWhiteSpace(activatedBy))
-                throw new ArgumentException("Activated by cannot be null or empty", nameof(activatedBy));
+            Guard.AgainstNullOrEmpty(activatedBy, nameof(activatedBy));
 
             IsActive = true;
             UpdatedAt = DateTime.UtcNow;
@@ -86,8 +77,7 @@ namespace MyShop.Identity.Models
 
         public void ChangePriority(int newPriority, string changedBy)
         {
-            if (string.IsNullOrWhiteSpace(changedBy))
-                throw new ArgumentException("Changed by cannot be null or empty", nameof(changedBy));
+            Guard.AgainstNullOrEmpty(changedBy, nameof(changedBy));
 
             Priority = newPriority;
             UpdatedAt = DateTime.UtcNow;

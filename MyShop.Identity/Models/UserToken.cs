@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Identity;
+using MyShop.Domain.Shared.Exceptions.Validation;
+using MyShop.Domain.Shared.Shared;
 
 namespace MyShop.Identity.Models
 {
@@ -22,17 +24,10 @@ namespace MyShop.Identity.Models
 
         public static UserToken Create(string userId, string loginProvider, string name, string value, DateTime? expiresAt = null, string? deviceInfo = null, string? ipAddress = null, string? userAgent = null, string createdBy = "System")
         {
-            if (string.IsNullOrWhiteSpace(userId))
-                throw new ArgumentException("User ID cannot be null or empty", nameof(userId));
-
-            if (string.IsNullOrWhiteSpace(loginProvider))
-                throw new ArgumentException("Login provider cannot be null or empty", nameof(loginProvider));
-
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Token name cannot be null or empty", nameof(name));
-
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("Token value cannot be null or empty", nameof(value));
+            Guard.AgainstNullOrEmpty(userId, nameof(userId));
+            Guard.AgainstNullOrEmpty(loginProvider, nameof(loginProvider));
+            Guard.AgainstNullOrEmpty(name, nameof(name));
+            Guard.AgainstNullOrEmpty(value, nameof(value));
 
             return new UserToken
             {
@@ -53,14 +48,11 @@ namespace MyShop.Identity.Models
 
         public void UpdateValue(string newValue, string updatedBy)
         {
-            if (string.IsNullOrWhiteSpace(newValue))
-                throw new ArgumentException("Token value cannot be null or empty", nameof(newValue));
-
-            if (string.IsNullOrWhiteSpace(updatedBy))
-                throw new ArgumentException("Updated by cannot be null or empty", nameof(updatedBy));
+            Guard.AgainstNullOrEmpty(newValue, nameof(newValue));
+            Guard.AgainstNullOrEmpty(updatedBy, nameof(updatedBy));
 
             if (IsRevoked)
-                throw new InvalidOperationException("Cannot update a revoked token");
+                throw new CustomValidationException("Cannot update a revoked token");
 
             Value = newValue;
             UpdatedAt = DateTime.UtcNow;
@@ -69,11 +61,10 @@ namespace MyShop.Identity.Models
 
         public void UpdateDeviceInfo(string? deviceInfo, string? ipAddress, string? userAgent, string updatedBy)
         {
-            if (string.IsNullOrWhiteSpace(updatedBy))
-                throw new ArgumentException("Updated by cannot be null or empty", nameof(updatedBy));
+            Guard.AgainstNullOrEmpty(updatedBy, nameof(updatedBy));
 
             if (IsRevoked)
-                throw new InvalidOperationException("Cannot update a revoked token");
+                throw new CustomValidationException("Cannot update a revoked token");
 
             DeviceInfo = deviceInfo;
             IpAddress = ipAddress;
@@ -84,14 +75,13 @@ namespace MyShop.Identity.Models
 
         public void ExtendExpiration(DateTime newExpiresAt, string extendedBy)
         {
-            if (string.IsNullOrWhiteSpace(extendedBy))
-                throw new ArgumentException("Extended by cannot be null or empty", nameof(extendedBy));
+            Guard.AgainstNullOrEmpty(extendedBy, nameof(extendedBy));
 
             if (newExpiresAt <= DateTime.UtcNow)
-                throw new ArgumentException("New expiration date must be in the future", nameof(newExpiresAt));
+                throw new CustomValidationException("New expiration date must be in the future");
 
             if (IsRevoked)
-                throw new InvalidOperationException("Cannot extend expiration of a revoked token");
+                throw new CustomValidationException("Cannot extend expiration of a revoked token");
 
             ExpiresAt = newExpiresAt;
             UpdatedAt = DateTime.UtcNow;
@@ -100,11 +90,10 @@ namespace MyShop.Identity.Models
 
         public void Revoke(string revokedBy, string? revocationReason = null)
         {
-            if (string.IsNullOrWhiteSpace(revokedBy))
-                throw new ArgumentException("Revoked by cannot be null or empty", nameof(revokedBy));
+            Guard.AgainstNullOrEmpty(revokedBy, nameof(revokedBy));
 
             if (IsRevoked)
-                throw new InvalidOperationException("Token is already revoked");
+                throw new CustomValidationException("Token is already revoked");
 
             IsRevoked = true;
             RevokedAt = DateTime.UtcNow;
@@ -116,8 +105,7 @@ namespace MyShop.Identity.Models
 
         public void Deactivate(string deactivatedBy)
         {
-            if (string.IsNullOrWhiteSpace(deactivatedBy))
-                throw new ArgumentException("Deactivated by cannot be null or empty", nameof(deactivatedBy));
+            Guard.AgainstNullOrEmpty(deactivatedBy, nameof(deactivatedBy));
 
             IsActive = false;
             UpdatedAt = DateTime.UtcNow;
@@ -126,8 +114,7 @@ namespace MyShop.Identity.Models
 
         public void Activate(string activatedBy)
         {
-            if (string.IsNullOrWhiteSpace(activatedBy))
-                throw new ArgumentException("Activated by cannot be null or empty", nameof(activatedBy));
+            Guard.AgainstNullOrEmpty(activatedBy, nameof(activatedBy));
 
             IsActive = true;
             UpdatedAt = DateTime.UtcNow;
