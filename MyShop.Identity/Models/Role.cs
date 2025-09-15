@@ -83,5 +83,109 @@ namespace MyShop.Identity.Models
             UpdatedAt = DateTime.UtcNow;
             UpdatedBy = changedBy;
         }
+
+        /// <summary>
+        /// Checks if this role is a system role
+        /// </summary>
+        public bool IsSystemRoleType()
+        {
+            return IsSystemRole;
+        }
+
+        /// <summary>
+        /// Checks if this role requires special privileges to assign
+        /// </summary>
+        public bool RequiresSpecialPrivileges()
+        {
+            return Name switch
+            {
+                "SuperAdmin" or "SystemAdmin" or "Admin" or "Auditor" => true,
+                _ => false
+            };
+        }
+
+        /// <summary>
+        /// Gets the category of this role
+        /// </summary>
+        public string GetRoleCategory()
+        {
+            return Category ?? Name switch
+            {
+                "SuperAdmin" or "SystemAdmin" => "System",
+                "Admin" or "Manager" => "Administrative",
+                "CustomerService" or "SalesRep" or "SupportAgent" => "Business",
+                "Customer" or "Guest" => "User",
+                "Auditor" or "ReportViewer" => "Specialized",
+                _ => "Custom"
+            };
+        }
+
+        /// <summary>
+        /// Checks if this role can be assigned to users
+        /// </summary>
+        public bool IsAssignable()
+        {
+            return !IsSystemRole && IsActive;
+        }
+
+        /// <summary>
+        /// Checks if this role can be modified
+        /// </summary>
+        public bool CanBeModified()
+        {
+            return !IsSystemRole;
+        }
+
+        /// <summary>
+        /// Checks if this role can be deleted
+        /// </summary>
+        public bool CanBeDeleted()
+        {
+            return !IsSystemRole;
+        }
+
+        /// <summary>
+        /// Gets a display-friendly name for the role
+        /// </summary>
+        public string GetDisplayName()
+        {
+            return Name switch
+            {
+                "SuperAdmin" => "Super Administrator",
+                "SystemAdmin" => "System Administrator",
+                "CustomerService" => "Customer Service",
+                "SalesRep" => "Sales Representative",
+                "SupportAgent" => "Support Agent",
+                "ReportViewer" => "Report Viewer",
+                _ => Name
+            };
+        }
+
+        /// <summary>
+        /// Gets the priority level for sorting
+        /// </summary>
+        public int GetSortPriority()
+        {
+            return Priority == 0 ? GetDefaultPriority() : Priority;
+        }
+
+        private int GetDefaultPriority()
+        {
+            return Name switch
+            {
+                "SuperAdmin" => 1,
+                "SystemAdmin" => 2,
+                "Admin" => 3,
+                "Manager" => 4,
+                "CustomerService" => 5,
+                "Auditor" => 5,
+                "SalesRep" => 6,
+                "ReportViewer" => 6,
+                "SupportAgent" => 7,
+                "Customer" => 8,
+                "Guest" => 9,
+                _ => 10
+            };
+        }
     }
 }
