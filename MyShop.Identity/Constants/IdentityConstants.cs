@@ -6,6 +6,10 @@ namespace MyShop.Identity.Constants
     public static class IdentityConstants
     {
         /// <summary>
+        /// Authentication scheme name
+        /// </summary>
+        public const string ApplicationScheme = "MyShopIdentity";
+        /// <summary>
         /// Password expiration policy
         /// </summary>
         public static class PasswordPolicy

@@ -28,8 +28,4 @@
     <ProjectReference Include="..\MyShop.ExternalServices\MyShop.ExternalServices.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Enums\" />
-  </ItemGroup>
-
 </Project>

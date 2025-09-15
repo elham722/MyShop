@@ -4,6 +4,7 @@ using MyShop.Identity.Context;
 using MyShop.Identity.Models;
 using MyShop.Identity.Constants;
 using MyShop.Contracts.Enums.Identity;
+using MyShop.Contracts.Identity.Services;
 
 namespace MyShop.Identity.Services;
 

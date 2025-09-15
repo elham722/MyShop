@@ -108,8 +108,9 @@ public class AuthenticationService : IAuthenticationService
         }
 
         // Generate tokens
-        var accessToken = await _jwtTokenService.GenerateAccessTokenAsync(user);
-        var refreshToken = await _jwtTokenService.GenerateRefreshTokenAsync(user);
+        var userDto = MappingService.MapToDto(user);
+        var accessToken = await _jwtTokenService.GenerateAccessTokenAsync(userDto);
+        var refreshToken = await _jwtTokenService.GenerateRefreshTokenAsync(userDto);
 
         // Update last login
       
@@ -152,8 +153,9 @@ public class AuthenticationService : IAuthenticationService
         }
 
         // Generate new tokens
-        var newAccessToken = await _jwtTokenService.GenerateAccessTokenAsync(user);
-        var newRefreshToken = await _jwtTokenService.GenerateRefreshTokenAsync(user);
+        var userDto = MappingService.MapToDto(user);
+        var newAccessToken = await _jwtTokenService.GenerateAccessTokenAsync(userDto);
+        var newRefreshToken = await _jwtTokenService.GenerateRefreshTokenAsync(userDto);
 
         // Revoke old refresh token
         await _jwtTokenService.RevokeTokenAsync(refreshToken);

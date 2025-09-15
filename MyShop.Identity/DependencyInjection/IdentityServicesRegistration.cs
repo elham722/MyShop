@@ -137,24 +137,8 @@ namespace MyShop.Identity.DependencyInjection
             
             // Register custom identity services
             services.AddScoped<IAuditService, AuditService>();
-            services.AddScoped<IRolePermissionService, RolePermissionService>();
-            services.AddScoped<IJwtTokenService, JwtTokenService>();
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<IAuthorizationService, AuthorizationService>();
-            services.AddScoped<IUserProfileService, UserProfileService>();
-            services.AddScoped<IIdentityConfigurationService, IdentityConfigurationService>();
-            services.AddScoped<IIdentityStatisticsService, IdentityStatisticsService>();
-            services.AddScoped<IIdentityNotificationService, IdentityNotificationService>();
-            services.AddScoped<ISecurityService, SecurityService>();
-            services.AddScoped<IIdentityHealthCheckService, IdentityHealthCheckService>();
-            services.AddScoped<IIdentityReportService, IdentityReportService>();
-            services.AddScoped<IIdentityCacheService, IdentityCacheService>();
-            services.AddScoped<IIdentityValidationService, IdentityValidationService>();
-            
-            // Register cached services
-            services.AddScoped<CachedUserService>();
-            services.AddScoped<CachedRoleService>();
-            services.AddScoped<CachedPermissionService>();
             
             // Register authorization handlers
             services.AddScoped<IAuthorizationHandler, ResourceAuthorizationHandler>();
