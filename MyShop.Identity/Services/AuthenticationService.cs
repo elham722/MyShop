@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using MyShop.Contracts.Identity.Services;
+using MyShop.Contracts.DTOs.Identity;
 using MyShop.Identity.Constants;
 using MyShop.Identity.Context;
 using MyShop.Identity.Models;
@@ -10,21 +11,6 @@ using MyShop.Domain.Shared.Interfaces;
 
 namespace MyShop.Identity.Services;
 
-/// <summary>
-/// Result of authentication operations
-/// </summary>
-public class AuthenticationResult
-{
-    public bool IsSuccess { get; set; }
-    public string? AccessToken { get; set; }
-    public string? RefreshToken { get; set; }
-    public ApplicationUser? User { get; set; }
-    public string? ErrorMessage { get; set; }
-    public bool RequiresTwoFactor { get; set; }
-    public bool RequiresEmailConfirmation { get; set; }
-    public bool IsAccountLocked { get; set; }
-    public DateTime? LockoutEnd { get; set; }
-}
 
 /// <summary>
 /// Implementation of authentication service
@@ -139,7 +125,7 @@ public class AuthenticationService : IAuthenticationService
             IsSuccess = true,
             AccessToken = accessToken,
             RefreshToken = refreshToken,
-            User = user
+            User = MapToDto(user)
         };
     }
 
@@ -181,7 +167,7 @@ public class AuthenticationService : IAuthenticationService
             IsSuccess = true,
             AccessToken = newAccessToken,
             RefreshToken = newRefreshToken,
-            User = user
+            User = MapToDto(user)
         };
     }
 
@@ -230,7 +216,7 @@ public class AuthenticationService : IAuthenticationService
         return new AuthenticationResult
         {
             IsSuccess = true,
-            User = user,
+            User = MapToDto(user),
             RequiresEmailConfirmation = true
         };
     }
@@ -400,4 +386,44 @@ public class AuthenticationService : IAuthenticationService
         var remaining = user.LockoutEnd.Value - DateTime.UtcNow;
         return remaining > TimeSpan.Zero ? remaining : null;
     }
+
+    #region Private Helpers
+
+    private static ApplicationUserDto MapToDto(ApplicationUser user)
+    {
+        return new ApplicationUserDto
+        {
+            Id = user.Id,
+            UserName = user.UserName ?? string.Empty,
+            Email = user.Email ?? string.Empty,
+            PhoneNumber = user.PhoneNumber,
+            EmailConfirmed = user.EmailConfirmed,
+            PhoneNumberConfirmed = user.PhoneNumberConfirmed,
+            TwoFactorEnabled = user.TwoFactorEnabled,
+            LockoutEnabled = user.LockoutEnabled,
+            AccessFailedCount = user.AccessFailedCount,
+            LockoutEnd = user.LockoutEnd,
+            CustomerId = user.CustomerId,
+            TotpEnabled = user.TotpEnabled,
+            SmsEnabled = user.SmsEnabled,
+            GoogleId = user.GoogleId,
+            MicrosoftId = user.MicrosoftId,
+            IsLocked = user.IsLocked,
+            IsAccountLocked = user.IsAccountLocked,
+            IsActive = user.IsActive,
+            IsNewUser = user.IsNewUser,
+            IsDeleted = user.IsDeleted,
+            LastLoginAt = user.LastLoginAt,
+            LastPasswordChangeAt = user.LastPasswordChangeAt,
+            LoginAttempts = user.LoginAttempts,
+            RequiresPasswordChange = user.RequiresPasswordChange,
+            CreatedAt = user.Account.CreatedAt,
+            BranchId = user.Account.BranchId,
+            CreatedBy = user.Audit.CreatedBy,
+            UpdatedAt = user.Audit.ModifiedAt,
+            UpdatedBy = user.Audit.ModifiedBy
+        };
+    }
+
+    #endregion
 }
