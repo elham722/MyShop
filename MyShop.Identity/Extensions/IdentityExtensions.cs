@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MyShop.Identity.Models;
-using MyShop.Identity.Enums;
 using MyShop.Identity.Constants;
 using MyShop.Identity.Context;
+using MyShop.Contracts.Enums.Identity;
 
 namespace MyShop.Identity.Extensions;
 

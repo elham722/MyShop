@@ -2,37 +2,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using MyShop.Identity.Context;
 using MyShop.Identity.Models;
-using MyShop.Identity.Enums;
 using MyShop.Identity.Constants;
+using MyShop.Contracts.Enums.Identity;
 
 namespace MyShop.Identity.Services;
 
-/// <summary>
-/// Service for managing authorization and permission checking
-/// </summary>
-public interface IAuthorizationService
-{
-    Task<bool> HasPermissionAsync(string userId, string permissionName);
-    Task<bool> HasPermissionAsync(string userId, Resource resource, ActionEnum action);
-    Task<bool> HasRoleAsync(string userId, string roleName);
-    Task<bool> HasAnyRoleAsync(string userId, params string[] roleNames);
-    Task<bool> HasAllRolesAsync(string userId, params string[] roleNames);
-    Task<bool> CanAccessResourceAsync(string userId, string resourceName);
-    Task<bool> CanPerformActionAsync(string userId, string resourceName, string actionName);
-    Task<IEnumerable<string>> GetUserPermissionsAsync(string userId);
-    Task<IEnumerable<string>> GetUserRolesAsync(string userId);
-    Task<bool> IsSystemAdminAsync(string userId);
-    Task<bool> IsAdminAsync(string userId);
-    Task<bool> IsManagerOrAboveAsync(string userId);
-    Task<bool> IsBusinessUserOrAboveAsync(string userId);
-    Task<string?> GetUserHighestRoleAsync(string userId);
-    Task<string?> GetUserRoleCategoryAsync(string userId);
-}
-
-/// <summary>
-/// Implementation of authorization service
-/// </summary>
-public class AuthorizationService : IAuthorizationService
+public class AuthorizationService : Contracts.Identity.Services.IAuthorizationService
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly MyShopIdentityDbContext _context;
@@ -170,107 +145,4 @@ public class AuthorizationService : IAuthorizationService
     }
 }
 
-/// <summary>
-/// Authorization handler for resource-based authorization
-/// </summary>
-public class ResourceAuthorizationHandler : AuthorizationHandler<ResourceRequirement>
-{
-    private readonly IAuthorizationService _authorizationService;
 
-    public ResourceAuthorizationHandler(IAuthorizationService authorizationService)
-    {
-        _authorizationService = authorizationService;
-    }
-
-    protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, 
-        ResourceRequirement requirement)
-    {
-        var userId = context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-        
-        if (string.IsNullOrEmpty(userId))
-        {
-            context.Fail();
-            return;
-        }
-
-        var hasPermission = await _authorizationService.HasPermissionAsync(userId, requirement.Resource, requirement.Action);
-        
-        if (hasPermission)
-        {
-            context.Succeed(requirement);
-        }
-        else
-        {
-            context.Fail();
-        }
-    }
-}
-
-/// <summary>
-/// Authorization requirement for resource-based authorization
-/// </summary>
-public class ResourceRequirement : IAuthorizationRequirement
-{
-    public Resource Resource { get; }
-    public ActionEnum Action { get; }
-
-    public ResourceRequirement(Resource resource, ActionEnum action)
-    {
-        Resource = resource;
-        Action = action;
-    }
-}
-
-/// <summary>
-/// Authorization policy builder extensions
-/// </summary>
-public static class AuthorizationPolicyBuilderExtensions
-{
-    public static AuthorizationPolicyBuilder RequireResourcePermission(this AuthorizationPolicyBuilder builder, 
-        Resource resource, ActionEnum action)
-    {
-        builder.Requirements.Add(new ResourceRequirement(resource, action));
-        return builder;
-    }
-
-    public static AuthorizationPolicyBuilder RequireSystemAdmin(this AuthorizationPolicyBuilder builder)
-    {
-        builder.RequireRole(RoleConstants.System.SuperAdmin, RoleConstants.System.SystemAdmin);
-        return builder;
-    }
-
-    public static AuthorizationPolicyBuilder RequireAdminOrAbove(this AuthorizationPolicyBuilder builder)
-    {
-        builder.RequireRole(
-            RoleConstants.System.SuperAdmin,
-            RoleConstants.System.SystemAdmin,
-            RoleConstants.Administrative.Admin
-        );
-        return builder;
-    }
-
-    public static AuthorizationPolicyBuilder RequireManagerOrAbove(this AuthorizationPolicyBuilder builder)
-    {
-        builder.RequireRole(
-            RoleConstants.System.SuperAdmin,
-            RoleConstants.System.SystemAdmin,
-            RoleConstants.Administrative.Admin,
-            RoleConstants.Administrative.Manager
-        );
-        return builder;
-    }
-
-    public static AuthorizationPolicyBuilder RequireBusinessUserOrAbove(this AuthorizationPolicyBuilder builder)
-    {
-        builder.RequireRole(
-            RoleConstants.System.SuperAdmin,
-            RoleConstants.System.SystemAdmin,
-            RoleConstants.Administrative.Admin,
-            RoleConstants.Administrative.Manager,
-            RoleConstants.Business.CustomerService,
-            RoleConstants.Business.SalesRep,
-            RoleConstants.Business.SupportAgent
-        );
-        return builder;
-    }
-}

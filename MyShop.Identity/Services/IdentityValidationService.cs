@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MyShop.Identity.Context;
 using MyShop.Identity.Models;
-using MyShop.Identity.Enums;
+using MyShop.Contracts.Enums.Identity;
 
 namespace MyShop.Identity.Services;
 

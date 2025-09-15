@@ -6,7 +6,6 @@ using MyShop.Contracts.DTOs.Identity;
 using MyShop.Identity.Constants;
 using MyShop.Identity.Context;
 using MyShop.Identity.Models;
-using MyShop.Identity.Enums;
 using MyShop.Domain.Shared.Interfaces;
 
 namespace MyShop.Identity.Services;

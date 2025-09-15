@@ -1,4 +1,4 @@
-namespace MyShop.Identity.Enums;
+namespace MyShop.Contracts.Enums.Identity;
 
 /// <summary>
 /// Represents the resources that can be accessed in the system

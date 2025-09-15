@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using MyShop.Identity.Enums;
+using MyShop.Contracts.Enums.Identity;
 using MyShop.Identity.Models;
 
 namespace MyShop.Identity.Configurations;

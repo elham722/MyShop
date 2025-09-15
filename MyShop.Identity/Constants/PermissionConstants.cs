@@ -1,4 +1,4 @@
-using MyShop.Identity.Enums;
+using MyShop.Contracts.Enums.Identity;
 
 namespace MyShop.Identity.Constants;
 
