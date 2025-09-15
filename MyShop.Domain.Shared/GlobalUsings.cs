@@ -13,3 +13,4 @@ global using MyShop.Domain.Shared.ValueObjects.Common;
 global using MyShop.Domain.Shared.Enums.Business;
 global using MyShop.Domain.Shared.Enums.Customer;
 global using MyShop.Domain.Shared.Exceptions.Bussiness;
+global using MyShop.Domain.Shared.Interfaces;
