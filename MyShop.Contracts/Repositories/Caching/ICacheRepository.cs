@@ -1,4 +1,5 @@
-﻿using MyShop.Domain.Shared.Base;
+﻿using MyShop.Contracts.DTOs.Identity.CacheService;
+using MyShop.Domain.Shared.Base;
 
 namespace MyShop.Contracts.Repositories.Caching;
 public interface ICacheRepository<T, TId> where T : BaseAggregateRoot<TId> where TId : IEquatable<TId>
