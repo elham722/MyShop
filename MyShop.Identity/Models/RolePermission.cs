@@ -17,7 +17,7 @@ namespace MyShop.Identity.Models
         public DateTime? AssignedAt { get; private set; }
         public DateTime? ExpiresAt { get; private set; }
         public string? AssignedBy { get; private set; }
-        public string? AssignmentReason { get; private set; }
+        // AssignmentReason removed - use AuditLog for tracking assignment reasons
         public bool IsGranted { get; private set; } = true; // For future deny permissions
 
         // Navigation properties
@@ -26,7 +26,7 @@ namespace MyShop.Identity.Models
 
         private RolePermission() { } // For EF Core
 
-        public static RolePermission Create(string roleId, string permissionId, string? assignedBy = null, string? assignmentReason = null, DateTime? expiresAt = null, bool isGranted = true, string createdBy = "System")
+        public static RolePermission Create(string roleId, string permissionId, string? assignedBy = null, DateTime? expiresAt = null, bool isGranted = true, string createdBy = "System")
         {
             Guard.AgainstNullOrEmpty(roleId, nameof(roleId));
             Guard.AgainstNullOrEmpty(permissionId, nameof(permissionId));
@@ -42,20 +42,11 @@ namespace MyShop.Identity.Models
                 AssignedAt = DateTime.UtcNow,
                 ExpiresAt = expiresAt,
                 AssignedBy = assignedBy ?? createdBy,
-                AssignmentReason = assignmentReason,
                 IsGranted = isGranted
             };
         }
 
-        public void UpdateAssignmentReason(string assignmentReason, string updatedBy)
-        {
-            Guard.AgainstNullOrEmpty(assignmentReason, nameof(assignmentReason));
-            Guard.AgainstNullOrEmpty(updatedBy, nameof(updatedBy));
-           
-            AssignmentReason = assignmentReason;
-            UpdatedAt = DateTime.UtcNow;
-            UpdatedBy = updatedBy;
-        }
+        // UpdateAssignmentReason removed - use AuditLog for tracking assignment reasons
 
         public void ExtendExpiration(DateTime newExpiresAt, string extendedBy)
         {
@@ -127,6 +118,117 @@ namespace MyShop.Identity.Models
                 return null;
 
             return ExpiresAt.Value - DateTime.UtcNow;
+        }
+
+        /// <summary>
+        /// Checks if this assignment can be modified
+        /// </summary>
+        public bool CanBeModified()
+        {
+            return IsActive && !IsExpired();
+        }
+
+        /// <summary>
+        /// Checks if this assignment can be revoked
+        /// </summary>
+        public bool CanBeRevoked()
+        {
+            return IsActive && IsGranted;
+        }
+
+        /// <summary>
+        /// Checks if this assignment can be granted
+        /// </summary>
+        public bool CanBeGranted()
+        {
+            return IsActive && !IsGranted;
+        }
+
+        /// <summary>
+        /// Gets the status of this assignment
+        /// </summary>
+        public string GetStatus()
+        {
+            if (!IsActive)
+                return "Inactive";
+            
+            if (IsExpired())
+                return "Expired";
+            
+            if (!IsGranted)
+                return "Denied";
+            
+            return "Active";
+        }
+
+        /// <summary>
+        /// Gets a human-readable description of the expiration
+        /// </summary>
+        public string GetExpirationDescription()
+        {
+            if (!ExpiresAt.HasValue)
+                return "Never expires";
+            
+            if (IsExpired())
+                return "Expired";
+            
+            var remaining = GetRemainingTime();
+            if (remaining.HasValue)
+            {
+                if (remaining.Value.TotalDays >= 1)
+                    return $"Expires in {remaining.Value.Days} days";
+                
+                if (remaining.Value.TotalHours >= 1)
+                    return $"Expires in {remaining.Value.Hours} hours";
+                
+                return $"Expires in {remaining.Value.Minutes} minutes";
+            }
+            
+            return "Expires soon";
+        }
+
+        /// <summary>
+        /// Checks if this assignment is for a system role
+        /// </summary>
+        public bool IsSystemRoleAssignment()
+        {
+            return Role?.IsSystemRole == true;
+        }
+
+        /// <summary>
+        /// Checks if this assignment is for a system permission
+        /// </summary>
+        public bool IsSystemPermissionAssignment()
+        {
+            return Permission?.IsSystemPermission == true;
+        }
+
+        /// <summary>
+        /// Checks if this assignment requires special privileges to modify
+        /// </summary>
+        public bool RequiresSpecialPrivilegesToModify()
+        {
+            return IsSystemRoleAssignment() || IsSystemPermissionAssignment();
+        }
+
+        /// <summary>
+        /// Gets the assignment duration
+        /// </summary>
+        public TimeSpan GetAssignmentDuration()
+        {
+            return DateTime.UtcNow - AssignedAt;
+        }
+
+        /// <summary>
+        /// Gets a summary of this assignment
+        /// </summary>
+        public string GetAssignmentSummary()
+        {
+            var status = GetStatus();
+            var expiration = GetExpirationDescription();
+            var duration = GetAssignmentDuration();
+            
+            return $"Role: {Role?.Name}, Permission: {Permission?.Name}, Status: {status}, {expiration}, Duration: {duration.Days} days";
         }
     }
 }
