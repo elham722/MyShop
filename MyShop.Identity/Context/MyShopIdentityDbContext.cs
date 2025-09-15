@@ -1,14 +1,181 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using MyShop.Identity.Models;
+using MyShop.Identity.Configurations;
 
 namespace MyShop.Identity.Context
 {
-    public class MyShopIdentityDbContext:IdentityDbContext<ApplicationUser>
+    /// <summary>
+    /// Identity DbContext for MyShop application with custom entities and configurations
+    /// </summary>
+    public class MyShopIdentityDbContext : IdentityDbContext<
+        ApplicationUser,
+        Role,
+        string,
+        UserClaim,
+        UserRole,
+        UserLogin,
+        IdentityRoleClaim<string>,
+        UserToken>
     {
+        public MyShopIdentityDbContext(DbContextOptions<MyShopIdentityDbContext> options) : base(options)
+        {
+        }
+
+        // Custom DbSets
+        public DbSet<Permission> Permissions { get; set; }
+        public DbSet<RolePermission> RolePermissions { get; set; }
+        public DbSet<AuditLog> AuditLogs { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            // Apply all configurations
+            builder.ApplyConfiguration(new ApplicationUserConfiguration());
+            builder.ApplyConfiguration(new RoleConfiguration());
+            builder.ApplyConfiguration(new PermissionConfiguration());
+            builder.ApplyConfiguration(new UserRoleConfiguration());
+            builder.ApplyConfiguration(new RolePermissionConfiguration());
+            builder.ApplyConfiguration(new UserClaimConfiguration());
+            builder.ApplyConfiguration(new UserLoginConfiguration());
+            builder.ApplyConfiguration(new UserTokenConfiguration());
+            builder.ApplyConfiguration(new AuditLogConfiguration());
+
+            // Configure table names and schema
+            ConfigureTableNames(builder);
+            
+            // Configure relationships
+            ConfigureRelationships(builder);
+            
+            // Configure indexes
+            ConfigureIndexes(builder);
+        }
+
+        private void ConfigureTableNames(ModelBuilder builder)
+        {
+            // Set schema for all tables
+            builder.Entity<ApplicationUser>().ToTable("Users", "Identity");
+            builder.Entity<Role>().ToTable("Roles", "Identity");
+            builder.Entity<Permission>().ToTable("Permissions", "Identity");
+            builder.Entity<UserRole>().ToTable("UserRoles", "Identity");
+            builder.Entity<RolePermission>().ToTable("RolePermissions", "Identity");
+            builder.Entity<UserClaim>().ToTable("UserClaims", "Identity");
+            builder.Entity<UserLogin>().ToTable("UserLogins", "Identity");
+            builder.Entity<UserToken>().ToTable("UserTokens", "Identity");
+            builder.Entity<AuditLog>().ToTable("AuditLogs", "Identity");
+        }
+
+        private void ConfigureRelationships(ModelBuilder builder)
+        {
+            // Configure RolePermission with composite key
+            builder.Entity<RolePermission>()
+                .HasKey(rp => new { rp.RoleId, rp.PermissionId });
+
+            // Role -> RolePermissions (One-to-Many)
+            builder.Entity<RolePermission>()
+                .HasOne(rp => rp.Role)
+                .WithMany(r => r.RolePermissions)
+                .HasForeignKey(rp => rp.RoleId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Permission -> RolePermissions (One-to-Many)
+            builder.Entity<RolePermission>()
+                .HasOne(rp => rp.Permission)
+                .WithMany(p => p.RolePermissions)
+                .HasForeignKey(rp => rp.PermissionId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // User -> AuditLogs (One-to-Many)
+            builder.Entity<AuditLog>()
+                .HasOne(al => al.User)
+                .WithMany(u => u.AuditLogs)
+                .HasForeignKey(al => al.UserId)
+                .OnDelete(DeleteBehavior.Restrict); // Keep audit logs even if user is deleted
+        }
+
+        private void ConfigureIndexes(ModelBuilder builder)
+        {
+            // Audit log indexes for better performance
+            builder.Entity<AuditLog>()
+                .HasIndex(al => new { al.UserId, al.Timestamp })
+                .HasDatabaseName("IX_AuditLogs_UserId_Timestamp");
+
+            builder.Entity<AuditLog>()
+                .HasIndex(al => new { al.EntityType, al.EntityId })
+                .HasDatabaseName("IX_AuditLogs_EntityType_EntityId");
+
+            builder.Entity<AuditLog>()
+                .HasIndex(al => al.Timestamp)
+                .HasDatabaseName("IX_AuditLogs_Timestamp");
+
+            // User token indexes for performance
+            builder.Entity<UserToken>()
+                .HasIndex(ut => ut.ExpiresAt)
+                .HasDatabaseName("IX_UserTokens_ExpiresAt");
+
+            // Role indexes for performance
+            builder.Entity<Role>()
+                .HasIndex(r => r.Name)
+                .IsUnique()
+                .HasDatabaseName("IX_Roles_Name_Unique");
+
+            builder.Entity<Role>()
+                .HasIndex(r => new { r.Category, r.Priority })
+                .HasDatabaseName("IX_Roles_Category_Priority");
+
+            // Permission indexes for performance
+            builder.Entity<Permission>()
+                .HasIndex(p => p.Name)
+                .IsUnique()
+                .HasDatabaseName("IX_Permissions_Name_Unique");
+
+            builder.Entity<Permission>()
+                .HasIndex(p => new { p.Resource, p.Action })
+                .IsUnique()
+                .HasDatabaseName("IX_Permissions_Resource_Action_Unique");
+        }
+
+        public override int SaveChanges()
+        {
+            UpdateAuditFields();
+            return base.SaveChanges();
+        }
+
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            UpdateAuditFields();
+            return await base.SaveChangesAsync(cancellationToken);
+        }
+
+        private void UpdateAuditFields()
+        {
+            var entries = ChangeTracker.Entries()
+                .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
+
+            foreach (var entry in entries)
+            {
+                var entity = entry.Entity;
+                var now = DateTime.UtcNow;
+
+                if (entry.State == EntityState.Added)
+                {
+                    // Set CreatedAt for entities that have this property
+                    if (entity.GetType().GetProperty("CreatedAt") != null)
+                    {
+                        entry.Property("CreatedAt").CurrentValue = now;
+                    }
+                }
+
+                if (entry.State == EntityState.Modified)
+                {
+                    // Set UpdatedAt for entities that have this property
+                    if (entity.GetType().GetProperty("UpdatedAt") != null)
+                    {
+                        entry.Property("UpdatedAt").CurrentValue = now;
+                    }
+                }
+            }
+        }
     }
 }

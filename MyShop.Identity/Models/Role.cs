@@ -16,6 +16,9 @@ namespace MyShop.Identity.Models
         public int Priority { get; private set; }
         public string? Category { get; private set; }
 
+        // Navigation Properties
+        public ICollection<RolePermission> RolePermissions { get; set; } = new List<RolePermission>();
+
         private Role() { } // For EF Core
 
         public static Role Create(string name, string description, string? category = null, int priority = 0, bool isSystemRole = false, string createdBy = "System")

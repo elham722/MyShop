@@ -25,6 +25,9 @@ namespace MyShop.Identity.Models
         public string? ErrorMessage { get; private set; }
         public AuditSeverity Severity { get; private set; } = AuditSeverity.Info;
 
+        // Navigation Properties
+        public ApplicationUser? User { get; set; }
+
         private AuditLog() { } 
 
         public static AuditLog Create(string userId, string action, string entityType, string entityId, string? oldValues = null, string? newValues = null, string? ipAddress = null, string? userAgent = null, string? deviceInfo = null, string? sessionId = null, string? requestId = null, string? additionalData = null, bool isSuccess = true, string? errorMessage = null, AuditSeverity severity = AuditSeverity.Info)

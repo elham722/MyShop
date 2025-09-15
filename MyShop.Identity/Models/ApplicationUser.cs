@@ -39,6 +39,9 @@ public class ApplicationUser : IdentityUser
         Account.LastPasswordChangeAt == null ||
         DateTime.UtcNow.Subtract(Account.LastPasswordChangeAt.Value).Days > 90;
 
+    // Navigation Properties
+    public ICollection<AuditLog> AuditLogs { get; set; } = new List<AuditLog>();
+
     // EF Core constructor
     private ApplicationUser()
     {

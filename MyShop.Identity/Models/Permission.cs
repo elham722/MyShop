@@ -21,6 +21,9 @@ namespace MyShop.Identity.Models
         public string? Category { get; private set; }
         public int Priority { get; private set; }
 
+        // Navigation Properties
+        public ICollection<RolePermission> RolePermissions { get; set; } = new List<RolePermission>();
+
         private Permission() { } // For EF Core
 
         public static Permission Create(string name, Resource resource, ActionEnum action, string description, string? category = null, int priority = 0, bool isSystemPermission = false, string createdBy = "System")
