@@ -84,36 +84,28 @@ public class RolePermissionConfiguration : IEntityTypeConfiguration<RolePermissi
         builder.HasIndex(rp => new { rp.RoleId, rp.PermissionId })
             .IsUnique()
             .HasDatabaseName("IX_RolePermission_RoleId_PermissionId_Unique")
-            .HasFilter("[IsActive] = 1") // Only unique among active assignments
-            .HasComment("Unique index on role-permission combination for active assignments");
+            .HasFilter("[IsActive] = 1"); // Only unique among active assignments;
 
         builder.HasIndex(rp => rp.RoleId)
-            .HasDatabaseName("IX_RolePermission_RoleId")
-            .HasComment("Index for filtering by role");
+            .HasDatabaseName("IX_RolePermission_RoleId");
 
         builder.HasIndex(rp => rp.PermissionId)
-            .HasDatabaseName("IX_RolePermission_PermissionId")
-            .HasComment("Index for filtering by permission");
+            .HasDatabaseName("IX_RolePermission_PermissionId");
 
         builder.HasIndex(rp => rp.IsActive)
-            .HasDatabaseName("IX_RolePermission_IsActive")
-            .HasComment("Index for filtering active/inactive assignments");
+            .HasDatabaseName("IX_RolePermission_IsActive");
 
         builder.HasIndex(rp => rp.IsGranted)
-            .HasDatabaseName("IX_RolePermission_IsGranted")
-            .HasComment("Index for filtering granted/denied permissions");
+            .HasDatabaseName("IX_RolePermission_IsGranted");
 
         builder.HasIndex(rp => rp.ExpiresAt)
-            .HasDatabaseName("IX_RolePermission_ExpiresAt")
-            .HasComment("Index for filtering by expiration date");
+            .HasDatabaseName("IX_RolePermission_ExpiresAt");
 
         builder.HasIndex(rp => rp.AssignedAt)
-            .HasDatabaseName("IX_RolePermission_AssignedAt")
-            .HasComment("Index for sorting by assignment date");
+            .HasDatabaseName("IX_RolePermission_AssignedAt");
 
         builder.HasIndex(rp => rp.AssignedBy)
-            .HasDatabaseName("IX_RolePermission_AssignedBy")
-            .HasComment("Index for filtering by assigner");
+            .HasDatabaseName("IX_RolePermission_AssignedBy");
 
         // Table Configuration
         builder.ToTable("RolePermissions", "Identity")

@@ -216,7 +216,9 @@ namespace MyShop.Identity.Models
         /// </summary>
         public TimeSpan GetAssignmentDuration()
         {
-            return DateTime.UtcNow - AssignedAt;
+            if (!AssignedAt.HasValue)
+                throw new CustomValidationException("AssignedAt must have a value to calculate the duration.");
+            return DateTime.UtcNow - AssignedAt.Value;
         }
 
         /// <summary>
