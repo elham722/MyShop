@@ -1,4 +1,5 @@
 ﻿namespace MyShop.Contracts.DTOs.Customer;
+
 public class UpdateCustomerDto
 {
     public string FirstName { get; set; } = string.Empty;
