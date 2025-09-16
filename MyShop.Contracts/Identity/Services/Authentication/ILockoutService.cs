@@ -1,12 +1,15 @@
+using MyShop.Contracts.DTOs.Identity.Authentication;
+using MyShop.Contracts.DTOs.Identity.Authentication.LockUser;
+
 namespace MyShop.Contracts.Identity.Services.Authentication;
 
 public interface ILockoutService
 {
-    Task<bool> LockUserAsync(string userId, TimeSpan? lockoutDuration = null);
+    Task<OperationResponseDto> LockUserAsync(LockUserRequestDto request);
 
-    Task<bool> UnlockUserAsync(string userId);
+    Task<OperationResponseDto> UnlockUserAsync(UnlockUserRequestDto request);
 
-    Task<bool> IsUserLockedAsync(string userId);
+    Task<LockoutStatusResponseDto> GetLockoutStatusAsync(string userId);
 
     Task<TimeSpan?> GetLockoutEndTimeAsync(string userId);
 }

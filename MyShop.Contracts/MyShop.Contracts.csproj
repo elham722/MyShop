@@ -15,8 +15,4 @@
     <ProjectReference Include="..\MyShop.Domain.Shared\MyShop.Domain.Shared.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="DTOs\Identity\Auth\" />
-  </ItemGroup>
-
 </Project>

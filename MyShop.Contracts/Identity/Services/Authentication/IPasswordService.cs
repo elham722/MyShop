@@ -1,10 +1,13 @@
+using MyShop.Contracts.DTOs.Identity.Authentication;
+using MyShop.Contracts.DTOs.Identity.Authentication.Password;
+
 namespace MyShop.Contracts.Identity.Services.Authentication;
 
 public interface IPasswordService
 {
-    Task<bool> ForgotPasswordAsync(string email);
+    Task<OperationResponseDto> ForgotPasswordAsync(ForgotPasswordRequestDto request);
 
-    Task<bool> ResetPasswordAsync(string userId, string token, string newPassword);
+    Task<OperationResponseDto> ResetPasswordAsync(ResetPasswordRequestDto request);
 
-    Task<bool> ChangePasswordAsync(string userId, string currentPassword, string newPassword);
+    Task<OperationResponseDto> ChangePasswordAsync(ChangePasswordRequestDto request);
 }

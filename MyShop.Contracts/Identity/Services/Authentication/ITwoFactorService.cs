@@ -1,12 +1,15 @@
+using MyShop.Contracts.DTOs.Identity.Authentication;
+using MyShop.Contracts.DTOs.Identity.Authentication.TwoFactor;
+
 namespace MyShop.Contracts.Identity.Services.Authentication;
 
 public interface ITwoFactorService
 {
-    Task<bool> EnableTwoFactorAsync(string userId);
+    Task<OperationResponseDto> EnableTwoFactorAsync(TwoFactorRequestDto request);
 
-    Task<bool> DisableTwoFactorAsync(string userId);
+    Task<OperationResponseDto> DisableTwoFactorAsync(TwoFactorRequestDto request);
 
-    Task<bool> VerifyTwoFactorTokenAsync(string userId, string token);
+    Task<OperationResponseDto> VerifyTwoFactorTokenAsync(VerifyTwoFactorRequestDto request);
 
-    Task<string> GenerateTwoFactorTokenAsync(string userId);
+    Task<TwoFactorTokenResponseDto> GenerateTwoFactorTokenAsync(TwoFactorRequestDto request);
 }

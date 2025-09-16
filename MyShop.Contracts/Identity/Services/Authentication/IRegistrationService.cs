@@ -1,13 +1,15 @@
 using MyShop.Contracts.DTOs.Identity;
+using MyShop.Contracts.DTOs.Identity.Authentication;
+using MyShop.Contracts.DTOs.Identity.Authentication.Email;
+using MyShop.Contracts.DTOs.Identity.Authentication.Register;
 
 namespace MyShop.Contracts.Identity.Services.Authentication;
 
 public interface IRegistrationService
 {
-    Task<AuthenticationResult> RegisterAsync(string email, string userName, string password, 
-        string? customerId = null, string? ipAddress = null, string? userAgent = null);
+    Task<RegisterResponseDto> RegisterAsync(RegisterRequestDto request, string? ipAddress = null, string? userAgent = null);
 
-    Task<bool> ConfirmEmailAsync(string userId, string token);
+    Task<OperationResponseDto> ConfirmEmailAsync(ConfirmEmailRequestDto request);
 
-    Task<bool> ResendEmailConfirmationAsync(string email);
+    Task<OperationResponseDto> ResendEmailConfirmationAsync(ResendEmailConfirmationRequestDto request);
 }

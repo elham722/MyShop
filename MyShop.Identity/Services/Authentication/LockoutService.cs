@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Identity;
+using MyShop.Contracts.DTOs.Identity.Authentication;
+using MyShop.Contracts.DTOs.Identity.Authentication.LockUser;
 using MyShop.Contracts.Identity.Services.Audit;
 using MyShop.Contracts.Identity.Services.Authentication;
 using MyShop.Identity.Models;
@@ -16,9 +18,9 @@ public class LockoutService : ILockoutService
         _auditService = auditService;
     }
 
-    public async Task<bool> LockUserAsync(string userId, TimeSpan? lockoutDuration = null)
+    public async Task<OperationResponseDto> LockUserAsync(LockUserRequestDto request)
     {
-        var user = await _userManager.FindByIdAsync(userId);
+        var user = await _userManager.FindByIdAsync(request.UserId);
         if (user == null) return false;
 
         var lockoutEnd = DateTime.UtcNow.Add(lockoutDuration ?? TimeSpan.FromMinutes(15));

@@ -1,4 +1,13 @@
 using MyShop.Contracts.DTOs.Identity;
+using MyShop.Contracts.DTOs.Identity.Authentication;
+using MyShop.Contracts.DTOs.Identity.Authentication.Email;
+using MyShop.Contracts.DTOs.Identity.Authentication.LockUser;
+using MyShop.Contracts.DTOs.Identity.Authentication.Login;
+using MyShop.Contracts.DTOs.Identity.Authentication.Logout;
+using MyShop.Contracts.DTOs.Identity.Authentication.Password;
+using MyShop.Contracts.DTOs.Identity.Authentication.Register;
+using MyShop.Contracts.DTOs.Identity.Authentication.Token;
+using MyShop.Contracts.DTOs.Identity.Authentication.TwoFactor;
 using MyShop.Contracts.Identity.Services.Authentication;
 
 namespace MyShop.Identity.Services.Authentication;
@@ -27,75 +36,72 @@ public class AuthenticationFacade : IAuthenticationFacade
 
     #region Login/Logout Operations
 
-    public Task<AuthenticationResult> LoginAsync(string email, string password, string? ipAddress = null, 
-        string? userAgent = null, string? deviceInfo = null)
-        => _loginService.LoginAsync(email, password, ipAddress, userAgent, deviceInfo);
+    public Task<LoginResponseDto> LoginAsync(LoginRequestDto request, string? ipAddress = null, string? userAgent = null)
+        => _loginService.LoginAsync(request, ipAddress, userAgent);
 
-    public Task<AuthenticationResult> LoginWithRefreshTokenAsync(string refreshToken, string? ipAddress = null, 
-        string? userAgent = null)
-        => _loginService.LoginWithRefreshTokenAsync(refreshToken, ipAddress, userAgent);
+    public Task<LoginResponseDto> LoginWithRefreshTokenAsync(RefreshTokenRequestDto request, string? ipAddress = null, string? userAgent = null)
+        => _loginService.LoginWithRefreshTokenAsync(request, ipAddress, userAgent);
 
-    public Task<bool> LogoutAsync(string userId, string? ipAddress = null, string? userAgent = null)
-        => _loginService.LogoutAsync(userId, ipAddress, userAgent);
+    public Task<OperationResponseDto> LogoutAsync(LogoutRequestDto request, string? ipAddress = null, string? userAgent = null)
+        => _loginService.LogoutAsync(request, ipAddress, userAgent);
 
-    public Task<bool> LogoutAllDevicesAsync(string userId, string? ipAddress = null, string? userAgent = null)
-        => _loginService.LogoutAllDevicesAsync(userId, ipAddress, userAgent);
+    public Task<OperationResponseDto> LogoutAllDevicesAsync(LogoutRequestDto request, string? ipAddress = null, string? userAgent = null)
+        => _loginService.LogoutAllDevicesAsync(request, ipAddress, userAgent);
 
     #endregion
 
     #region Registration Operations
 
-    public Task<AuthenticationResult> RegisterAsync(string email, string userName, string password, 
-        string? customerId = null, string? ipAddress = null, string? userAgent = null)
-        => _registrationService.RegisterAsync(email, userName, password, customerId, ipAddress, userAgent);
+    public Task<RegisterResponseDto> RegisterAsync(RegisterRequestDto request, string? ipAddress = null, string? userAgent = null)
+        => _registrationService.RegisterAsync(request, ipAddress, userAgent);
 
-    public Task<bool> ConfirmEmailAsync(string userId, string token)
-        => _registrationService.ConfirmEmailAsync(userId, token);
+    public Task<OperationResponseDto> ConfirmEmailAsync(ConfirmEmailRequestDto request)
+        => _registrationService.ConfirmEmailAsync(request);
 
-    public Task<bool> ResendEmailConfirmationAsync(string email)
-        => _registrationService.ResendEmailConfirmationAsync(email);
+    public Task<OperationResponseDto> ResendEmailConfirmationAsync(ResendEmailConfirmationRequestDto request)
+        => _registrationService.ResendEmailConfirmationAsync(request);
 
     #endregion
 
     #region Password Operations
 
-    public Task<bool> ForgotPasswordAsync(string email)
-        => _passwordService.ForgotPasswordAsync(email);
+    public Task<OperationResponseDto> ForgotPasswordAsync(ForgotPasswordRequestDto request)
+        => _passwordService.ForgotPasswordAsync(request);
 
-    public Task<bool> ResetPasswordAsync(string userId, string token, string newPassword)
-        => _passwordService.ResetPasswordAsync(userId, token, newPassword);
+    public Task<OperationResponseDto> ResetPasswordAsync(ResetPasswordRequestDto request)
+        => _passwordService.ResetPasswordAsync(request);
 
-    public Task<bool> ChangePasswordAsync(string userId, string currentPassword, string newPassword)
-        => _passwordService.ChangePasswordAsync(userId, currentPassword, newPassword);
+    public Task<OperationResponseDto> ChangePasswordAsync(ChangePasswordRequestDto request)
+        => _passwordService.ChangePasswordAsync(request );
 
     #endregion
 
     #region Two-Factor Authentication Operations
 
-    public Task<bool> EnableTwoFactorAsync(string userId)
-        => _twoFactorService.EnableTwoFactorAsync(userId);
+    public Task<OperationResponseDto> EnableTwoFactorAsync(TwoFactorRequestDto request)
+        => _twoFactorService.EnableTwoFactorAsync(request);
 
-    public Task<bool> DisableTwoFactorAsync(string userId)
-        => _twoFactorService.DisableTwoFactorAsync(userId);
+    public Task<OperationResponseDto> DisableTwoFactorAsync(TwoFactorRequestDto request)
+        => _twoFactorService.DisableTwoFactorAsync(request);
 
-    public Task<bool> VerifyTwoFactorTokenAsync(string userId, string token)
-        => _twoFactorService.VerifyTwoFactorTokenAsync(userId, token);
+    public Task<OperationResponseDto> VerifyTwoFactorTokenAsync(VerifyTwoFactorRequestDto request)
+        => _twoFactorService.VerifyTwoFactorTokenAsync(request);
 
-    public Task<string> GenerateTwoFactorTokenAsync(string userId)
-        => _twoFactorService.GenerateTwoFactorTokenAsync(userId);
+    public Task<TwoFactorTokenResponseDto> GenerateTwoFactorTokenAsync(TwoFactorRequestDto request)
+        => _twoFactorService.GenerateTwoFactorTokenAsync(request);
 
     #endregion
 
     #region Lockout Operations
 
-    public Task<bool> LockUserAsync(string userId, TimeSpan? lockoutDuration = null)
-        => _lockoutService.LockUserAsync(userId, lockoutDuration);
+    public Task<OperationResponseDto> LockUserAsync(LockUserRequestDto request)
+        => _lockoutService.LockUserAsync(request);
 
-    public Task<bool> UnlockUserAsync(string userId)
-        => _lockoutService.UnlockUserAsync(userId);
+    public Task<OperationResponseDto> UnlockUserAsync(UnlockUserRequestDto request)
+        => _lockoutService.UnlockUserAsync(request);
 
-    public Task<bool> IsUserLockedAsync(string userId)
-        => _lockoutService.IsUserLockedAsync(userId);
+    public Task<LockoutStatusResponseDto> GetLockoutStatusAsync(string userId)
+        => _lockoutService.GetLockoutStatusAsync(userId);
 
     public Task<TimeSpan?> GetLockoutEndTimeAsync(string userId)
         => _lockoutService.GetLockoutEndTimeAsync(userId);
