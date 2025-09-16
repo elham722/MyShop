@@ -4,11 +4,11 @@ using MyShop.Identity.Context;
 using MyShop.Identity.Models;
 using MyShop.Identity.Constants;
 using MyShop.Contracts.Enums.Identity;
-using MyShop.Contracts.Identity.Services;
+using MyShop.Contracts.Identity.Services.RolePermission;
 
-namespace MyShop.Identity.Services;
+namespace MyShop.Identity.Services.Authorization;
 
-public class AuthorizationService : Contracts.Identity.Services.IAuthorizationService
+public class AuthorizationService : Contracts.Identity.Services.Authorization.IAuthorizationService
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly MyShopIdentityDbContext _context;

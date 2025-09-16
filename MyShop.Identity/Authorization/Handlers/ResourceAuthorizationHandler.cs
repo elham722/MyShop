@@ -14,9 +14,9 @@ namespace MyShop.Identity.Authorization.Handlers
     /// </summary>
     public class ResourceAuthorizationHandler : AuthorizationHandler<ResourceRequirement>
     {
-        private readonly Contracts.Identity.Services.IAuthorizationService _authorizationService;
+        private readonly Contracts.Identity.Services.Authorization.IAuthorizationService _authorizationService;
 
-        public ResourceAuthorizationHandler(Contracts.Identity.Services.IAuthorizationService authorizationService)
+        public ResourceAuthorizationHandler(Contracts.Identity.Services.Authorization.IAuthorizationService authorizationService)
         {
             _authorizationService = authorizationService;
         }

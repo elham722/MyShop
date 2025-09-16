@@ -4,10 +4,10 @@ using MyShop.Identity.Context;
 using MyShop.Identity.Models;
 using MyShop.Identity.Constants;
 using MyShop.Contracts.Enums.Identity;
-using MyShop.Contracts.Identity.Services;
 using MyShop.Contracts.DTOs.Identity;
+using MyShop.Contracts.Identity.Services.RolePermission;
 
-namespace MyShop.Identity.Services;
+namespace MyShop.Identity.Services.RolePermission;
 
 
 /// <summary>

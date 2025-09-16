@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MyShop.Contracts.DTOs.Identity;
 
-namespace MyShop.Contracts.Identity.Services
+namespace MyShop.Contracts.Identity.Services.JwtToken
 {
     /// <summary>
     /// Service for managing JWT tokens

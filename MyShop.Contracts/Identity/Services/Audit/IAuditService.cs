@@ -2,7 +2,7 @@
 using MyShop.Contracts.DTOs.Identity;
 using MyShop.Contracts.Common;
 
-namespace MyShop.Contracts.Identity.Services;
+namespace MyShop.Contracts.Identity.Services.Audit;
 /// <summary>
 /// Contract for auditing user and system activities
 /// </summary>

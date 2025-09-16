@@ -1,16 +1,20 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using MyShop.Contracts.Identity.Services;
 using MyShop.Identity.Authorization.Handlers;
 using MyShop.Identity.Constants;
 using MyShop.Identity.Context;
 using MyShop.Identity.Models;
-using MyShop.Identity.Services;
 using MyShop.Identity.Mappings;
-using IAuthorizationService = MyShop.Identity.Services.AuthorizationService;
+using IAuthorizationService = MyShop.Identity.Services.Authorization.AuthorizationService;
+using MyShop.Contracts.Identity.Services.Audit;
+using MyShop.Contracts.Identity.Services.Authentication;
+using MyShop.Identity.Services.Audit;
+using MyShop.Identity.Services.Authentication;
+using MyShop.Identity.Services.Authorization;
 
 namespace MyShop.Identity.DependencyInjection
 {
@@ -137,11 +141,20 @@ namespace MyShop.Identity.DependencyInjection
             services.AddScoped<SignInManager<ApplicationUser>>();
             
             // Configure Mapster mappings
-            
+            services.AddMapster();
 
-            // Register custom identity services
+            // Register individual authentication services
+            services.AddScoped<ILoginService, LoginService>();
+            services.AddScoped<IRegistrationService, RegistrationService>();
+            services.AddScoped<IPasswordService, PasswordService>();
+            services.AddScoped<ITwoFactorService, TwoFactorService>();
+            services.AddScoped<ILockoutService, LockoutService>();
+
+            // Register authentication facade
+            services.AddScoped<IAuthenticationFacade, AuthenticationFacade>();
+
+            // Register other identity services
             services.AddScoped<IAuditService, AuditService>();
-            services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<IAuthorizationService, AuthorizationService>();
             
             // Register authorization handlers

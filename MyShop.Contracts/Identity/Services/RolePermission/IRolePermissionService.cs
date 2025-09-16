@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MyShop.Contracts.DTOs.Identity;
 
-namespace MyShop.Contracts.Identity.Services
+namespace MyShop.Contracts.Identity.Services.RolePermission
 {
     /// <summary>
     /// Service for managing roles and permissions

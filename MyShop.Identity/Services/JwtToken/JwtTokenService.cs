@@ -5,13 +5,14 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using MyShop.Contracts.Identity.Services;
 using MyShop.Contracts.DTOs.Identity;
 using MyShop.Contracts.DTOs.Identity.JwtSettings;
 using MyShop.Identity.Models;
 using MyShop.Identity.Context;
+using MyShop.Contracts.Identity.Services.Audit;
+using MyShop.Contracts.Identity.Services.JwtToken;
 
-namespace MyShop.Identity.Services;
+namespace MyShop.Identity.Services.JwtToken;
 
 /// <summary>
 /// Implementation of JWT token service

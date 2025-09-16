@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MyShop.Contracts.Enums.Identity;
 
-namespace MyShop.Contracts.Identity.Services
+namespace MyShop.Contracts.Identity.Services.Authorization
 {
     public interface IAuthorizationService
     {

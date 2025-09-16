@@ -162,7 +162,7 @@ public static class MappingService
     /// <summary>
     /// Maps RolePermission entity to RolePermissionDto
     /// </summary>
-    public static RolePermissionDto MapToDto(RolePermission rolePermission)
+    public static RolePermissionDto MapToDto(Models.RolePermission rolePermission)
     {
         if (rolePermission == null)
             throw new ArgumentNullException(nameof(rolePermission));

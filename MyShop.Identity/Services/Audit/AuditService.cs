@@ -5,11 +5,11 @@ using MyShop.Identity.Context;
 using MyShop.Identity.Models;
 using MyShop.Contracts.Enums.Identity;
 using MyShop.Contracts.DTOs.Identity;
-using MyShop.Contracts.Identity.Services;
 using MyShop.Contracts.Common;
 using Mapster;
+using MyShop.Contracts.Identity.Services.Audit;
 
-namespace MyShop.Identity.Services;
+namespace MyShop.Identity.Services.Audit;
 
 public class AuditService : IAuditService
 {
