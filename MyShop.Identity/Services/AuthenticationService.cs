@@ -1,3 +1,4 @@
+using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -6,6 +7,7 @@ using MyShop.Contracts.DTOs.Identity;
 using MyShop.Identity.Constants;
 using MyShop.Identity.Context;
 using MyShop.Identity.Models;
+using MyShop.Identity.Mappings;
 using MyShop.Domain.Shared.Interfaces;
 
 namespace MyShop.Identity.Services;
@@ -108,7 +110,7 @@ public class AuthenticationService : IAuthenticationService
         }
 
         // Generate tokens
-        var userDto = MappingService.MapToDto(user);
+        var userDto = user.Adapt<ApplicationUserDto>();
         var accessToken = await _jwtTokenService.GenerateAccessTokenAsync(userDto);
         var refreshToken = await _jwtTokenService.GenerateRefreshTokenAsync(userDto);
 
@@ -120,13 +122,7 @@ public class AuthenticationService : IAuthenticationService
         // Log successful login
         await _auditService.LogLoginAsync(user.Id, true, ipAddress, userAgent, deviceInfo);
 
-        return new AuthenticationResult
-        {
-            IsSuccess = true,
-            AccessToken = accessToken,
-            RefreshToken = refreshToken,
-            User = MappingService.MapToDto(user)
-        };
+        return CreateSuccessResult(user, accessToken, refreshToken);
     }
 
     public async Task<AuthenticationResult> LoginWithRefreshTokenAsync(string refreshToken, string? ipAddress = null, 
@@ -153,7 +149,7 @@ public class AuthenticationService : IAuthenticationService
         }
 
         // Generate new tokens
-        var userDto = MappingService.MapToDto(user);
+        var userDto = user.Adapt<ApplicationUserDto>();
         var newAccessToken = await _jwtTokenService.GenerateAccessTokenAsync(userDto);
         var newRefreshToken = await _jwtTokenService.GenerateRefreshTokenAsync(userDto);
 
@@ -168,7 +164,7 @@ public class AuthenticationService : IAuthenticationService
             IsSuccess = true,
             AccessToken = newAccessToken,
             RefreshToken = newRefreshToken,
-            User = MappingService.MapToDto(user)
+            User = user.Adapt<ApplicationUserDto>()
         };
     }
 
@@ -217,7 +213,7 @@ public class AuthenticationService : IAuthenticationService
         return new AuthenticationResult
         {
             IsSuccess = true,
-            User = MappingService.MapToDto(user),
+            User = user.Adapt<ApplicationUserDto>(),
             RequiresEmailConfirmation = true
         };
     }
@@ -388,4 +384,38 @@ public class AuthenticationService : IAuthenticationService
         return remaining > TimeSpan.Zero ? remaining : null;
     }
 
+    #region Helper Methods
+
+    /// <summary>
+    /// Helper method to create successful authentication result with user DTO
+    /// </summary>
+    private AuthenticationResult CreateSuccessResult(ApplicationUser user, string? accessToken = null, string? refreshToken = null)
+    {
+        return new AuthenticationResult
+        {
+            IsSuccess = true,
+            AccessToken = accessToken,
+            RefreshToken = refreshToken,
+            User = user.Adapt<ApplicationUserDto>()
+        };
+    }
+
+    /// <summary>
+    /// Helper method to create failed authentication result
+    /// </summary>
+    private AuthenticationResult CreateFailureResult(string errorMessage, bool requiresEmailConfirmation = false, 
+        bool requiresTwoFactor = false, bool isAccountLocked = false, DateTime? lockoutEnd = null)
+    {
+        return new AuthenticationResult
+        {
+            IsSuccess = false,
+            ErrorMessage = errorMessage,
+            RequiresEmailConfirmation = requiresEmailConfirmation,
+            RequiresTwoFactor = requiresTwoFactor,
+            IsAccountLocked = isAccountLocked,
+            LockoutEnd = lockoutEnd
+        };
+    }
+
+    #endregion
 }

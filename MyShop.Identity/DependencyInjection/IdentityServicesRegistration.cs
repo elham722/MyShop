@@ -9,6 +9,7 @@ using MyShop.Identity.Constants;
 using MyShop.Identity.Context;
 using MyShop.Identity.Models;
 using MyShop.Identity.Services;
+using MyShop.Identity.Mappings;
 using IAuthorizationService = MyShop.Identity.Services.AuthorizationService;
 
 namespace MyShop.Identity.DependencyInjection
@@ -135,6 +136,9 @@ namespace MyShop.Identity.DependencyInjection
             services.AddScoped<UserManager<ApplicationUser>>();
             services.AddScoped<SignInManager<ApplicationUser>>();
             
+            // Configure Mapster mappings
+            
+
             // Register custom identity services
             services.AddScoped<IAuditService, AuditService>();
             services.AddScoped<IAuthenticationService, AuthenticationService>();
