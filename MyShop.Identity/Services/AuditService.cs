@@ -7,6 +7,7 @@ using MyShop.Contracts.Enums.Identity;
 using MyShop.Contracts.DTOs.Identity;
 using MyShop.Contracts.Identity.Services;
 using MyShop.Contracts.Common;
+using Mapster;
 
 namespace MyShop.Identity.Services;
 
@@ -196,7 +197,7 @@ public class AuditService : IAuditService
                 .AsNoTracking()
                 .ToListAsync();
 
-            var auditLogDtos = logs.Select(MapToDto).ToList();
+            var auditLogDtos = logs.Adapt<List<AuditLogDto>>();
             return Result<IReadOnlyList<AuditLogDto>>.Success(auditLogDtos);
         }
         catch (Exception ex)
@@ -220,7 +221,7 @@ public class AuditService : IAuditService
             if (log == null)
                 return Result<AuditLogDto>.Failure($"Audit log with ID '{id}' not found");
 
-            var auditLogDto = MapToDto(log);
+            var auditLogDto = log.Adapt<AuditLogDto>();
             return Result<AuditLogDto>.Success(auditLogDto);
         }
         catch (Exception ex)
@@ -251,35 +252,9 @@ public class AuditService : IAuditService
             .AsNoTracking()
             .ToListAsync();
 
-        return logs.Select(MapToDto).ToList();
+        return logs.Adapt<List<AuditLogDto>>();
     }
 
-
-    private static AuditLogDto MapToDto(AuditLog log)
-    {
-        return new AuditLogDto
-        {
-            Id = log.Id,
-            UserId = log.UserId,
-            Action = log.Action,
-            EntityType = log.EntityType,
-            EntityId = log.EntityId,
-            OldValues = log.OldValues,
-            NewValues = log.NewValues,
-            Timestamp = log.Timestamp,
-            IpAddress = log.IpAddress,
-            UserAgent = log.UserAgent,
-            DeviceInfo = log.DeviceInfo,
-            SessionId = log.SessionId,
-            RequestId = log.RequestId,
-            AdditionalData = log.AdditionalData,
-            IsSuccess = log.IsSuccess,
-            ErrorMessage = log.ErrorMessage,
-            Severity = log.Severity,
-            UserName = log.User?.UserName,
-            UserEmail = log.User?.Email
-        };
-    }
 
     #endregion
 }

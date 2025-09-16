@@ -21,6 +21,7 @@ public interface IAuditService
     Task LogLogoutAsync(string userId, string? ipAddress = null,
         string? userAgent = null, string? sessionId = null);
 
+
     Task LogRoleAssignmentAsync(string userId, string roleId, string action,
         string? oldValues = null, string? newValues = null, string? ipAddress = null,
         string? userAgent = null, string? additionalData = null);
