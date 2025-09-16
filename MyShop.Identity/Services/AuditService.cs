@@ -10,10 +10,6 @@ using MyShop.Contracts.Common;
 
 namespace MyShop.Identity.Services;
 
-
-/// <summary>
-/// Implementation of IAuditService
-/// </summary>
 public class AuditService : IAuditService
 {
     private readonly MyShopIdentityDbContext _context;
