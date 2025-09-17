@@ -11,4 +11,7 @@ public class LockoutStatusResponseDto
     public string? Reason { get; set; }
     public int FailedAttempts { get; set; }
     public int MaxAttempts { get; set; }
+    public bool IsPermanent { get; set; }
+    public DateTime? LockedAt { get; set; }
+    public string? LockedBy { get; set; }
 }
