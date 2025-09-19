@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Identity;
-using MyShop.Contracts.DTOs.Identity.Authentication;
+using Microsoft.Extensions.Options;
+using MyShop.Contracts.Common;
 using MyShop.Contracts.DTOs.Identity.Authentication.LockUser;
+using MyShop.Contracts.DTOs.Options;
+using MyShop.Contracts.Identity.Services;
 using MyShop.Contracts.Identity.Services.Audit;
 using MyShop.Contracts.Identity.Services.Authentication;
 using MyShop.Identity.Models;
@@ -11,235 +14,161 @@ public class LockoutService : ILockoutService
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IAuditService _auditService;
+    private readonly LockoutOptionsDto _lockoutOptions;
+    private readonly IUserContextService _userContextService;
 
-    public LockoutService(UserManager<ApplicationUser> userManager, IAuditService auditService)
+    public LockoutService(
+        UserManager<ApplicationUser> userManager,
+        IAuditService auditService,
+        IUserContextService userContextService,
+        IOptions<LockoutOptionsDto> lockoutOptions)
     {
         _userManager = userManager;
         _auditService = auditService;
+        _userContextService = userContextService;
+        _lockoutOptions = lockoutOptions.Value;
     }
 
-    public async Task<OperationResponseDto> LockUserAsync(LockUserRequestDto request)
+    public async Task<Result<LockUserResponseDto>> LockUserAsync(LockUserRequestDto request)
     {
-        try
+        var user = await _userManager.FindByIdAsync(request.UserId);
+        if (user == null)
+            return Result<LockUserResponseDto>.Failure("User not found");
+
+        if (user.IsLocked)
+            return Result<LockUserResponseDto>.Failure("User is already locked");
+
+        var lockoutDuration = request.DurationMinutes ?? _lockoutOptions.DefaultDurationMinutes;
+        if (lockoutDuration > _lockoutOptions.MaxDurationMinutes)
+            lockoutDuration = _lockoutOptions.MaxDurationMinutes;
+        if (lockoutDuration < _lockoutOptions.MinDurationMinutes)
+            lockoutDuration = _lockoutOptions.MinDurationMinutes;
+
+        var lockoutEnd = DateTime.UtcNow.AddMinutes(lockoutDuration);
+
+        var result = await _userManager.SetLockoutEndDateAsync(user, lockoutEnd);
+        var lockedBy = _userContextService.GetCurrentUserName() ?? "System";
+        var userIp = _userContextService.GetCurrentUserIpAddress();
+        var deviceInfo = _userContextService.GetCurrentDeviceInfo();
+
+        if (!result.Succeeded)
         {
-            var user = await _userManager.FindByIdAsync(request.UserId);
-            if (user == null)
-            {
-                return CreateFailureResponse("User not found", "USER_NOT_FOUND");
-            }
-
-            // Check if user is already locked
-            if (user.IsLocked)
-            {
-                return CreateFailureResponse("User is already locked", "USER_ALREADY_LOCKED");
-            }
-
-            // Calculate lockout duration
-            var lockoutDuration = request.DurationMinutes.HasValue 
-                ? TimeSpan.FromMinutes(request.DurationMinutes.Value)
-                : TimeSpan.FromMinutes(15);
-
-            var lockoutEnd = DateTime.UtcNow.Add(lockoutDuration);
-            var result = await _userManager.SetLockoutEndDateAsync(user, lockoutEnd);
-
-            if (result.Succeeded)
-            {
-                await _auditService.LogUserActionAsync(
-                    request.UserId, 
-                    "UserLocked", 
-                    "User", 
-                    request.UserId,
-                    additionalData: $"DurationMinutes: {request.DurationMinutes ?? 15}, Reason: {request.Reason ?? "Manual lockout"}, LockoutEnd: {lockoutEnd:yyyy-MM-dd HH:mm:ss}",
-                    isSuccess: true);
-
-                return CreateSuccessResponse(
-                    $"User locked successfully for {request.DurationMinutes ?? 15} minutes",
-                    new Dictionary<string, object>
-                    {
-                        { "LockoutEnd", lockoutEnd },
-                        { "DurationMinutes", request.DurationMinutes ?? 15 },
-                        { "Reason", request.Reason }
-                    });
-            }
-
+            var errorMessage = string.Join(", ", result.Errors.Select(e => e.Description));
             await _auditService.LogUserActionAsync(
-                request.UserId, 
-                "UserLocked", 
-                "User", 
                 request.UserId,
-                additionalData: $"DurationMinutes: {request.DurationMinutes ?? 15}, Reason: {request.Reason ?? "Manual lockout"}",
-                errorMessage: string.Join(", ", result.Errors.Select(e => e.Description)),
-                isSuccess: false);
+                "UserLocked",
+                "User",
+                request.UserId,
+                additionalData: $"Reason: {request.Reason}, LockedBy: {lockedBy}, IP: {userIp}, Device: {deviceInfo}",
+                errorMessage: errorMessage,
+                isSuccess: false
+            );
 
-            return CreateFailureResponse(
-                "Failed to lock user: " + string.Join(", ", result.Errors.Select(e => e.Description)),
-                "LOCKOUT_FAILED");
+            return Result<LockUserResponseDto>.Failure(errorMessage);
         }
-        catch (Exception ex)
+
+        await _auditService.LogUserActionAsync(
+            request.UserId,
+            "UserLocked",
+            "User",
+            request.UserId,
+            additionalData: $"DurationMinutes: {lockoutDuration}, Reason: {request.Reason}, LockedBy: {lockedBy}, IP: {userIp}, Device: {deviceInfo}",
+            isSuccess: true
+        );
+
+        return Result<LockUserResponseDto>.Success(new LockUserResponseDto
         {
-            await _auditService.LogUserActionAsync(
-                request.UserId, 
-                "UserLocked", 
-                "User", 
-                request.UserId,
-                additionalData: $"DurationMinutes: {request.DurationMinutes ?? 15}, Reason: {request.Reason ?? "Manual lockout"}",
-                errorMessage: ex.Message,
-                isSuccess: false);
-
-            return CreateFailureResponse("An error occurred while locking the user", "INTERNAL_ERROR");
-        }
+            LockoutEnd = lockoutEnd,
+            DurationMinutes = lockoutDuration,
+            Reason = request.Reason
+        });
     }
 
-    public async Task<OperationResponseDto> UnlockUserAsync(UnlockUserRequestDto request)
+    public async Task<Result<UnlockUserResponseDto>> UnlockUserAsync(UnlockUserRequestDto request)
     {
-        try
+        var user = await _userManager.FindByIdAsync(request.UserId);
+        if (user == null)
+            return Result<UnlockUserResponseDto>.Failure("User not found");
+
+        if (!user.IsLocked && !_lockoutOptions.EnableIdempotentUnlock)
+            return Result<UnlockUserResponseDto>.Failure("User is not locked");
+
+        var result = await _userManager.SetLockoutEndDateAsync(user, null);
+        var unlockedBy = _userContextService.GetCurrentUserName() ?? "System";
+        var userIp = _userContextService.GetCurrentUserIpAddress();
+        var deviceInfo = _userContextService.GetCurrentDeviceInfo();
+
+        if (!result.Succeeded)
         {
-            var user = await _userManager.FindByIdAsync(request.UserId);
-            if (user == null)
-            {
-                return CreateFailureResponse("User not found", "USER_NOT_FOUND");
-            }
-
-            // Check if user is actually locked
-            if (!user.IsLocked)
-            {
-                return CreateFailureResponse("User is not locked", "USER_NOT_LOCKED");
-            }
-
-            var result = await _userManager.SetLockoutEndDateAsync(user, null);
-
-            if (result.Succeeded)
-            {
-                await _auditService.LogUserActionAsync(
-                    request.UserId, 
-                    "UserUnlocked", 
-                    "User", 
-                    request.UserId,
-                    additionalData: $"Reason: {request.Reason ?? "Manual unlock"}",
-                    isSuccess: true);
-
-                return CreateSuccessResponse(
-                    "User unlocked successfully",
-                    new Dictionary<string, object>
-                    {
-                        { "Reason", request.Reason }
-                    });
-            }
-
+            var errorMessage = string.Join(", ", result.Errors.Select(e => e.Description));
             await _auditService.LogUserActionAsync(
-                request.UserId, 
-                "UserUnlocked", 
-                "User", 
                 request.UserId,
-                additionalData: $"Reason: {request.Reason ?? "Manual unlock"}",
-                errorMessage: string.Join(", ", result.Errors.Select(e => e.Description)),
-                isSuccess: false);
+                "UserUnlocked",
+                "User",
+                request.UserId,
+                additionalData: $"Reason: {request.Reason}, UnlockedBy: {unlockedBy}, IP: {userIp}, Device: {deviceInfo}",
+                errorMessage: errorMessage,
+                isSuccess: false
+            );
 
-            return CreateFailureResponse(
-                "Failed to unlock user: " + string.Join(", ", result.Errors.Select(e => e.Description)),
-                "UNLOCK_FAILED");
+            return Result<UnlockUserResponseDto>.Failure(errorMessage);
         }
-        catch (Exception ex)
+
+        await _auditService.LogUserActionAsync(
+            request.UserId,
+            "UserUnlocked",
+            "User",
+            request.UserId,
+            additionalData: $"Reason: {request.Reason}, UnlockedBy: {unlockedBy}, IP: {userIp}, Device: {deviceInfo}",
+            isSuccess: true
+        );
+
+        return Result<UnlockUserResponseDto>.Success(new UnlockUserResponseDto
         {
-            await _auditService.LogUserActionAsync(
-                request.UserId, 
-                "UserUnlocked", 
-                "User", 
-                request.UserId,
-                additionalData: $"Reason: {request.Reason ?? "Manual unlock"}",
-                errorMessage: ex.Message,
-                isSuccess: false);
-
-            return CreateFailureResponse("An error occurred while unlocking the user", "INTERNAL_ERROR");
-        }
+            Reason = request.Reason,
+            UnlockedAt = DateTime.UtcNow
+        });
     }
 
-    public async Task<LockoutStatusResponseDto> GetLockoutStatusAsync(string userId)
+    public async Task<Result<LockoutStatusResponseDto>> GetLockoutStatusAsync(string userId)
     {
-        try
-        {
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                return new LockoutStatusResponseDto
-                {
-                    IsLocked = false,
-                    FailedAttempts = 0,
-                    MaxAttempts = 5, // Default max attempts
-                    IsPermanent = false
-                };
-            }
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+            return Result<LockoutStatusResponseDto>.Failure("User not found");
 
-            var remainingTime = GetRemainingLockoutTime(user);
-            var isPermanent = user.LockoutEnd?.DateTime > DateTime.UtcNow.AddYears(1);
+        var remainingTime = GetRemainingLockoutTime(user);
+        var isPermanent = user.LockoutEnd?.DateTime > DateTime.UtcNow.AddDays(_lockoutOptions.PermanentLockThresholdDays);
+        var lockedBy = _userContextService.GetCurrentUserName() ?? "System";
 
-            return new LockoutStatusResponseDto
-            {
-                IsLocked = user.IsLocked,
-                LockoutEnd = user.LockoutEnd?.DateTime,
-                RemainingTime = remainingTime,
-                FailedAttempts = user.AccessFailedCount,
-                MaxAttempts = 5, // This should come from configuration
-                IsPermanent = isPermanent,
-                LockedAt = user.LockoutEnd?.DateTime,
-                LockedBy = "System" // This should be tracked in the user entity
-            };
-        }
-        catch (Exception)
+        var status = new LockoutStatusResponseDto
         {
-            return new LockoutStatusResponseDto
-            {
-                IsLocked = false,
-                FailedAttempts = 0,
-                MaxAttempts = 5,
-                IsPermanent = false
-            };
-        }
+            IsLocked = user.IsLocked,
+            LockoutEnd = user.LockoutEnd?.DateTime,
+            RemainingTime = remainingTime,
+            FailedAttempts = user.AccessFailedCount,
+            MaxAttempts = _lockoutOptions.MaxFailedAttempts,
+            IsPermanent = isPermanent,
+            LockedAt = user.LockoutEnd?.DateTime,
+            LockedBy = lockedBy
+        };
+
+        return Result<LockoutStatusResponseDto>.Success(status);
     }
 
-    public async Task<TimeSpan?> GetLockoutEndTimeAsync(string userId)
+    public async Task<Result<TimeSpan?>> GetLockoutEndTimeAsync(string userId)
     {
-        try
-        {
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user?.LockoutEnd == null) return null;
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user?.LockoutEnd == null)
+            return Result<TimeSpan?>.Success(null);
 
-            var remaining = user.LockoutEnd.Value - DateTime.UtcNow;
-            return remaining > TimeSpan.Zero ? remaining : null;
-        }
-        catch (Exception)
-        {
-            return null;
-        }
+        var remaining = user.LockoutEnd.Value - DateTime.UtcNow;
+        return Result<TimeSpan?>.Success(remaining > TimeSpan.Zero ? remaining : null);
     }
 
     private TimeSpan? GetRemainingLockoutTime(ApplicationUser user)
     {
         if (user.LockoutEnd == null) return null;
-
         var remaining = user.LockoutEnd.Value - DateTime.UtcNow;
         return remaining > TimeSpan.Zero ? remaining : null;
-    }
-
-    private OperationResponseDto CreateSuccessResponse(string message, Dictionary<string, object>? additionalData = null)
-    {
-        return new OperationResponseDto
-        {
-            IsSuccess = true,
-            Message = message,
-            Timestamp = DateTime.UtcNow,
-            AdditionalData = additionalData
-        };
-    }
-
-    private OperationResponseDto CreateFailureResponse(string errorMessage, string errorCode)
-    {
-        return new OperationResponseDto
-        {
-            IsSuccess = false,
-            ErrorMessage = errorMessage,
-            ErrorCode = errorCode,
-            Timestamp = DateTime.UtcNow
-        };
     }
 }

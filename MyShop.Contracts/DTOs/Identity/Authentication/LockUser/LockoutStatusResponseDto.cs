@@ -1,8 +1,5 @@
 namespace MyShop.Contracts.DTOs.Identity.Authentication.LockUser;
 
-/// <summary>
-/// DTO for lockout status response
-/// </summary>
 public class LockoutStatusResponseDto
 {
     public bool IsLocked { get; set; }
