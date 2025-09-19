@@ -7,9 +7,9 @@ namespace MyShop.Contracts.Identity.Services.Authentication;
 
 public interface IRegistrationService
 {
-    Task<RegisterResponseDto> RegisterAsync(RegisterRequestDto request, string? ipAddress = null, string? userAgent = null);
+    Task<Result<RegisterResponseDto>> RegisterAsync(RegisterRequestDto request, string? ipAddress = null, string? userAgent = null);
 
-    Task<OperationResponseDto> ConfirmEmailAsync(ConfirmEmailRequestDto request);
+    Task<Result> ConfirmEmailAsync(ConfirmEmailRequestDto request);
 
-    Task<OperationResponseDto> ResendEmailConfirmationAsync(ResendEmailConfirmationRequestDto request);
+    Task<Result> ResendEmailConfirmationAsync(ResendEmailConfirmationRequestDto request);
 }

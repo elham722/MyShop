@@ -5,9 +5,9 @@ namespace MyShop.Contracts.Identity.Services.Authentication;
 
 public interface IPasswordService
 {
-    Task<OperationResponseDto> ForgotPasswordAsync(ForgotPasswordRequestDto request);
+    Task<Result> ForgotPasswordAsync(ForgotPasswordRequestDto request);
 
-    Task<OperationResponseDto> ResetPasswordAsync(ResetPasswordRequestDto request);
+    Task<Result> ResetPasswordAsync(ResetPasswordRequestDto request);
 
-    Task<OperationResponseDto> ChangePasswordAsync(ChangePasswordRequestDto request);
+    Task<Result> ChangePasswordAsync(ChangePasswordRequestDto request);
 }

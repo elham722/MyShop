@@ -5,11 +5,11 @@ namespace MyShop.Contracts.Identity.Services.Authentication;
 
 public interface ITwoFactorService
 {
-    Task<OperationResponseDto> EnableTwoFactorAsync(TwoFactorRequestDto request);
+    Task<Result<TwoFactorResponseDto>> EnableTwoFactorAsync(TwoFactorRequestDto request);
 
-    Task<OperationResponseDto> DisableTwoFactorAsync(TwoFactorRequestDto request);
+    Task<Result<TwoFactorResponseDto>> DisableTwoFactorAsync(TwoFactorRequestDto request);
 
-    Task<OperationResponseDto> VerifyTwoFactorTokenAsync(VerifyTwoFactorRequestDto request);
+    Task<Result> VerifyTwoFactorTokenAsync(VerifyTwoFactorRequestDto request);
 
-    Task<TwoFactorTokenResponseDto> GenerateTwoFactorTokenAsync(TwoFactorRequestDto request);
+    Task<Result<TwoFactorTokenResponseDto>> GenerateTwoFactorTokenAsync(TwoFactorRequestDto request);
 }
