@@ -12,16 +12,13 @@ public class ExceptionHandlingMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogger<ExceptionHandlingMiddleware> _logger;
-    private readonly IExceptionMappingService _exceptionMappingService;
 
     public ExceptionHandlingMiddleware(
         RequestDelegate next, 
-        ILogger<ExceptionHandlingMiddleware> logger,
-        IExceptionMappingService exceptionMappingService)
+        ILogger<ExceptionHandlingMiddleware> logger)
     {
         _next = next;
         _logger = logger;
-        _exceptionMappingService = exceptionMappingService;
     }
 
     public async Task InvokeAsync(HttpContext context)
@@ -46,7 +43,9 @@ public class ExceptionHandlingMiddleware
             context.Request.Path, 
             correlationId);
 
-        var (statusCode, apiResponse) = _exceptionMappingService.MapException(exception);
+        // Resolve the service from the request scope
+        var exceptionMappingService = context.RequestServices.GetRequiredService<IExceptionMappingService>();
+        var (statusCode, apiResponse) = exceptionMappingService.MapException(exception);
         
         // Add correlation ID to response
         apiResponse.WithCorrelationId(correlationId);
