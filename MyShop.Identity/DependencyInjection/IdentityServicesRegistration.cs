@@ -14,6 +14,7 @@ using MyShop.Contracts.Identity.Services.Audit;
 using MyShop.Contracts.Identity.Services.Authentication;
 using MyShop.Contracts.Identity.Services;
 using MyShop.Contracts.DTOs.Options;
+using MyShop.Identity.Services;
 using MyShop.Identity.Services.Audit;
 using MyShop.Identity.Services.Authentication;
 using MyShop.Identity.Services.Authorization;

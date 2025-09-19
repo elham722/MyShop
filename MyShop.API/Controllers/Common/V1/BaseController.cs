@@ -4,13 +4,13 @@ using MyShop.Contracts.DTOs.Responses;
 using MyShop.Contracts.DTOs.Results;
 using MyShop.API.Filters;
 
-namespace MyShop.API.Controllers;
+namespace MyShop.API.Controllers.Common.V1;
 
 /// <summary>
 /// Base controller with standardized response methods
 /// </summary>
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v{version:apiVersion}/[controller]")]
 [ApiResponse]
 public abstract class BaseController : ControllerBase
 {
