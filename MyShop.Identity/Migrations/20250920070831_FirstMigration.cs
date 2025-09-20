@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MyShop.Identity.Migrations
 {
     /// <inheritdoc />
-    public partial class firstmigration : Migration
+    public partial class FirstMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -178,6 +178,96 @@ namespace MyShop.Identity.Migrations
                 comment: "Many-to-many relationship between roles and permissions");
 
             migrationBuilder.CreateTable(
+                name: "AspNetUserClaims",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(50)", nullable: false),
+                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserClaims", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetUserClaims_Users_UserId",
+                        column: x => x.UserId,
+                        principalSchema: "Identity",
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserLogins",
+                columns: table => new
+                {
+                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(50)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserLogins_Users_UserId",
+                        column: x => x.UserId,
+                        principalSchema: "Identity",
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserRoles",
+                columns: table => new
+                {
+                    UserId = table.Column<string>(type: "nvarchar(50)", nullable: false),
+                    RoleId = table.Column<string>(type: "nvarchar(50)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserRoles", x => new { x.UserId, x.RoleId });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserRoles_Roles_RoleId",
+                        column: x => x.RoleId,
+                        principalSchema: "Identity",
+                        principalTable: "Roles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AspNetUserRoles_Users_UserId",
+                        column: x => x.UserId,
+                        principalSchema: "Identity",
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserTokens",
+                columns: table => new
+                {
+                    UserId = table.Column<string>(type: "nvarchar(50)", nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserTokens_Users_UserId",
+                        column: x => x.UserId,
+                        principalSchema: "Identity",
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AuditLogs",
                 schema: "Identity",
                 columns: table => new
@@ -212,159 +302,24 @@ namespace MyShop.Identity.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "UserClaims",
-                schema: "Identity",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false, comment: "Unique identifier for the user claim")
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "When this claim was created"),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "When this claim was last updated"),
-                    CreatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false, comment: "Who created this claim"),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true, comment: "Who last updated this claim"),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true, comment: "Whether this claim is currently active"),
-                    ExpiresAt = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "When this claim expires (null = never expires)"),
-                    Category = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true, comment: "Category for grouping claims (Business, System, etc.)"),
-                    UserId = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false, comment: "Foreign key to the user"),
-                    ClaimType = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false, comment: "The type of the claim"),
-                    ClaimValue = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false, comment: "The value of the claim")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserClaims", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_UserClaims_Users_UserId",
-                        column: x => x.UserId,
-                        principalSchema: "Identity",
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                },
-                comment: "Custom user claims for dynamic business claims that need management and expiration");
-
-            migrationBuilder.CreateTable(
-                name: "UserLogins",
-                schema: "Identity",
-                columns: table => new
-                {
-                    LoginProvider = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false, comment: "The login provider (e.g., Google, Facebook, Local)"),
-                    ProviderKey = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false, comment: "The provider key (e.g., Google ID, Facebook ID)"),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "When this login was created"),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "When this login was last updated"),
-                    CreatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false, comment: "Who created this login"),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true, comment: "Who last updated this login"),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true, comment: "Whether this login is currently active"),
-                    DeviceInfo = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true, comment: "Device information (OS, model, etc.)"),
-                    IpAddress = table.Column<string>(type: "nvarchar(45)", maxLength: 45, nullable: true, comment: "IP address of the login"),
-                    UserAgent = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true, comment: "User agent string from the browser"),
-                    LastUsedAt = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "When this login was last used"),
-                    Location = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true, comment: "Geographic location of the login"),
-                    IsTrusted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false, comment: "Whether this device is trusted"),
-                    ProviderDisplayName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true, comment: "The display name of the provider"),
-                    UserId = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false, comment: "Foreign key to the user")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserLogins", x => new { x.LoginProvider, x.ProviderKey });
-                    table.ForeignKey(
-                        name: "FK_UserLogins_Users_UserId",
-                        column: x => x.UserId,
-                        principalSchema: "Identity",
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                },
-                comment: "User login tracking for multi-device management and security monitoring");
-
-            migrationBuilder.CreateTable(
-                name: "UserRoles",
-                schema: "Identity",
-                columns: table => new
-                {
-                    UserId = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false, comment: "Foreign key to the user"),
-                    RoleId = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false, comment: "Foreign key to the role"),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "When this role assignment was created"),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "When this role assignment was last updated"),
-                    CreatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false, comment: "Who created this role assignment"),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true, comment: "Who last updated this role assignment"),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true, comment: "Whether this role assignment is currently active"),
-                    AssignedAt = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "When this role was assigned to the user"),
-                    ExpiresAt = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "When this role assignment expires (null = never expires)"),
-                    AssignedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true, comment: "Who assigned this role to the user"),
-                    AssignmentReason = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true, comment: "Reason for assigning this role to the user"),
-                    AssignmentCategory = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true, comment: "Category of the assignment (Standard, Temporary, Emergency, etc.)"),
-                    Priority = table.Column<int>(type: "int", nullable: false, defaultValue: 5, comment: "Priority level for sorting (1=highest, 10=lowest)"),
-                    IsTemporary = table.Column<bool>(type: "bit", nullable: false, defaultValue: false, comment: "Whether this is a temporary role assignment"),
-                    Notes = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true, comment: "Additional notes about this role assignment")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserRoles", x => new { x.UserId, x.RoleId });
-                    table.ForeignKey(
-                        name: "FK_UserRoles_Roles_RoleId",
-                        column: x => x.RoleId,
-                        principalSchema: "Identity",
-                        principalTable: "Roles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_UserRoles_Users_UserId",
-                        column: x => x.UserId,
-                        principalSchema: "Identity",
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                },
-                comment: "User role assignments with expiration, priority, and audit tracking");
-
-            migrationBuilder.CreateTable(
-                name: "UserTokens",
-                schema: "Identity",
-                columns: table => new
-                {
-                    UserId = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false, comment: "Foreign key to the user"),
-                    LoginProvider = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false, comment: "The login provider (e.g., Local, Google, Facebook)"),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false, comment: "The name of the token (e.g., AccessToken, RefreshToken)"),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, comment: "When this token was created"),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "When this token was last updated"),
-                    CreatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false, comment: "Who created this token"),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true, comment: "Who last updated this token"),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true, comment: "Whether this token is currently active"),
-                    ExpiresAt = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "When this token expires (null = never expires)"),
-                    DeviceInfo = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true, comment: "Device information (OS, model, etc.)"),
-                    IpAddress = table.Column<string>(type: "nvarchar(45)", maxLength: 45, nullable: true, comment: "IP address of the token creation"),
-                    UserAgent = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true, comment: "User agent string from the browser"),
-                    IsRevoked = table.Column<bool>(type: "bit", nullable: false, defaultValue: false, comment: "Whether this token has been revoked"),
-                    RevokedAt = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "When this token was revoked"),
-                    RevokedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true, comment: "Who revoked this token"),
-                    RevocationReason = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true, comment: "Reason for revoking the token"),
-                    TokenType = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true, comment: "The type of token (e.g., Bearer, JWT, OAuth)"),
-                    TokenPurpose = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true, comment: "The purpose of the token (e.g., Access, Refresh, Authentication)"),
-                    UsageCount = table.Column<int>(type: "int", nullable: false, defaultValue: 0, comment: "Number of times this token has been used"),
-                    LastUsedAt = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "When this token was last used"),
-                    ParentTokenId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true, comment: "ID of the parent token (for token rotation)"),
-                    IsRotated = table.Column<bool>(type: "bit", nullable: false, defaultValue: false, comment: "Whether this token has been rotated"),
-                    RotatedAt = table.Column<DateTime>(type: "datetime2", nullable: true, comment: "When this token was rotated"),
-                    RotatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true, comment: "Who rotated this token"),
-                    Value = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: false, comment: "The token value")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
-                    table.ForeignKey(
-                        name: "FK_UserTokens_Users_UserId",
-                        column: x => x.UserId,
-                        principalSchema: "Identity",
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                },
-                comment: "User tokens for refresh token management, multi-token scenarios, and token revocation");
-
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
+                column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUserClaims_UserId",
+                table: "AspNetUserClaims",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUserLogins_UserId",
+                table: "AspNetUserLogins",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUserRoles_RoleId",
+                table: "AspNetUserRoles",
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
@@ -575,199 +530,6 @@ namespace MyShop.Identity.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserClaim_Category",
-                schema: "Identity",
-                table: "UserClaims",
-                column: "Category");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserClaim_ClaimType",
-                schema: "Identity",
-                table: "UserClaims",
-                column: "ClaimType");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserClaim_CreatedAt",
-                schema: "Identity",
-                table: "UserClaims",
-                column: "CreatedAt");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserClaim_ExpiresAt",
-                schema: "Identity",
-                table: "UserClaims",
-                column: "ExpiresAt");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserClaim_IsActive",
-                schema: "Identity",
-                table: "UserClaims",
-                column: "IsActive");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserClaim_UserId",
-                schema: "Identity",
-                table: "UserClaims",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserClaim_UserId_ClaimType",
-                schema: "Identity",
-                table: "UserClaims",
-                columns: new[] { "UserId", "ClaimType" },
-                filter: "[IsActive] = 1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserLogin_CreatedAt",
-                schema: "Identity",
-                table: "UserLogins",
-                column: "CreatedAt");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserLogin_IpAddress",
-                schema: "Identity",
-                table: "UserLogins",
-                column: "IpAddress");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserLogin_IsActive",
-                schema: "Identity",
-                table: "UserLogins",
-                column: "IsActive");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserLogin_IsTrusted",
-                schema: "Identity",
-                table: "UserLogins",
-                column: "IsTrusted");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserLogin_LastUsedAt",
-                schema: "Identity",
-                table: "UserLogins",
-                column: "LastUsedAt");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserLogin_Location",
-                schema: "Identity",
-                table: "UserLogins",
-                column: "Location");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserLogin_LoginProvider",
-                schema: "Identity",
-                table: "UserLogins",
-                column: "LoginProvider");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserLogin_UserId",
-                schema: "Identity",
-                table: "UserLogins",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserLogin_UserId_IsActive",
-                schema: "Identity",
-                table: "UserLogins",
-                columns: new[] { "UserId", "IsActive" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserLogin_UserId_IsTrusted",
-                schema: "Identity",
-                table: "UserLogins",
-                columns: new[] { "UserId", "IsTrusted" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserRole_AssignedAt",
-                schema: "Identity",
-                table: "UserRoles",
-                column: "AssignedAt");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserRole_AssignedBy",
-                schema: "Identity",
-                table: "UserRoles",
-                column: "AssignedBy");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserRole_AssignmentCategory",
-                schema: "Identity",
-                table: "UserRoles",
-                column: "AssignmentCategory");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserRole_CreatedAt",
-                schema: "Identity",
-                table: "UserRoles",
-                column: "CreatedAt");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserRole_ExpiresAt",
-                schema: "Identity",
-                table: "UserRoles",
-                column: "ExpiresAt");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserRole_IsActive",
-                schema: "Identity",
-                table: "UserRoles",
-                column: "IsActive");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserRole_IsTemporary",
-                schema: "Identity",
-                table: "UserRoles",
-                column: "IsTemporary");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserRole_Priority",
-                schema: "Identity",
-                table: "UserRoles",
-                column: "Priority");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserRole_RoleId",
-                schema: "Identity",
-                table: "UserRoles",
-                column: "RoleId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserRole_RoleId_IsActive",
-                schema: "Identity",
-                table: "UserRoles",
-                columns: new[] { "RoleId", "IsActive" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserRole_UserId",
-                schema: "Identity",
-                table: "UserRoles",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserRole_UserId_ExpiresAt",
-                schema: "Identity",
-                table: "UserRoles",
-                columns: new[] { "UserId", "ExpiresAt" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserRole_UserId_IsActive",
-                schema: "Identity",
-                table: "UserRoles",
-                columns: new[] { "UserId", "IsActive" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserRole_UserId_IsTemporary",
-                schema: "Identity",
-                table: "UserRoles",
-                columns: new[] { "UserId", "IsTemporary" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserRole_UserId_Priority",
-                schema: "Identity",
-                table: "UserRoles",
-                columns: new[] { "UserId", "Priority" });
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ApplicationUser_AccessFailedCount",
                 schema: "Identity",
                 table: "Users",
@@ -950,114 +712,6 @@ namespace MyShop.Identity.Migrations
                 table: "Users",
                 column: "UserName",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserToken_CreatedAt",
-                schema: "Identity",
-                table: "UserTokens",
-                column: "CreatedAt");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserToken_IpAddress",
-                schema: "Identity",
-                table: "UserTokens",
-                column: "IpAddress");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserToken_IsActive",
-                schema: "Identity",
-                table: "UserTokens",
-                column: "IsActive");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserToken_IsRevoked",
-                schema: "Identity",
-                table: "UserTokens",
-                column: "IsRevoked");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserToken_IsRotated",
-                schema: "Identity",
-                table: "UserTokens",
-                column: "IsRotated");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserToken_LastUsedAt",
-                schema: "Identity",
-                table: "UserTokens",
-                column: "LastUsedAt");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserToken_LoginProvider",
-                schema: "Identity",
-                table: "UserTokens",
-                column: "LoginProvider");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserToken_Name",
-                schema: "Identity",
-                table: "UserTokens",
-                column: "Name");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserToken_ParentTokenId",
-                schema: "Identity",
-                table: "UserTokens",
-                column: "ParentTokenId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserToken_TokenPurpose",
-                schema: "Identity",
-                table: "UserTokens",
-                column: "TokenPurpose");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserToken_TokenType",
-                schema: "Identity",
-                table: "UserTokens",
-                column: "TokenType");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserToken_UserId",
-                schema: "Identity",
-                table: "UserTokens",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserToken_UserId_ExpiresAt",
-                schema: "Identity",
-                table: "UserTokens",
-                columns: new[] { "UserId", "ExpiresAt" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserToken_UserId_IsActive",
-                schema: "Identity",
-                table: "UserTokens",
-                columns: new[] { "UserId", "IsActive" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserToken_UserId_IsRevoked",
-                schema: "Identity",
-                table: "UserTokens",
-                columns: new[] { "UserId", "IsRevoked" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserToken_UserId_LastUsedAt",
-                schema: "Identity",
-                table: "UserTokens",
-                columns: new[] { "UserId", "LastUsedAt" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserToken_UserId_TokenPurpose",
-                schema: "Identity",
-                table: "UserTokens",
-                columns: new[] { "UserId", "TokenPurpose" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserTokens_ExpiresAt",
-                schema: "Identity",
-                table: "UserTokens",
-                column: "ExpiresAt");
         }
 
         /// <inheritdoc />
@@ -1065,6 +719,18 @@ namespace MyShop.Identity.Migrations
         {
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUserClaims");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUserLogins");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUserRoles");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
                 name: "AuditLogs",
@@ -1075,19 +741,7 @@ namespace MyShop.Identity.Migrations
                 schema: "Identity");
 
             migrationBuilder.DropTable(
-                name: "UserClaims",
-                schema: "Identity");
-
-            migrationBuilder.DropTable(
-                name: "UserLogins",
-                schema: "Identity");
-
-            migrationBuilder.DropTable(
-                name: "UserRoles",
-                schema: "Identity");
-
-            migrationBuilder.DropTable(
-                name: "UserTokens",
+                name: "Users",
                 schema: "Identity");
 
             migrationBuilder.DropTable(
@@ -1096,10 +750,6 @@ namespace MyShop.Identity.Migrations
 
             migrationBuilder.DropTable(
                 name: "Roles",
-                schema: "Identity");
-
-            migrationBuilder.DropTable(
-                name: "Users",
                 schema: "Identity");
         }
     }

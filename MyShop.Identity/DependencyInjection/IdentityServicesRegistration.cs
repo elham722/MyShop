@@ -1,6 +1,7 @@
 ﻿using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,15 +10,18 @@ using MyShop.Identity.Constants;
 using MyShop.Identity.Context;
 using MyShop.Identity.Models;
 using MyShop.Identity.Mappings;
-using IAuthorizationService = MyShop.Identity.Services.Authorization.AuthorizationService;
 using MyShop.Contracts.Identity.Services.Audit;
 using MyShop.Contracts.Identity.Services.Authentication;
 using MyShop.Contracts.Identity.Services;
+using MyShop.Contracts.Identity.Services.JwtToken;
+using MyShop.Contracts.Identity.Services.RolePermission;
 using MyShop.Contracts.DTOs.Options;
 using MyShop.Identity.Services;
 using MyShop.Identity.Services.Audit;
 using MyShop.Identity.Services.Authentication;
 using MyShop.Identity.Services.Authorization;
+using MyShop.Identity.Services.JwtToken;
+using MyShop.Identity.Services.RolePermission;
 
 namespace MyShop.Identity.DependencyInjection
 {
@@ -152,14 +156,16 @@ namespace MyShop.Identity.DependencyInjection
             services.AddScoped<IPasswordService, PasswordService>();
             services.AddScoped<ITwoFactorService, TwoFactorService>();
             services.AddScoped<ILockoutService, LockoutService>();
+            services.AddScoped<IJwtTokenService, JwtTokenService>();
 
             // Register authentication facade
             services.AddScoped<IAuthenticationFacade, AuthenticationFacade>();
 
             // Register other identity services
             services.AddScoped<IAuditService, AuditService>();
-            services.AddScoped<IAuthorizationService, AuthorizationService>();
+            services.AddScoped<Contracts.Identity.Services.Authorization.IAuthorizationService, AuthorizationService>();
             services.AddScoped<IUserContextService, UserContextService>();
+            services.AddScoped<IRolePermissionService, RolePermissionService>();
             
             // Configure options
             services.Configure<LockoutOptions>(configuration.GetSection("LockoutOptions"));

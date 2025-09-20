@@ -12,8 +12,8 @@ using MyShop.Identity.Context;
 namespace MyShop.Identity.Migrations
 {
     [DbContext(typeof(MyShopIdentityDbContext))]
-    [Migration("20250920063812_firstmigration")]
-    partial class firstmigration
+    [Migration("20250920070831_FirstMigration")]
+    partial class FirstMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -48,6 +48,87 @@ namespace MyShop.Identity.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetRoleClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProviderKey")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("LoginProvider", "ProviderKey");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserLogins", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("RoleId")
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetUserRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserId", "LoginProvider", "Name");
+
+                    b.ToTable("AspNetUserTokens", (string)null);
                 });
 
             modelBuilder.Entity("MyShop.Identity.Models.ApplicationUser", b =>
@@ -661,537 +742,53 @@ namespace MyShop.Identity.Migrations
                         });
                 });
 
-            modelBuilder.Entity("MyShop.Identity.Models.UserClaim", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasComment("Unique identifier for the user claim");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Category")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasComment("Category for grouping claims (Business, System, etc.)");
-
-                    b.Property<string>("ClaimType")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasComment("The type of the claim");
-
-                    b.Property<string>("ClaimValue")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)")
-                        .HasComment("The value of the claim");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2")
-                        .HasComment("When this claim was created");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasComment("Who created this claim");
-
-                    b.Property<DateTime?>("ExpiresAt")
-                        .HasColumnType("datetime2")
-                        .HasComment("When this claim expires (null = never expires)");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true)
-                        .HasComment("Whether this claim is currently active");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2")
-                        .HasComment("When this claim was last updated");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasComment("Who last updated this claim");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasComment("Foreign key to the user");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Category")
-                        .HasDatabaseName("IX_UserClaim_Category");
-
-                    b.HasIndex("ClaimType")
-                        .HasDatabaseName("IX_UserClaim_ClaimType");
-
-                    b.HasIndex("CreatedAt")
-                        .HasDatabaseName("IX_UserClaim_CreatedAt");
-
-                    b.HasIndex("ExpiresAt")
-                        .HasDatabaseName("IX_UserClaim_ExpiresAt");
-
-                    b.HasIndex("IsActive")
-                        .HasDatabaseName("IX_UserClaim_IsActive");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("IX_UserClaim_UserId");
-
-                    b.HasIndex("UserId", "ClaimType")
-                        .HasDatabaseName("IX_UserClaim_UserId_ClaimType")
-                        .HasFilter("[IsActive] = 1");
-
-                    b.ToTable("UserClaims", "Identity", t =>
-                        {
-                            t.HasComment("Custom user claims for dynamic business claims that need management and expiration");
-                        });
-                });
-
-            modelBuilder.Entity("MyShop.Identity.Models.UserLogin", b =>
-                {
-                    b.Property<string>("LoginProvider")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasComment("The login provider (e.g., Google, Facebook, Local)");
-
-                    b.Property<string>("ProviderKey")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasComment("The provider key (e.g., Google ID, Facebook ID)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2")
-                        .HasComment("When this login was created");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasComment("Who created this login");
-
-                    b.Property<string>("DeviceInfo")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)")
-                        .HasComment("Device information (OS, model, etc.)");
-
-                    b.Property<string>("IpAddress")
-                        .HasMaxLength(45)
-                        .HasColumnType("nvarchar(45)")
-                        .HasComment("IP address of the login");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true)
-                        .HasComment("Whether this login is currently active");
-
-                    b.Property<bool>("IsTrusted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasComment("Whether this device is trusted");
-
-                    b.Property<DateTime?>("LastUsedAt")
-                        .HasColumnType("datetime2")
-                        .HasComment("When this login was last used");
-
-                    b.Property<string>("Location")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasComment("Geographic location of the login");
-
-                    b.Property<string>("ProviderDisplayName")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasComment("The display name of the provider");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2")
-                        .HasComment("When this login was last updated");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasComment("Who last updated this login");
-
-                    b.Property<string>("UserAgent")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)")
-                        .HasComment("User agent string from the browser");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasComment("Foreign key to the user");
-
-                    b.HasKey("LoginProvider", "ProviderKey");
-
-                    b.HasIndex("CreatedAt")
-                        .HasDatabaseName("IX_UserLogin_CreatedAt");
-
-                    b.HasIndex("IpAddress")
-                        .HasDatabaseName("IX_UserLogin_IpAddress");
-
-                    b.HasIndex("IsActive")
-                        .HasDatabaseName("IX_UserLogin_IsActive");
-
-                    b.HasIndex("IsTrusted")
-                        .HasDatabaseName("IX_UserLogin_IsTrusted");
-
-                    b.HasIndex("LastUsedAt")
-                        .HasDatabaseName("IX_UserLogin_LastUsedAt");
-
-                    b.HasIndex("Location")
-                        .HasDatabaseName("IX_UserLogin_Location");
-
-                    b.HasIndex("LoginProvider")
-                        .HasDatabaseName("IX_UserLogin_LoginProvider");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("IX_UserLogin_UserId");
-
-                    b.HasIndex("UserId", "IsActive")
-                        .HasDatabaseName("IX_UserLogin_UserId_IsActive");
-
-                    b.HasIndex("UserId", "IsTrusted")
-                        .HasDatabaseName("IX_UserLogin_UserId_IsTrusted");
-
-                    b.ToTable("UserLogins", "Identity", t =>
-                        {
-                            t.HasComment("User login tracking for multi-device management and security monitoring");
-                        });
-                });
-
-            modelBuilder.Entity("MyShop.Identity.Models.UserRole", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasComment("Foreign key to the user");
-
-                    b.Property<string>("RoleId")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasComment("Foreign key to the role");
-
-                    b.Property<DateTime>("AssignedAt")
-                        .HasColumnType("datetime2")
-                        .HasComment("When this role was assigned to the user");
-
-                    b.Property<string>("AssignedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasComment("Who assigned this role to the user");
-
-                    b.Property<string>("AssignmentCategory")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasComment("Category of the assignment (Standard, Temporary, Emergency, etc.)");
-
-                    b.Property<string>("AssignmentReason")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)")
-                        .HasComment("Reason for assigning this role to the user");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2")
-                        .HasComment("When this role assignment was created");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasComment("Who created this role assignment");
-
-                    b.Property<DateTime?>("ExpiresAt")
-                        .HasColumnType("datetime2")
-                        .HasComment("When this role assignment expires (null = never expires)");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true)
-                        .HasComment("Whether this role assignment is currently active");
-
-                    b.Property<bool>("IsTemporary")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasComment("Whether this is a temporary role assignment");
-
-                    b.Property<string>("Notes")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)")
-                        .HasComment("Additional notes about this role assignment");
-
-                    b.Property<int>("Priority")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(5)
-                        .HasComment("Priority level for sorting (1=highest, 10=lowest)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2")
-                        .HasComment("When this role assignment was last updated");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasComment("Who last updated this role assignment");
-
-                    b.HasKey("UserId", "RoleId");
-
-                    b.HasIndex("AssignedAt")
-                        .HasDatabaseName("IX_UserRole_AssignedAt");
-
-                    b.HasIndex("AssignedBy")
-                        .HasDatabaseName("IX_UserRole_AssignedBy");
-
-                    b.HasIndex("AssignmentCategory")
-                        .HasDatabaseName("IX_UserRole_AssignmentCategory");
-
-                    b.HasIndex("CreatedAt")
-                        .HasDatabaseName("IX_UserRole_CreatedAt");
-
-                    b.HasIndex("ExpiresAt")
-                        .HasDatabaseName("IX_UserRole_ExpiresAt");
-
-                    b.HasIndex("IsActive")
-                        .HasDatabaseName("IX_UserRole_IsActive");
-
-                    b.HasIndex("IsTemporary")
-                        .HasDatabaseName("IX_UserRole_IsTemporary");
-
-                    b.HasIndex("Priority")
-                        .HasDatabaseName("IX_UserRole_Priority");
-
-                    b.HasIndex("RoleId")
-                        .HasDatabaseName("IX_UserRole_RoleId");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("IX_UserRole_UserId");
-
-                    b.HasIndex("RoleId", "IsActive")
-                        .HasDatabaseName("IX_UserRole_RoleId_IsActive");
-
-                    b.HasIndex("UserId", "ExpiresAt")
-                        .HasDatabaseName("IX_UserRole_UserId_ExpiresAt");
-
-                    b.HasIndex("UserId", "IsActive")
-                        .HasDatabaseName("IX_UserRole_UserId_IsActive");
-
-                    b.HasIndex("UserId", "IsTemporary")
-                        .HasDatabaseName("IX_UserRole_UserId_IsTemporary");
-
-                    b.HasIndex("UserId", "Priority")
-                        .HasDatabaseName("IX_UserRole_UserId_Priority");
-
-                    b.ToTable("UserRoles", "Identity", t =>
-                        {
-                            t.HasComment("User role assignments with expiration, priority, and audit tracking");
-                        });
-                });
-
-            modelBuilder.Entity("MyShop.Identity.Models.UserToken", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasComment("Foreign key to the user");
-
-                    b.Property<string>("LoginProvider")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasComment("The login provider (e.g., Local, Google, Facebook)");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasComment("The name of the token (e.g., AccessToken, RefreshToken)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2")
-                        .HasComment("When this token was created");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasComment("Who created this token");
-
-                    b.Property<string>("DeviceInfo")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)")
-                        .HasComment("Device information (OS, model, etc.)");
-
-                    b.Property<DateTime?>("ExpiresAt")
-                        .HasColumnType("datetime2")
-                        .HasComment("When this token expires (null = never expires)");
-
-                    b.Property<string>("IpAddress")
-                        .HasMaxLength(45)
-                        .HasColumnType("nvarchar(45)")
-                        .HasComment("IP address of the token creation");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true)
-                        .HasComment("Whether this token is currently active");
-
-                    b.Property<bool>("IsRevoked")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasComment("Whether this token has been revoked");
-
-                    b.Property<bool>("IsRotated")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasComment("Whether this token has been rotated");
-
-                    b.Property<DateTime?>("LastUsedAt")
-                        .HasColumnType("datetime2")
-                        .HasComment("When this token was last used");
-
-                    b.Property<string>("ParentTokenId")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasComment("ID of the parent token (for token rotation)");
-
-                    b.Property<string>("RevocationReason")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)")
-                        .HasComment("Reason for revoking the token");
-
-                    b.Property<DateTime?>("RevokedAt")
-                        .HasColumnType("datetime2")
-                        .HasComment("When this token was revoked");
-
-                    b.Property<string>("RevokedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasComment("Who revoked this token");
-
-                    b.Property<DateTime?>("RotatedAt")
-                        .HasColumnType("datetime2")
-                        .HasComment("When this token was rotated");
-
-                    b.Property<string>("RotatedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasComment("Who rotated this token");
-
-                    b.Property<string>("TokenPurpose")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasComment("The purpose of the token (e.g., Access, Refresh, Authentication)");
-
-                    b.Property<string>("TokenType")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasComment("The type of token (e.g., Bearer, JWT, OAuth)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2")
-                        .HasComment("When this token was last updated");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasComment("Who last updated this token");
-
-                    b.Property<int>("UsageCount")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0)
-                        .HasComment("Number of times this token has been used");
-
-                    b.Property<string>("UserAgent")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)")
-                        .HasComment("User agent string from the browser");
-
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)")
-                        .HasComment("The token value");
-
-                    b.HasKey("UserId", "LoginProvider", "Name");
-
-                    b.HasIndex("CreatedAt")
-                        .HasDatabaseName("IX_UserToken_CreatedAt");
-
-                    b.HasIndex("ExpiresAt")
-                        .HasDatabaseName("IX_UserTokens_ExpiresAt");
-
-                    b.HasIndex("IpAddress")
-                        .HasDatabaseName("IX_UserToken_IpAddress");
-
-                    b.HasIndex("IsActive")
-                        .HasDatabaseName("IX_UserToken_IsActive");
-
-                    b.HasIndex("IsRevoked")
-                        .HasDatabaseName("IX_UserToken_IsRevoked");
-
-                    b.HasIndex("IsRotated")
-                        .HasDatabaseName("IX_UserToken_IsRotated");
-
-                    b.HasIndex("LastUsedAt")
-                        .HasDatabaseName("IX_UserToken_LastUsedAt");
-
-                    b.HasIndex("LoginProvider")
-                        .HasDatabaseName("IX_UserToken_LoginProvider");
-
-                    b.HasIndex("Name")
-                        .HasDatabaseName("IX_UserToken_Name");
-
-                    b.HasIndex("ParentTokenId")
-                        .HasDatabaseName("IX_UserToken_ParentTokenId");
-
-                    b.HasIndex("TokenPurpose")
-                        .HasDatabaseName("IX_UserToken_TokenPurpose");
-
-                    b.HasIndex("TokenType")
-                        .HasDatabaseName("IX_UserToken_TokenType");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("IX_UserToken_UserId");
-
-                    b.HasIndex("UserId", "ExpiresAt")
-                        .HasDatabaseName("IX_UserToken_UserId_ExpiresAt");
-
-                    b.HasIndex("UserId", "IsActive")
-                        .HasDatabaseName("IX_UserToken_UserId_IsActive");
-
-                    b.HasIndex("UserId", "IsRevoked")
-                        .HasDatabaseName("IX_UserToken_UserId_IsRevoked");
-
-                    b.HasIndex("UserId", "LastUsedAt")
-                        .HasDatabaseName("IX_UserToken_UserId_LastUsedAt");
-
-                    b.HasIndex("UserId", "TokenPurpose")
-                        .HasDatabaseName("IX_UserToken_UserId_TokenPurpose");
-
-                    b.ToTable("UserTokens", "Identity", t =>
-                        {
-                            t.HasComment("User tokens for refresh token management, multi-token scenarios, and token revocation");
-                        });
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("MyShop.Identity.Models.Role", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.HasOne("MyShop.Identity.Models.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.HasOne("MyShop.Identity.Models.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.HasOne("MyShop.Identity.Models.Role", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MyShop.Identity.Models.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.HasOne("MyShop.Identity.Models.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -1432,48 +1029,6 @@ namespace MyShop.Identity.Migrations
                     b.Navigation("Permission");
 
                     b.Navigation("Role");
-                });
-
-            modelBuilder.Entity("MyShop.Identity.Models.UserClaim", b =>
-                {
-                    b.HasOne("MyShop.Identity.Models.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("MyShop.Identity.Models.UserLogin", b =>
-                {
-                    b.HasOne("MyShop.Identity.Models.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("MyShop.Identity.Models.UserRole", b =>
-                {
-                    b.HasOne("MyShop.Identity.Models.Role", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MyShop.Identity.Models.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("MyShop.Identity.Models.UserToken", b =>
-                {
-                    b.HasOne("MyShop.Identity.Models.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("MyShop.Identity.Models.ApplicationUser", b =>

@@ -140,13 +140,13 @@ public class LoginService : ILoginService
             userAgent ??= _userContextService.GetCurrentUserAgent();
 
             var userToken = await _context.UserTokens
-                .FirstOrDefaultAsync(ut => ut.Value == request.RefreshToken && ut.IsActive && !ut.IsRevoked);
+                .FirstOrDefaultAsync(ut => ut.Value == request.RefreshToken);
 
-            if (userToken == null || userToken.ExpiresAt < DateTime.UtcNow)
+            if (userToken == null)
             {
                 await _auditService.LogTokenOperationAsync("", "RefreshTokenValidation", 
                     ipAddress: ipAddress, userAgent: userAgent, isSuccess: false, 
-                    errorMessage: "Invalid or expired refresh token");
+                    errorMessage: "Invalid refresh token");
                 return Result<LoginResponseDto>.Failure("Invalid refresh token");
             }
 

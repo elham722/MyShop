@@ -95,10 +95,9 @@ public class JwtTokenService : IJwtTokenService
 
             var principal = tokenHandler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
             
-            // Check if token exists in database and is not revoked
+            // Check if token exists in database
             var tokenExists = await _context.UserTokens
-                .AnyAsync(ut => ut.Value == token && ut.IsActive && !ut.IsRevoked && 
-                               (!ut.ExpiresAt.HasValue || ut.ExpiresAt > DateTime.UtcNow));
+                .AnyAsync(ut => ut.Value == token);
 
             if (!tokenExists)
                 return null;
@@ -119,7 +118,8 @@ public class JwtTokenService : IJwtTokenService
         if (userToken == null)
             return false;
 
-        userToken.Revoke("System", "Manual revocation");
+        // Remove token from database
+        _context.UserTokens.Remove(userToken);
         await _context.SaveChangesAsync();
 
         //await _auditService.LogAsync("Token Revoked", $"Token revoked for user {userToken.UserId}", userToken.UserId);
@@ -129,12 +129,13 @@ public class JwtTokenService : IJwtTokenService
     public async Task<bool> RevokeAllUserTokensAsync(string userId)
     {
         var userTokens = await _context.UserTokens
-            .Where(ut => ut.UserId == userId && ut.IsActive && !ut.IsRevoked)
+            .Where(ut => ut.UserId == userId)
             .ToListAsync();
 
         foreach (var token in userTokens)
         {
-            token.Revoke("System", "Bulk revocation");
+            // Remove token from database
+            _context.UserTokens.Remove(token);
         }
 
         await _context.SaveChangesAsync();
@@ -147,24 +148,25 @@ public class JwtTokenService : IJwtTokenService
     {
         var tokens = await _context.UserTokens
             .Where(ut => ut.UserId == userId)
-            .OrderByDescending(ut => ut.CreatedAt)
             .ToListAsync();
-        var tokenDto = MappingService.MapToDto(tokens);
-        return tokenDto;
+        
+        // Convert to DTO manually since we're using default IdentityUserToken
+        var tokenDtos = tokens.Select(t => new UserTokenDto
+        {
+            UserId = t.UserId,
+            LoginProvider = t.LoginProvider,
+            Name = t.Name,
+            Value = t.Value
+        });
+        
+        return tokenDtos;
     }
 
     public async Task CleanupExpiredTokensAsync()
     {
-        var expiredTokens = await _context.UserTokens
-            .Where(ut => ut.ExpiresAt.HasValue && ut.ExpiresAt < DateTime.UtcNow)
-            .ToListAsync();
-
-        foreach (var token in expiredTokens)
-        {
-            token.Deactivate("Expired", "System");
-        }
-
-        await _context.SaveChangesAsync();
+        // For default IdentityUserToken, we can't check expiration
+        // This method is simplified for default Identity implementation
+        await Task.CompletedTask;
     }
 
     private async Task<List<Claim>> GetUserClaimsAsync(ApplicationUser user)

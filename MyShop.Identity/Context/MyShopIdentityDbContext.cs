@@ -8,15 +8,7 @@ namespace MyShop.Identity.Context
     /// <summary>
     /// Identity DbContext for MyShop application with custom entities and configurations
     /// </summary>
-    public class MyShopIdentityDbContext : IdentityDbContext<
-        ApplicationUser,
-        Role,
-        string,
-        UserClaim,
-        UserRole,
-        UserLogin,
-        IdentityRoleClaim<string>,
-        UserToken>
+    public class MyShopIdentityDbContext : IdentityDbContext<ApplicationUser, Role, string>
     {
         public MyShopIdentityDbContext(DbContextOptions<MyShopIdentityDbContext> options) : base(options)
         {
@@ -67,16 +59,7 @@ namespace MyShop.Identity.Context
                     throw;
                 }
 
-                try
-                {
-                    builder.ApplyConfiguration(new UserRoleConfiguration());
-                    Console.WriteLine("UserRoleConfiguration applied successfully");
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error in UserRoleConfiguration: {ex.Message}");
-                    throw;
-                }
+                // UserRoleConfiguration removed - using default IdentityUserRole<string>
 
                 try
                 {
@@ -89,38 +72,7 @@ namespace MyShop.Identity.Context
                     throw;
                 }
 
-                try
-                {
-                    builder.ApplyConfiguration(new UserClaimConfiguration());
-                    Console.WriteLine("UserClaimConfiguration applied successfully");
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error in UserClaimConfiguration: {ex.Message}");
-                    throw;
-                }
-
-                try
-                {
-                    builder.ApplyConfiguration(new UserLoginConfiguration());
-                    Console.WriteLine("UserLoginConfiguration applied successfully");
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error in UserLoginConfiguration: {ex.Message}");
-                    throw;
-                }
-
-                try
-                {
-                    builder.ApplyConfiguration(new UserTokenConfiguration());
-                    Console.WriteLine("UserTokenConfiguration applied successfully");
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error in UserTokenConfiguration: {ex.Message}");
-                    throw;
-                }
+                // Using default Identity classes - custom configurations removed
 
                 try
                 {
@@ -154,12 +106,10 @@ namespace MyShop.Identity.Context
             builder.Entity<ApplicationUser>().ToTable("Users", "Identity");
             builder.Entity<Role>().ToTable("Roles", "Identity");
             builder.Entity<Permission>().ToTable("Permissions", "Identity");
-            builder.Entity<UserRole>().ToTable("UserRoles", "Identity");
             builder.Entity<RolePermission>().ToTable("RolePermissions", "Identity");
-            builder.Entity<UserClaim>().ToTable("UserClaims", "Identity");
-            builder.Entity<UserLogin>().ToTable("UserLogins", "Identity");
-            builder.Entity<UserToken>().ToTable("UserTokens", "Identity");
             builder.Entity<AuditLog>().ToTable("AuditLogs", "Identity");
+            
+            // Default Identity tables will use default names and schema
         }
 
         private void ConfigureRelationships(ModelBuilder builder)
@@ -204,11 +154,6 @@ namespace MyShop.Identity.Context
             builder.Entity<AuditLog>()
                 .HasIndex(al => al.Timestamp)
                 .HasDatabaseName("IX_AuditLogs_Timestamp");
-
-            // User token indexes for performance
-            builder.Entity<UserToken>()
-                .HasIndex(ut => ut.ExpiresAt)
-                .HasDatabaseName("IX_UserTokens_ExpiresAt");
 
             // Role indexes for performance
             builder.Entity<Role>()

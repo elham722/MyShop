@@ -7,7 +7,7 @@ using MyShop.Domain.Shared.ValueObjects.Identity;
 
 namespace MyShop.Identity.Models;
 
-public class ApplicationUser : IdentityUser
+public class ApplicationUser : IdentityUser<string>
 {
     public AccountInfo Account { get; private set; } = null!;
     public SecurityInfo Security { get; private set; } = null!;
