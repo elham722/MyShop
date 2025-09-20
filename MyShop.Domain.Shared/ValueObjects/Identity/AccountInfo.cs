@@ -11,7 +11,14 @@ public class AccountInfo : BaseValueObject
     public DateTime? DeletedAt { get; private init; }
     public string? BranchId { get; private init; }
 
-    private AccountInfo() { } 
+    public AccountInfo() 
+    {
+        // Default constructor for EF Core
+        CreatedAt = DateTime.UtcNow;
+        LoginAttempts = 0;
+        IsActive = true;
+        IsDeleted = false;
+    } 
 
     private AccountInfo(
         DateTime createdAt,

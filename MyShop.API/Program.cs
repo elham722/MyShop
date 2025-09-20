@@ -5,11 +5,23 @@ using MyShop.API.Filters;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Mvc.Versioning;
+using MyShop.Application.DependencyInjection;
+using MyShop.Identity.DependencyInjection;
+using MyShop.ExternalServices.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
 builder.Services.AddControllers();
+
+// Add Application Services
+builder.Services.ConfigureApplicationServices();
+
+// Add External Services
+builder.Services.ConfigureInfrastructureServices(builder.Configuration);
+
+// Add Identity Services
+builder.Services.ConfigureIdentityServices(builder.Configuration);
 
 // Add API Versioning
 builder.Services.AddApiVersioning(opt =>

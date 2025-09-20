@@ -95,8 +95,8 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
         builder.ToTable("Roles", "Identity")
             .HasComment("User roles for role-based access control");
 
-        // Seed Data
-        builder.HasData(GetSeedData());
+        // Seed Data - Commented out for now to avoid design-time issues
+        // builder.HasData(GetSeedData());
     }
 
     private static IEnumerable<Role> GetSeedData()

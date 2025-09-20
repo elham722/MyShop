@@ -114,8 +114,8 @@ public class UserLoginConfiguration : IEntityTypeConfiguration<UserLogin>
         builder.ToTable("UserLogins", "Identity")
             .HasComment("User login tracking for multi-device management and security monitoring");
 
-        // Seed Data
-        builder.HasData(GetSeedData());
+        // Seed Data - Commented out for now to avoid design-time issues
+        // builder.HasData(GetSeedData());
     }
 
     private static IEnumerable<UserLogin> GetSeedData()

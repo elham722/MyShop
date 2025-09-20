@@ -129,8 +129,8 @@ public class UserRoleConfiguration : IEntityTypeConfiguration<UserRole>
         builder.ToTable("UserRoles", "Identity")
             .HasComment("User role assignments with expiration, priority, and audit tracking");
 
-        // Seed Data
-        builder.HasData(GetSeedData());
+        // Seed Data - Commented out for now to avoid design-time issues
+        // builder.HasData(GetSeedData());
     }
 
     private static IEnumerable<UserRole> GetSeedData()

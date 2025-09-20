@@ -26,18 +26,18 @@ public class ApplicationUser : IdentityUser
 
     // Computed Properties
     public bool IsLocked => LockoutEnd.HasValue && LockoutEnd.Value > DateTime.UtcNow;
-    public bool IsAccountLocked => Account.IsLocked();
-    public bool IsActive => Account.IsActive && !Account.IsDeleted;
-    public bool IsNewUser => DateTime.UtcNow.Subtract(Account.CreatedAt).Days <= 7;
+    public bool IsAccountLocked => Account?.IsLocked() ?? false;
+    public bool IsActive => Account?.IsActive == true && Account?.IsDeleted != true;
+    public bool IsNewUser => Account?.CreatedAt != null && DateTime.UtcNow.Subtract(Account.CreatedAt).Days <= 7;
 
     // Additional state
-    public bool IsDeleted => Account.IsDeleted;
-    public DateTime? LastLoginAt => Account.LastLoginAt;
-    public DateTime? LastPasswordChangeAt => Account.LastPasswordChangeAt;
-    public int LoginAttempts => Account.LoginAttempts;
+    public bool IsDeleted => Account?.IsDeleted ?? false;
+    public DateTime? LastLoginAt => Account?.LastLoginAt;
+    public DateTime? LastPasswordChangeAt => Account?.LastPasswordChangeAt;
+    public int LoginAttempts => Account?.LoginAttempts ?? 0;
     public bool RequiresPasswordChange =>
-        Account.LastPasswordChangeAt == null ||
-        DateTime.UtcNow.Subtract(Account.LastPasswordChangeAt.Value).Days > 90;
+        Account?.LastPasswordChangeAt == null ||
+        (Account?.LastPasswordChangeAt != null && DateTime.UtcNow.Subtract(Account.LastPasswordChangeAt.Value).Days > 90);
 
     // Navigation Properties
     public ICollection<AuditLog> AuditLogs { get; set; } = new List<AuditLog>();
@@ -45,7 +45,11 @@ public class ApplicationUser : IdentityUser
     // EF Core constructor
     private ApplicationUser()
     {
-    
+        // Initialize ValueObjects for EF Core with default values
+        // These will be properly initialized when the entity is loaded from database
+        Account = new AccountInfo();
+        Security = SecurityInfo.Create();
+        Audit = AuditInfo.Create(null);
     }
 
     public static ApplicationUser Create(

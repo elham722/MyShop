@@ -29,27 +29,123 @@ namespace MyShop.Identity.Context
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            base.OnModelCreating(builder);
+            try
+            {
+                base.OnModelCreating(builder);
 
-            // Apply all configurations
-            builder.ApplyConfiguration(new ApplicationUserConfiguration());
-            builder.ApplyConfiguration(new RoleConfiguration());
-            builder.ApplyConfiguration(new PermissionConfiguration());
-            builder.ApplyConfiguration(new UserRoleConfiguration());
-            builder.ApplyConfiguration(new RolePermissionConfiguration());
-            builder.ApplyConfiguration(new UserClaimConfiguration());
-            builder.ApplyConfiguration(new UserLoginConfiguration());
-            builder.ApplyConfiguration(new UserTokenConfiguration());
-            builder.ApplyConfiguration(new AuditLogConfiguration());
+                // Apply configurations one by one to identify the problematic one
+                try
+                {
+                    builder.ApplyConfiguration(new ApplicationUserConfiguration());
+                    Console.WriteLine("ApplicationUserConfiguration applied successfully");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error in ApplicationUserConfiguration: {ex.Message}");
+                    throw;
+                }
 
-            // Configure table names and schema
-            ConfigureTableNames(builder);
-            
-            // Configure relationships
-            ConfigureRelationships(builder);
-            
-            // Configure indexes
-            ConfigureIndexes(builder);
+                try
+                {
+                    builder.ApplyConfiguration(new RoleConfiguration());
+                    Console.WriteLine("RoleConfiguration applied successfully");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error in RoleConfiguration: {ex.Message}");
+                    throw;
+                }
+
+                try
+                {
+                    builder.ApplyConfiguration(new PermissionConfiguration());
+                    Console.WriteLine("PermissionConfiguration applied successfully");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error in PermissionConfiguration: {ex.Message}");
+                    throw;
+                }
+
+                try
+                {
+                    builder.ApplyConfiguration(new UserRoleConfiguration());
+                    Console.WriteLine("UserRoleConfiguration applied successfully");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error in UserRoleConfiguration: {ex.Message}");
+                    throw;
+                }
+
+                try
+                {
+                    builder.ApplyConfiguration(new RolePermissionConfiguration());
+                    Console.WriteLine("RolePermissionConfiguration applied successfully");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error in RolePermissionConfiguration: {ex.Message}");
+                    throw;
+                }
+
+                try
+                {
+                    builder.ApplyConfiguration(new UserClaimConfiguration());
+                    Console.WriteLine("UserClaimConfiguration applied successfully");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error in UserClaimConfiguration: {ex.Message}");
+                    throw;
+                }
+
+                try
+                {
+                    builder.ApplyConfiguration(new UserLoginConfiguration());
+                    Console.WriteLine("UserLoginConfiguration applied successfully");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error in UserLoginConfiguration: {ex.Message}");
+                    throw;
+                }
+
+                try
+                {
+                    builder.ApplyConfiguration(new UserTokenConfiguration());
+                    Console.WriteLine("UserTokenConfiguration applied successfully");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error in UserTokenConfiguration: {ex.Message}");
+                    throw;
+                }
+
+                try
+                {
+                    builder.ApplyConfiguration(new AuditLogConfiguration());
+                    Console.WriteLine("AuditLogConfiguration applied successfully");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error in AuditLogConfiguration: {ex.Message}");
+                    throw;
+                }
+
+                // Configure table names and schema
+                ConfigureTableNames(builder);
+                
+                // Configure relationships
+                ConfigureRelationships(builder);
+                
+                // Configure indexes
+                ConfigureIndexes(builder);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Error in OnModelCreating: {ex.Message}", ex);
+            }
         }
 
         private void ConfigureTableNames(ModelBuilder builder)

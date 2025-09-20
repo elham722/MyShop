@@ -105,8 +105,8 @@ public class PermissionConfiguration : IEntityTypeConfiguration<Permission>
         builder.ToTable("Permissions", "Identity")
             .HasComment("System permissions for fine-grained access control");
 
-        // Seed Data
-        builder.HasData(GetSeedData());
+        // Seed Data - Commented out for now to avoid design-time issues
+        // builder.HasData(GetSeedData());
     }
 
     private static IEnumerable<Permission> GetSeedData()

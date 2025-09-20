@@ -178,8 +178,8 @@ public class UserTokenConfiguration : IEntityTypeConfiguration<UserToken>
         builder.ToTable("UserTokens", "Identity")
             .HasComment("User tokens for refresh token management, multi-token scenarios, and token revocation");
 
-        // Seed Data
-        builder.HasData(GetSeedData());
+        // Seed Data - Commented out for now to avoid design-time issues
+        // builder.HasData(GetSeedData());
     }
 
     private static IEnumerable<UserToken> GetSeedData()

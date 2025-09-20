@@ -89,8 +89,8 @@ public class UserClaimConfiguration : IEntityTypeConfiguration<UserClaim>
         builder.ToTable("UserClaims", "Identity")
             .HasComment("Custom user claims for dynamic business claims that need management and expiration");
 
-        // Seed Data
-        builder.HasData(GetSeedData());
+        // Seed Data - Commented out for now to avoid design-time issues
+        // builder.HasData(GetSeedData());
     }
 
     private static IEnumerable<UserClaim> GetSeedData()

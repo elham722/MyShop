@@ -12,11 +12,17 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.1.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="7.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.9">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\MyShop.Application\MyShop.Application.csproj" />
     <ProjectReference Include="..\MyShop.Contracts\MyShop.Contracts.csproj" />
+    <ProjectReference Include="..\MyShop.ExternalServices\MyShop.ExternalServices.csproj" />
+    <ProjectReference Include="..\MyShop.Identity\MyShop.Identity.csproj" />
   </ItemGroup>
 
   <ItemGroup>

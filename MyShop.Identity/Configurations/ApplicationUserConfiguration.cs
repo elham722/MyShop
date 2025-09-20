@@ -179,8 +179,8 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
         builder.ToTable("ApplicationUsers", "Identity")
             .HasComment("Application users with enhanced security and audit features");
 
-        // Seed Data
-        builder.HasData(GetSeedData());
+        // Seed Data - Commented out for now to avoid design-time issues
+        // builder.HasData(GetSeedData());
     }
 
     private static void ConfigureAccountInfo(EntityTypeBuilder<ApplicationUser> builder)

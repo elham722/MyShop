@@ -9,7 +9,11 @@ public class AuditInfo : BaseValueObject
     public string? IpAddress { get; private init; }
     public string? UserAgent { get; private init; }
 
-    private AuditInfo() { } 
+    public AuditInfo() 
+    {
+        // Default constructor for EF Core
+        CreatedAt = DateTime.UtcNow;
+    } 
 
     private AuditInfo(string? createdBy, DateTime createdAt, string? modifiedBy, DateTime? modifiedAt, string? ipAddress, string? userAgent)
     {
