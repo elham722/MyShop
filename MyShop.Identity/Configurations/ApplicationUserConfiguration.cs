@@ -99,11 +99,6 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
             .HasDefaultValue(false)
             .HasComment("Whether TOTP is enabled");
 
-        builder.Property(u => u.SmsEnabled)
-            .IsRequired()
-            .HasDefaultValue(false)
-            .HasComment("Whether SMS two-factor authentication is enabled");
-
         // Social Login Properties
         builder.Property(u => u.GoogleId)
             .HasMaxLength(100)
@@ -113,10 +108,25 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
             .HasMaxLength(100)
             .HasComment("Microsoft OAuth ID");
 
-        // Value Objects Configuration
-        ConfigureAccountInfo(builder);
-        ConfigureSecurityInfo(builder);
-        ConfigureAuditInfo(builder);
+        // Extra states - inline properties
+        builder.Property(u => u.IsDeleted)
+            .IsRequired()
+            .HasDefaultValue(false)
+            .HasComment("Whether the user is deleted");
+
+        builder.Property(u => u.LastPasswordChangeAt)
+            .HasComment("When the password was last changed");
+
+        builder.Property(u => u.LastLoginAt)
+            .HasComment("When the user last logged in");
+
+        builder.Property(u => u.CreatedAt)
+            .IsRequired()
+            .HasComment("When the user was created");
+
+        builder.Property(u => u.BranchId)
+            .HasMaxLength(50)
+            .HasComment("Branch ID associated with the user");
 
         // Indexes
         builder.HasIndex(u => u.UserName)
@@ -141,9 +151,6 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
         builder.HasIndex(u => u.TotpEnabled)
             .HasDatabaseName("IX_ApplicationUser_TotpEnabled");
 
-        builder.HasIndex(u => u.SmsEnabled)
-            .HasDatabaseName("IX_ApplicationUser_SmsEnabled");
-
         builder.HasIndex(u => u.GoogleId)
             .HasDatabaseName("IX_ApplicationUser_GoogleId");
 
@@ -165,15 +172,28 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
         builder.HasIndex(u => u.PhoneNumberConfirmed)
             .HasDatabaseName("IX_ApplicationUser_PhoneNumberConfirmed");
 
+        // Extra states indexes
+        builder.HasIndex(u => u.IsDeleted)
+            .HasDatabaseName("IX_ApplicationUser_IsDeleted");
+
+        builder.HasIndex(u => u.CreatedAt)
+            .HasDatabaseName("IX_ApplicationUser_CreatedAt");
+
+        builder.HasIndex(u => u.LastLoginAt)
+            .HasDatabaseName("IX_ApplicationUser_LastLoginAt");
+
+        builder.HasIndex(u => u.BranchId)
+            .HasDatabaseName("IX_ApplicationUser_BranchId");
+
         // Composite Indexes
         builder.HasIndex(u => new { u.CustomerId, u.EmailConfirmed })
             .HasDatabaseName("IX_ApplicationUser_CustomerId_EmailConfirmed");
 
-        builder.HasIndex(u => new { u.TotpEnabled, u.SmsEnabled })
-            .HasDatabaseName("IX_ApplicationUser_TotpEnabled_SmsEnabled");
-
         builder.HasIndex(u => new { u.LockoutEnabled, u.LockoutEnd })
             .HasDatabaseName("IX_ApplicationUser_LockoutEnabled_LockoutEnd");
+
+        builder.HasIndex(u => new { u.IsDeleted, u.CreatedAt })
+            .HasDatabaseName("IX_ApplicationUser_IsDeleted_CreatedAt");
 
         // Table Configuration
         builder.ToTable("ApplicationUsers", "Identity")
@@ -183,166 +203,6 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
         // builder.HasData(GetSeedData());
     }
 
-    private static void ConfigureAccountInfo(EntityTypeBuilder<ApplicationUser> builder)
-    {
-        // AccountInfo Value Object Configuration
-        builder.OwnsOne(u => u.Account, account =>
-        {
-            account.Property(a => a.CreatedAt)
-                .IsRequired()
-                .HasColumnName("Account_CreatedAt")
-                .HasComment("When the account was created");
-
-            account.Property(a => a.LastLoginAt)
-                .HasColumnName("Account_LastLoginAt")
-                .HasComment("When the user last logged in");
-
-            account.Property(a => a.LastPasswordChangeAt)
-                .HasColumnName("Account_LastPasswordChangeAt")
-                .HasComment("When the password was last changed");
-
-            account.Property(a => a.LoginAttempts)
-                .IsRequired()
-                .HasDefaultValue(0)
-                .HasColumnName("Account_LoginAttempts")
-                .HasComment("Number of login attempts");
-
-            account.Property(a => a.IsActive)
-                .IsRequired()
-                .HasDefaultValue(true)
-                .HasColumnName("Account_IsActive")
-                .HasComment("Whether the account is active");
-
-            account.Property(a => a.IsDeleted)
-                .IsRequired()
-                .HasDefaultValue(false)
-                .HasColumnName("Account_IsDeleted")
-                .HasComment("Whether the account is deleted");
-
-            account.Property(a => a.DeletedAt)
-                .HasColumnName("Account_DeletedAt")
-                .HasComment("When the account was deleted");
-
-            account.Property(a => a.BranchId)
-                .HasMaxLength(50)
-                .HasColumnName("Account_BranchId")
-                .HasComment("Branch ID associated with the account");
-
-            // Indexes for AccountInfo
-            account.HasIndex(a => a.IsActive)
-                .HasDatabaseName("IX_ApplicationUser_Account_IsActive");
-
-            account.HasIndex(a => a.IsDeleted)
-                .HasDatabaseName("IX_ApplicationUser_Account_IsDeleted");
-
-            account.HasIndex(a => a.CreatedAt)
-                .HasDatabaseName("IX_ApplicationUser_Account_CreatedAt");
-
-            account.HasIndex(a => a.LastLoginAt)
-                .HasDatabaseName("IX_ApplicationUser_Account_LastLoginAt");
-
-            account.HasIndex(a => a.BranchId)
-                .HasDatabaseName("IX_ApplicationUser_Account_BranchId");
-        });
-    }
-
-    private static void ConfigureSecurityInfo(EntityTypeBuilder<ApplicationUser> builder)
-    {
-        // SecurityInfo Value Object Configuration
-        builder.OwnsOne(u => u.Security, security =>
-        {
-            security.Property(s => s.TwoFactorEnabled)
-                .IsRequired()
-                .HasDefaultValue(false)
-                .HasColumnName("Security_TwoFactorEnabled")
-                .HasComment("Whether two-factor authentication is enabled");
-
-            security.Property(s => s.TwoFactorSecret)
-                .HasMaxLength(100)
-                .HasColumnName("Security_TwoFactorSecret")
-                .HasComment("Two-factor authentication secret key");
-
-            security.Property(s => s.TwoFactorEnabledAt)
-                .HasColumnName("Security_TwoFactorEnabledAt")
-                .HasComment("When two-factor authentication was enabled");
-
-            security.Property(s => s.SecurityQuestion)
-                .HasMaxLength(200)
-                .HasColumnName("Security_Question")
-                .HasComment("Security question for account recovery");
-
-            security.Property(s => s.SecurityAnswer)
-                .HasMaxLength(200)
-                .HasColumnName("Security_Answer")
-                .HasComment("Security answer for account recovery (encrypted)");
-
-            security.Property(s => s.LastSecurityUpdate)
-                .HasColumnName("Security_LastSecurityUpdate")
-                .HasComment("When the last security update was performed");
-
-            // Indexes for SecurityInfo
-            security.HasIndex(s => s.TwoFactorEnabled)
-                .HasDatabaseName("IX_ApplicationUser_Security_TwoFactorEnabled");
-
-            security.HasIndex(s => s.TwoFactorEnabledAt)
-                .HasDatabaseName("IX_ApplicationUser_Security_TwoFactorEnabledAt");
-
-            security.HasIndex(s => s.LastSecurityUpdate)
-                .HasDatabaseName("IX_ApplicationUser_Security_LastSecurityUpdate");
-        });
-    }
-
-    private static void ConfigureAuditInfo(EntityTypeBuilder<ApplicationUser> builder)
-    {
-        // AuditInfo Value Object Configuration
-        builder.OwnsOne(u => u.Audit, audit =>
-        {
-            audit.Property(a => a.CreatedBy)
-                .HasMaxLength(100)
-                .HasColumnName("Audit_CreatedBy")
-                .HasComment("Who created the user");
-
-            audit.Property(a => a.CreatedAt)
-                .IsRequired()
-                .HasColumnName("Audit_CreatedAt")
-                .HasComment("When the user was created");
-
-            audit.Property(a => a.ModifiedBy)
-                .HasMaxLength(100)
-                .HasColumnName("Audit_ModifiedBy")
-                .HasComment("Who last modified the user");
-
-            audit.Property(a => a.ModifiedAt)
-                .HasColumnName("Audit_ModifiedAt")
-                .HasComment("When the user was last modified");
-
-            audit.Property(a => a.IpAddress)
-                .HasMaxLength(45)
-                .HasColumnName("Audit_IpAddress")
-                .HasComment("IP address of the last operation");
-
-            audit.Property(a => a.UserAgent)
-                .HasMaxLength(500)
-                .HasColumnName("Audit_UserAgent")
-                .HasComment("User agent of the last operation");
-
-            // Indexes for AuditInfo
-            audit.HasIndex(a => a.CreatedAt)
-                .HasDatabaseName("IX_ApplicationUser_Audit_CreatedAt");
-
-            audit.HasIndex(a => a.ModifiedAt)
-                .HasDatabaseName("IX_ApplicationUser_Audit_ModifiedAt");
-
-            audit.HasIndex(a => a.CreatedBy)
-                .HasDatabaseName("IX_ApplicationUser_Audit_CreatedBy");
-
-            audit.HasIndex(a => a.ModifiedBy)
-                .HasDatabaseName("IX_ApplicationUser_Audit_ModifiedBy");
-
-            audit.HasIndex(a => a.IpAddress)
-                .HasDatabaseName("IX_ApplicationUser_Audit_IpAddress");
-        });
-    }
 
     private static IEnumerable<ApplicationUser> GetSeedData()
     {
@@ -352,21 +212,18 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
         var superAdmin = ApplicationUser.Create(
             "superadmin@myshop.com",
             "superadmin",
-            null,
-            "System");
+            null);
         superAdmin.Id = "superadmin-user-id";
         superAdmin.EmailConfirmed = true;
         superAdmin.TwoFactorEnabled = true;
         superAdmin.SetTotpEnabled(true);
-        superAdmin.SetSmsEnabled(true);
         users.Add(superAdmin);
 
         // Admin user
         var admin = ApplicationUser.Create(
             "admin@myshop.com",
             "admin",
-            null,
-            "System");
+            null);
         admin.Id = "admin-user-id";
         admin.EmailConfirmed = true;
         admin.TwoFactorEnabled = true;
@@ -377,8 +234,7 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
         var manager = ApplicationUser.Create(
             "manager@myshop.com",
             "manager",
-            null,
-            "System");
+            null);
         manager.Id = "manager-user-id";
         manager.EmailConfirmed = true;
         manager.TwoFactorEnabled = false;
@@ -388,8 +244,7 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
         var customerService = ApplicationUser.Create(
             "customerservice@myshop.com",
             "customerservice",
-            null,
-            "System");
+            null);
         customerService.Id = "customerservice-user-id";
         customerService.EmailConfirmed = true;
         customerService.TwoFactorEnabled = false;
@@ -399,8 +254,7 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
         var salesRep = ApplicationUser.Create(
             "salesrep@myshop.com",
             "salesrep",
-            null,
-            "System");
+            null);
         salesRep.Id = "salesrep-user-id";
         salesRep.EmailConfirmed = true;
         salesRep.TwoFactorEnabled = false;
@@ -410,8 +264,7 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
         var supportAgent = ApplicationUser.Create(
             "supportagent@myshop.com",
             "supportagent",
-            null,
-            "System");
+            null);
         supportAgent.Id = "supportagent-user-id";
         supportAgent.EmailConfirmed = true;
         supportAgent.TwoFactorEnabled = false;
@@ -421,8 +274,7 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
         var customer = ApplicationUser.Create(
             "customer@myshop.com",
             "customer",
-            "customer-domain-id",
-            "System");
+            "customer-domain-id");
         customer.Id = "customer-user-id";
         customer.EmailConfirmed = true;
         customer.TwoFactorEnabled = false;
@@ -432,8 +284,7 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
         var auditor = ApplicationUser.Create(
             "auditor@myshop.com",
             "auditor",
-            null,
-            "System");
+            null);
         auditor.Id = "auditor-user-id";
         auditor.EmailConfirmed = true;
         auditor.TwoFactorEnabled = true;
@@ -444,8 +295,7 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
         var reportViewer = ApplicationUser.Create(
             "reportviewer@myshop.com",
             "reportviewer",
-            null,
-            "System");
+            null);
         reportViewer.Id = "reportviewer-user-id";
         reportViewer.EmailConfirmed = true;
         reportViewer.TwoFactorEnabled = false;

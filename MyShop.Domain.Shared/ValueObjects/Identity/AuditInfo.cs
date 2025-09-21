@@ -6,8 +6,8 @@ public class AuditInfo : BaseValueObject
     public DateTime CreatedAt { get; private init; }
     public string? ModifiedBy { get; private init; }
     public DateTime? ModifiedAt { get; private init; }
-    public string? IpAddress { get; private init; }
-    public string? UserAgent { get; private init; }
+    // حذف IpAddress و UserAgent چون برای Identity معمولاً نیاز نیست
+    // اگر نیاز باشد می‌توان در AuditLog جداگانه نگه داشت
 
     public AuditInfo() 
     {
@@ -15,21 +15,19 @@ public class AuditInfo : BaseValueObject
         CreatedAt = DateTime.UtcNow;
     } 
 
-    private AuditInfo(string? createdBy, DateTime createdAt, string? modifiedBy, DateTime? modifiedAt, string? ipAddress, string? userAgent)
+    private AuditInfo(string? createdBy, DateTime createdAt, string? modifiedBy, DateTime? modifiedAt)
     {
         CreatedBy = createdBy;
         CreatedAt = createdAt;
         ModifiedBy = modifiedBy;
         ModifiedAt = modifiedAt;
-        IpAddress = ipAddress;
-        UserAgent = userAgent;
     }
 
-    public static AuditInfo Create(string? createdBy, string? ipAddress = null, string? userAgent = null, IDateTimeService? dateTimeService = null) =>
-        new(createdBy, dateTimeService?.UtcNow ?? DateTime.UtcNow, null, null, ipAddress, userAgent);
+    public static AuditInfo Create(string? createdBy, IDateTimeService? dateTimeService = null) =>
+        new(createdBy, dateTimeService?.UtcNow ?? DateTime.UtcNow, null, null);
 
-    public AuditInfo WithModified(string? modifiedBy, IDateTimeService dateTimeService, string? ipAddress = null, string? userAgent = null) =>
-        new(CreatedBy, CreatedAt, modifiedBy, dateTimeService.UtcNow, ipAddress ?? IpAddress, userAgent ?? UserAgent);
+    public AuditInfo WithModified(string? modifiedBy, IDateTimeService dateTimeService) =>
+        new(CreatedBy, CreatedAt, modifiedBy, dateTimeService.UtcNow);
 
     public bool HasBeenModified => ModifiedAt.HasValue;
 
@@ -39,7 +37,5 @@ public class AuditInfo : BaseValueObject
         yield return CreatedAt;
         yield return ModifiedBy;
         yield return ModifiedAt;
-        yield return IpAddress;
-        yield return UserAgent;
     }
 }

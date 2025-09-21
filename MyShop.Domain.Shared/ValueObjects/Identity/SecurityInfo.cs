@@ -2,7 +2,7 @@
 
 public class SecurityInfo : BaseValueObject
 {
-    public bool TwoFactorEnabled { get; private init; }
+    // حذف TwoFactorEnabled چون در IdentityUser موجود است
     public string? TwoFactorSecret { get; private init; }
     public DateTime? TwoFactorEnabledAt { get; private init; }
     public string? SecurityQuestion { get; private init; }
@@ -11,9 +11,8 @@ public class SecurityInfo : BaseValueObject
 
     private SecurityInfo() { }
 
-    private SecurityInfo(bool twoFactorEnabled, string? twoFactorSecret, DateTime? twoFactorEnabledAt, string? question, string? answer, DateTime? lastUpdate)
+    private SecurityInfo(string? twoFactorSecret, DateTime? twoFactorEnabledAt, string? question, string? answer, DateTime? lastUpdate)
     {
-        TwoFactorEnabled = twoFactorEnabled;
         TwoFactorSecret = twoFactorSecret;
         TwoFactorEnabledAt = twoFactorEnabledAt;
         SecurityQuestion = question;
@@ -21,25 +20,24 @@ public class SecurityInfo : BaseValueObject
         LastSecurityUpdate = lastUpdate;
     }
 
-    public static SecurityInfo Create() => new(false, null, null, null, null, null);
+    public static SecurityInfo Create() => new(null, null, null, null, null);
 
     public SecurityInfo EnableTwoFactor(string secret, IDateTimeService dateTimeService) =>
-        new(true, secret, dateTimeService.UtcNow, SecurityQuestion, SecurityAnswer, dateTimeService.UtcNow);
+        new(secret, dateTimeService.UtcNow, SecurityQuestion, SecurityAnswer, dateTimeService.UtcNow);
 
     public SecurityInfo DisableTwoFactor(IDateTimeService dateTimeService) =>
-        new(false, null, null, SecurityQuestion, SecurityAnswer, dateTimeService.UtcNow);
+        new(null, null, SecurityQuestion, SecurityAnswer, dateTimeService.UtcNow);
 
-    public SecurityInfo UpdateTwoFactorSecret(string newSecret, IDateTimeService dateTimeService)
-    {
-        if (!TwoFactorEnabled) throw new CustomValidationException("Two-factor is not enabled");
-        return new(TwoFactorEnabled, newSecret, TwoFactorEnabledAt, SecurityQuestion, SecurityAnswer, dateTimeService.UtcNow);
-    }
+    public SecurityInfo UpdateTwoFactorSecret(string newSecret, IDateTimeService dateTimeService) =>
+        new(newSecret, TwoFactorEnabledAt, SecurityQuestion, SecurityAnswer, dateTimeService.UtcNow);
 
-    public bool ValidateTwoFactorSecret(string secret) => TwoFactorEnabled && TwoFactorSecret == secret;
+    public SecurityInfo SetSecurityQuestion(string question, string answer, IDateTimeService dateTimeService) =>
+        new(TwoFactorSecret, TwoFactorEnabledAt, question, answer, dateTimeService.UtcNow);
+
+    public bool ValidateTwoFactorSecret(string secret) => TwoFactorSecret == secret;
 
     protected override IEnumerable<object?> GetEqualityComponents()
     {
-        yield return TwoFactorEnabled;
         yield return TwoFactorSecret;
         yield return TwoFactorEnabledAt;
         yield return SecurityQuestion;

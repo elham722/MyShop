@@ -5,9 +5,8 @@ public class AccountInfo : BaseValueObject
     public DateTime CreatedAt { get; private init; }
     public DateTime? LastLoginAt { get; private init; }
     public DateTime? LastPasswordChangeAt { get; private init; }
-    public int LoginAttempts { get; private init; }
-    public bool IsActive { get; private init; }
-    public bool IsDeleted { get; private init; }
+    // حذف LoginAttempts چون AccessFailedCount در IdentityUser موجود است
+    // حذف IsActive/IsDeleted چون LockoutEnabled/LockoutEnd در IdentityUser موجود است
     public DateTime? DeletedAt { get; private init; }
     public string? BranchId { get; private init; }
 
@@ -15,62 +14,45 @@ public class AccountInfo : BaseValueObject
     {
         // Default constructor for EF Core
         CreatedAt = DateTime.UtcNow;
-        LoginAttempts = 0;
-        IsActive = true;
-        IsDeleted = false;
     } 
 
     private AccountInfo(
         DateTime createdAt,
         DateTime? lastLoginAt,
         DateTime? lastPasswordChangeAt,
-        int loginAttempts,
-        bool isActive,
-        bool isDeleted,
         DateTime? deletedAt,
         string? branchId)
     {
         CreatedAt = createdAt;
         LastLoginAt = lastLoginAt;
         LastPasswordChangeAt = lastPasswordChangeAt;
-        LoginAttempts = loginAttempts;
-        IsActive = isActive;
-        IsDeleted = isDeleted;
         DeletedAt = deletedAt;
         BranchId = branchId;
     }
 
     public static AccountInfo Create(IDateTimeService dateTimeService, string? branchId = null) =>
-        new(dateTimeService.UtcNow, null, null, 0, true, false, null, branchId);
+        new(dateTimeService.UtcNow, null, null, null, branchId);
 
     public AccountInfo WithLastLogin(IDateTimeService dateTimeService) =>
-        new(CreatedAt, dateTimeService.UtcNow, LastPasswordChangeAt, 0, IsActive, IsDeleted, DeletedAt, BranchId);
+        new(CreatedAt, dateTimeService.UtcNow, LastPasswordChangeAt, DeletedAt, BranchId);
 
     public AccountInfo WithPasswordChanged(IDateTimeService dateTimeService) =>
-        new(CreatedAt, LastLoginAt, dateTimeService.UtcNow, LoginAttempts, IsActive, IsDeleted, DeletedAt, BranchId);
-
-    public AccountInfo IncrementLoginAttempts() =>
-        new(CreatedAt, LastLoginAt, LastPasswordChangeAt, LoginAttempts + 1, IsActive, IsDeleted, DeletedAt, BranchId);
-
-    public AccountInfo Deactivate() =>
-        new(CreatedAt, LastLoginAt, LastPasswordChangeAt, LoginAttempts, false, IsDeleted, DeletedAt, BranchId);
-
-    public AccountInfo Activate() =>
-        new(CreatedAt, LastLoginAt, LastPasswordChangeAt, LoginAttempts, true, IsDeleted, DeletedAt, BranchId);
+        new(CreatedAt, LastLoginAt, dateTimeService.UtcNow, DeletedAt, BranchId);
 
     public AccountInfo MarkAsDeleted(IDateTimeService dateTimeService) =>
-        new(CreatedAt, LastLoginAt, LastPasswordChangeAt, LoginAttempts, false, true, dateTimeService.UtcNow, BranchId);
+        new(CreatedAt, LastLoginAt, LastPasswordChangeAt, dateTimeService.UtcNow, BranchId);
 
-    public bool IsLocked(int maxLoginAttempts = 5) => LoginAttempts >= maxLoginAttempts;
+    public AccountInfo WithBranchId(string? branchId) =>
+        new(CreatedAt, LastLoginAt, LastPasswordChangeAt, DeletedAt, branchId);
+
+    // Business rules - استفاده از IdentityUser properties
+    public bool IsDeleted => DeletedAt.HasValue;
 
     protected override IEnumerable<object?> GetEqualityComponents()
     {
         yield return CreatedAt;
         yield return LastLoginAt;
         yield return LastPasswordChangeAt;
-        yield return LoginAttempts;
-        yield return IsActive;
-        yield return IsDeleted;
         yield return DeletedAt;
         yield return BranchId;
     }
